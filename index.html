@@ -26,9 +26,6 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
   <section class="controls">
     <label>赛季
       <select id="season"></select>
-        <option>2025-26</option><option>2024-25</option><option>2023-24</option>
-        <option>2022-23</option><option>2021-22</option><option>2020-21</option>
-      </select>
     </label>
     <label>赛制
       <select id="type">
@@ -37,32 +34,33 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
     </label>
     <label>排名指标
       <select id="metric">
-        <option value="PER">PER 球员效率值</option>
-        <option value="WS">WS 胜利贡献值</option>
-        <option value="VORP">VORP 替代球员贡献值</option>
+        <option value="NET_RATING">NET RTG 净效率</option>
+        <option value="OFF_RATING">OFF RTG 进攻效率</option>
+        <option value="PIE">PIE 球员影响效率</option>
         <option value="TS_PCT">TS% 真实命中率</option>
-        <option value="USG_PCT">Usage% 使用率</option>
-        <option value="OBPM">OBPM 进攻正负值</option>
-        <option value="DBPM">DBPM 防守正负值</option>
+        <option value="USG_PCT">USG% 使用率</option>
+        <option value="REB_PCT">REB% 篮板率</option>
+        <option value="AST_PCT">AST% 助攻率</option>
       </select>
     </label>
     <button id="refresh">刷新数据</button>
   </section>
 
-  <div id="status">正在连接数据接口…</div>
+  <div id="status">正在读取历史数据档案…</div>
   <div class="box">
     <table>
       <thead><tr>
         <th>排名</th><th>球员</th><th>球队</th><th>出场</th><th>分钟</th>
-        <th>PER</th><th>TS%</th><th>Usage%</th><th>REB%</th><th>AST%</th>
-        <th>WS</th><th>VORP</th><th>OBPM</th><th>DBPM</th>
+        <th>OFF RTG</th><th>DEF RTG</th><th>NET RTG</th><th>TS%</th><th>USG%</th>
+        <th>REB%</th><th>AST%</th><th>PIE</th>
       </tr></thead>
-      <tbody id="rows"><tr><td colspan="14">正在加载…</td></tr></tbody>
+      <tbody id="rows"><tr><td colspan="13">正在加载…</td></tr></tbody>
     </table>
   </div>
 
   <footer>
-    数据来自 <a href="https://github.com/ehammill/nbastats">社区 NBA Stats API</a>，不是 NBA 官方服务。
+    数据为按赛季保存的 NBA Stats 历史档案；高级指标从 1996-97 赛季开始。<br>
+    指标说明：进攻/防守/净效率、真实命中率、使用率、篮板率、助攻率与 PIE。PER、WS、VORP、BPM 属于其他统计口径，不在本档案内。
   </footer>
 </main>
 <script>
@@ -83,7 +81,7 @@ function escapeHtml(value) {
 function showRows() {
   const key = $('metric').value;
   const rows = allRows
-    .filter(r => r.PLAYER_NAME && Number.isFinite(Number(r[key])))
+    .filter(r => r.PLAYER_NAME && r[key] != null && Number.isFinite(Number(r[key])))
     .sort((a,b) => Number(b[key]) - Number(a[key]))
     .slice(0,30);
 
@@ -91,35 +89,37 @@ function showRows() {
     const val = (field, pct=false) => {
       const n = Number(r[field]);
       if (r[field] == null || !Number.isFinite(n)) return '—';
-      return (field === 'TS_PCT' ? (n*100).toFixed(1) : n.toFixed(1)) + (pct ? '%' : '');
+      return n.toFixed(1) + (pct ? '%' : '');
     };
+    const pie = Number(r.PIE);
     return `<tr>
       <td class="rank">${i+1}</td>
       <td>${escapeHtml(r.PLAYER_NAME)}</td><td>${escapeHtml(r.TEAM_ABBREVIATION)}</td>
       <td>${val('GP')}</td><td>${val('MIN')}</td>
-      <td class="metric">${val('PER')}</td><td>${val('TS_PCT',true)}</td>
+      <td>${val('OFF_RATING')}</td><td>${val('DEF_RATING')}</td>
+      <td class="metric">${val('NET_RATING')}</td><td>${val('TS_PCT',true)}</td>
       <td>${val('USG_PCT',true)}</td><td>${val('REB_PCT',true)}</td>
-      <td>${val('AST_PCT',true)}</td><td>${val('WS')}</td><td>${val('VORP')}</td>
-      <td>${val('OBPM')}</td><td>${val('DBPM')}</td>
+      <td>${val('AST_PCT',true)}</td><td>${Number.isFinite(pie) ? pie.toFixed(3) : '—'}</td>
     </tr>`;
-  }).join('') || '<tr><td colspan="14">没有可显示的数据</td></tr>';
+  }).join('') || '<tr><td colspan="13">没有可显示的数据</td></tr>';
 }
 async function load() {
-  $('status').textContent = '正在加载球员数据…';
-  $('rows').innerHTML = '<tr><td colspan="14">正在加载…</td></tr>';
+  $('status').textContent = '正在读取该赛季的历史档案…';
+  $('rows').innerHTML = '<tr><td colspan="13">正在加载…</td></tr>';
   try {
-    const query = new URLSearchParams({season:$('season').value,type:$('type').value});
-    const response = await fetch(`/api/advanced?${query}`, {signal:AbortSignal.timeout(30000)});
+    const startingYear = Number($('season').value.slice(0, 4));
+    const endingYear = startingYear + 1;
+    const response = await fetch(`/data/${endingYear}.json`, {signal:AbortSignal.timeout(30000)});
     const body = await response.json();
-    if (!response.ok) throw new Error(body.detail || body.error || `HTTP ${response.status}`);
-    allRows = body.rows || [];
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    allRows = body.rows?.[$('type').value] || [];
     if (!allRows.length) throw new Error('接口没有返回球员数据');
-    $('status').textContent = `已载入 ${allRows.length} 位球员；榜单按所选指标排序`;
+    $('status').textContent = `已载入 ${body.season} ${$('type').value === 'REG' ? '常规赛' : '季后赛'}档案，共 ${allRows.length} 条球员记录；榜单按所选指标排序`;
     showRows();
   } catch (error) {
     allRows = [];
     $('status').textContent = `加载失败：${error.message}`;
-    $('rows').innerHTML = '<tr><td colspan="14">请稍后点“刷新数据”重试。</td></tr>';
+    $('rows').innerHTML = '<tr><td colspan="13">该赛季档案尚未部署。请稍后刷新，或检查 GitHub Actions 是否已完成历史回填。</td></tr>';
   }
 }
 $('refresh').addEventListener('click',load);

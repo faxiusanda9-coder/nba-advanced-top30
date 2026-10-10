@@ -1,7 +1,1 @@
-{
-  "functions": {
-    "api/advanced.js": {
-      "maxDuration": 60
-    }
-  }
-}
+{}
