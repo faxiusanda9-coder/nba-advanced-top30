@@ -5,9 +5,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outputDir = path.join(root, 'data');
 const releaseBase = 'https://github.com/sportsdataverse/sportsdataverse-data/releases/download/nba_stats_player_season_stats';
-const raptorUrl = 'https://raw.githubusercontent.com/fivethirtyeight/data/master/nba-raptor/historical_RAPTOR_by_team.csv';
 const timeoutMs = 45_000;
-let raptorBySeasonPlayer = new Map();
 
 function csvRows(text) {
   const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(Boolean);
@@ -41,52 +39,7 @@ function numberOrNull(value, percent = false) {
   return Number.isFinite(number) ? (percent ? Number((number * 100).toFixed(3)) : number) : null;
 }
 
-function normalizePlayerName(value) {
-  return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .toLocaleLowerCase().replace(/\b(jr|sr|ii|iii|iv|v)\b/g, '').replace(/[^a-z0-9]/g, '');
-}
-
-function numberValue(value) {
-  const number = Number(value);
-  return value === '' || value == null || !Number.isFinite(number) ? null : number;
-}
-
-function buildRaptorIndex(rows) {
-  const grouped = new Map();
-  for (const row of rows) {
-    const endingYear = Number(row.season);
-    const type = row.season_type === 'RS' ? 'REG' : row.season_type === 'PO' ? 'PST' : '';
-    const name = normalizePlayerName(row.player_name);
-    if (!type || !name || !Number.isInteger(endingYear)) continue;
-    const key = `${endingYear}|${type}|${name}`;
-    if (!grouped.has(key)) grouped.set(key, { poss: 0, mp: 0, war: 0, rates: Object.create(null) });
-    const total = grouped.get(key);
-    const poss = numberValue(row.poss) || 0;
-    total.poss += poss;
-    total.mp += numberValue(row.mp) || 0;
-    total.war += numberValue(row.war_total) || 0;
-    for (const field of ['raptor_offense','raptor_defense','raptor_total','predator_offense','predator_defense','predator_total','pace_impact']) {
-      const value = numberValue(row[field]);
-      if (value == null) continue;
-      const aggregate = total.rates[field] || (total.rates[field] = { weighted: 0, weight: 0 });
-      aggregate.weighted += value * poss;
-      aggregate.weight += poss;
-    }
-  }
-  return new Map([...grouped].map(([key, total]) => [key, {
-    RAPTOR: total.rates.raptor_total?.weight ? total.rates.raptor_total.weighted / total.rates.raptor_total.weight : null,
-    RAPTOR_OFF: total.rates.raptor_offense?.weight ? total.rates.raptor_offense.weighted / total.rates.raptor_offense.weight : null,
-    RAPTOR_DEF: total.rates.raptor_defense?.weight ? total.rates.raptor_defense.weighted / total.rates.raptor_defense.weight : null,
-    RAPTOR_WAR: total.war,
-    PREDATOR: total.rates.predator_total?.weight ? total.rates.predator_total.weighted / total.rates.predator_total.weight : null,
-    PREDATOR_OFF: total.rates.predator_offense?.weight ? total.rates.predator_offense.weighted / total.rates.predator_offense.weight : null,
-    PREDATOR_DEF: total.rates.predator_defense?.weight ? total.rates.predator_defense.weighted / total.rates.predator_defense.weight : null,
-    PACE_IMPACT: total.rates.pace_impact?.weight ? total.rates.pace_impact.weighted / total.rates.pace_impact.weight : null
-  }]));
-}
-
-function normalize(row, endingYear, type) {
-  const extra = raptorBySeasonPlayer.get(`${endingYear}|${type}|${normalizePlayerName(row.player_name)}`) || {};
+function normalize(row) {
   return {
     PLAYER_NAME: row.player_name,
     TEAM_ABBREVIATION: row.team_abbreviation || '',
@@ -109,15 +62,8 @@ function normalize(row, endingYear, type) {
     PACE: numberOrNull(row.pace),
     POSS: numberOrNull(row.poss),
     PIE: numberOrNull(row.pie),
-    ...extra,
     playerId: row.player_id || ''
   };
-}
-
-async function loadRaptorData() {
-  const response = await fetch(raptorUrl, { signal: AbortSignal.timeout(timeoutMs) });
-  if (!response.ok) throw new Error(`下载 FiveThirtyEight RAPTOR 档案失败：HTTP ${response.status}`);
-  raptorBySeasonPlayer = buildRaptorIndex(csvRows(await response.text()));
 }
 
 async function getSeasonCsv(endingYear) {
@@ -136,12 +82,10 @@ async function writeSeason(endingYear) {
     season: `${endingYear - 1}-${String(endingYear % 100).padStart(2, '0')}`,
     endingYear,
     source: 'NBA Stats via SportsDataverse archive',
-    supplementalSources: {
-      raptor: 'FiveThirtyEight historical_RAPTOR_by_team.csv (CC BY 4.0; coverage through 2021-22)'
-    },
+    supplementalSources: {},
     rows: {
-      REG: regularSeasonRows.map(row => normalize(row, endingYear, 'REG')),
-      PST: playoffRows.map(row => normalize(row, endingYear, 'PST'))
+      REG: regularSeasonRows.map(normalize),
+      PST: playoffRows.map(normalize)
     }
   };
   if (!data.rows.REG.length) throw new Error(`${endingYear} 未找到常规赛高级数据，未写入文件`);
@@ -162,9 +106,6 @@ if (yearArg) {
   const currentEndingYear = now.getUTCMonth() >= 8 ? now.getUTCFullYear() + 1 : now.getUTCFullYear();
   years = [currentEndingYear];
 }
-
-await loadRaptorData();
-console.log(`已载入 FiveThirtyEight RAPTOR 附加档案：${raptorBySeasonPlayer.size} 个球员赛季记录`);
 
 for (const year of years) {
   if (!Number.isInteger(year) || year < 1997 || year > 2100) throw new Error(`无效的赛季结束年份：${year}`);
