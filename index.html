@@ -88,22 +88,23 @@ function escapeHtml(value) {
 function showRows() {
   const key = $('metric').value;
   const minMinutes = Number($('minMinutes').value);
+  const isRegularSeason = $('type').value === 'REG';
+  const minGames = isRegularSeason ? 58 : 7;
   const eligibleRows = allRows
     .filter(r => {
       const games = Number(r.GP);
       const minutesPerGame = Number(r.MIN);
       return r.PLAYER_NAME && r[key] != null && Number.isFinite(Number(r[key])) &&
-        Number.isFinite(games) && games > 0 && Number.isFinite(minutesPerGame) &&
+        Number.isFinite(games) && games >= minGames && Number.isFinite(minutesPerGame) &&
         minutesPerGame >= minMinutes;
     });
   const rows = eligibleRows
     .sort((a,b) => Number(b[key]) - Number(a[key]))
     .slice(0,30);
 
-  const seasonType = $('type').value === 'REG' ? '常规赛' : '季后赛';
+  const seasonType = isRegularSeason ? '常规赛' : '季后赛';
   const season = $('season').value;
-  const thresholdText = minMinutes ? `最低场均 ${minMinutes} 分钟` : '不限制场均分钟';
-  $('status').textContent = `已载入 ${season} ${seasonType}档案，共 ${allRows.length} 条球员记录；${thresholdText}，符合条件 ${eligibleRows.length} 人，显示按所选指标排序的前 30 名`;
+  $('status').textContent = `已载入 ${season} ${seasonType}档案，共 ${allRows.length} 条球员记录；筛选条件：场均至少 ${minMinutes} 分钟、至少出场 ${minGames} 场；符合条件 ${eligibleRows.length} 人，显示按所选指标排序的前 30 名`;
 
   $('rows').innerHTML = rows.map((r,i) => {
     const val = (field, pct=false) => {
