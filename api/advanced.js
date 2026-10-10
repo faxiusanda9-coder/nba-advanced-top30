@@ -21,11 +21,13 @@ module.exports = async function handler(req, res) {
   });
 
   try {
-    const response = await fetch(`${ENDPOINT}?${params}`, {
+    const response = await fetch(`${ENDPOINT}?${params}`, {signal: AbortSignal.timeout(55000),
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; NBAAdvancedTop30/1.0)',
         Referer: 'https://www.nba.com/',
         Origin: 'https://www.nba.com',
+        'x-nba-stats-origin': 'stats',
+        'x-nba-stats-token': 'true',
         Accept: 'application/json, text/plain, */*'
       }
     });
