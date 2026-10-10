@@ -45,10 +45,7 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
     </label>
     <label>最低场均出场时间
       <select id="minMinutes">
-        <option value="0">不限</option>
-        <option value="10">10 分钟</option>
-        <option value="15" selected>15 分钟</option>
-        <option value="20">20 分钟</option>
+        <option value="20" selected>20 分钟</option>
         <option value="25">25 分钟</option>
         <option value="30">30 分钟</option>
       </select>
@@ -94,10 +91,10 @@ function showRows() {
   const eligibleRows = allRows
     .filter(r => {
       const games = Number(r.GP);
-      const totalMinutes = Number(r.MIN);
+      const minutesPerGame = Number(r.MIN);
       return r.PLAYER_NAME && r[key] != null && Number.isFinite(Number(r[key])) &&
-        Number.isFinite(games) && games > 0 && Number.isFinite(totalMinutes) &&
-        totalMinutes / games >= minMinutes;
+        Number.isFinite(games) && games > 0 && Number.isFinite(minutesPerGame) &&
+        minutesPerGame >= minMinutes;
     });
   const rows = eligibleRows
     .sort((a,b) => Number(b[key]) - Number(a[key]))
@@ -118,7 +115,7 @@ function showRows() {
     return `<tr>
       <td class="rank">${i+1}</td>
       <td>${escapeHtml(r.PLAYER_NAME)}</td><td>${escapeHtml(r.TEAM_ABBREVIATION)}</td>
-      <td>${val('GP')}</td><td>${(Number(r.MIN) / Number(r.GP)).toFixed(1)}</td>
+      <td>${val('GP')}</td><td>${val('MIN')}</td>
       <td>${val('OFF_RATING')}</td><td>${val('DEF_RATING')}</td>
       <td class="metric">${val('NET_RATING')}</td><td>${val('TS_PCT',true)}</td>
       <td>${val('USG_PCT',true)}</td><td>${val('REB_PCT',true)}</td>
