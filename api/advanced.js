@@ -1,44 +1,67 @@
-const ENDPOINT = 'https://stats.nba.com/stats/leaguedashplayerstats';
+const ENDPOINT = 'https://api.server.nbaapi.com/api/playeradvancedstats';
 
 module.exports = async function handler(req, res) {
   const season = String(req.query.season || '2025-26');
-  const type = String(req.query.type || 'Regular Season');
-  if (!/^\d{4}-\d{2}$/.test(season)) {
-    return res.status(400).json({ error: '无效的赛季参数' });
-  }
-  if (!['Regular Season', 'Playoffs'].includes(type)) {
-    return res.status(400).json({ error: '无效的赛制参数' });
-  }
+  const type = String(req.query.type || 'REG');
+  if (!/^\d{4}-\d{2}$/.test(season)) return res.status(400).json({ error: '赛季参数需类似 2025-26' });
+  if (!['REG', 'PST'].includes(type)) return res.status(400).json({ error: '赛制参数无效' });
 
   const params = new URLSearchParams({
-    College: '', Conference: '', Country: '', DateFrom: '', DateTo: '', Division: '',
-    DraftPick: '', DraftYear: '', GameScope: '', GameSegment: '', Height: '', ISTRound: '',
-    LastNGames: '0', LeagueID: '00', Location: '', MeasureType: 'Advanced', Month: '0',
-    OpponentTeamID: '0', Outcome: '', PORound: '0', PaceAdjust: 'N', PerMode: 'PerGame',
-    Period: '0', PlayerExperience: '', PlayerPosition: '', PlusMinus: 'N', Rank: 'N',
-    Season: season, SeasonSegment: '', SeasonType: type, ShotClockRange: '', StarterBench: '',
-    TeamID: '0', VsConference: '', VsDivision: '', Weight: ''
+    season: season.slice(0, 4),
+    isPlayoff: String(type === 'PST'),
+    page: '1',
+    pageSize: '100',
+    sortBy: 'win_shares',
+    ascending: 'false'
   });
 
   try {
-    const response = await fetch(`${ENDPOINT}?${params}`, {signal: AbortSignal.timeout(55000),
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; NBAAdvancedTop30/1.0)',
-        Referer: 'https://www.nba.com/',
-        Origin: 'https://www.nba.com',
-        'x-nba-stats-origin': 'stats',
-        'x-nba-stats-token': 'true',
-        Accept: 'application/json, text/plain, */*'
-      }
+    const firstResponse = await fetch(`${ENDPOINT}?${params}`, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(20000)
     });
-    if (!response.ok) throw new Error(`NBA Stats HTTP ${response.status}`);
-    const payload = await response.json();
-    const result = payload.resultSets?.[0];
-    if (!result?.headers || !result?.rowSet) throw new Error('NBA Stats 响应格式变化');
-    const rows = result.rowSet.map(row => Object.fromEntries(result.headers.map((key, i) => [key, row[i]])));
+    if (!firstResponse.ok) throw new Error(`NBA API HTTP ${firstResponse.status}`);
+    const firstPage = await firstResponse.json();
+    if (!Array.isArray(firstPage.data)) throw new Error('NBA API 响应格式变化');
+
+    const pageCount = Math.max(1, Math.min(Number(firstPage.pagination?.pages) || 1, 10));
+    const otherPages = await Promise.all(Array.from({ length: pageCount - 1 }, async (_, index) => {
+      const pageParams = new URLSearchParams(params);
+      pageParams.set('page', String(index + 2));
+      const response = await fetch(`${ENDPOINT}?${pageParams}`, {
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(20000)
+      });
+      if (!response.ok) throw new Error(`NBA API HTTP ${response.status}`);
+      const body = await response.json();
+      if (!Array.isArray(body.data)) throw new Error('NBA API 响应格式变化');
+      return body.data;
+    }));
+
+    const rows = [...firstPage.data, ...otherPages.flat()].map(player => ({
+      PLAYER_NAME: player.playerName,
+      TEAM_ABBREVIATION: player.team || '',
+      GP: player.games ?? null,
+      MIN: player.minutesPlayed ?? null,
+      PER: player.per ?? null,
+      TS_PCT: player.tsPercent ?? null,
+      USG_PCT: player.usagePercent ?? null,
+      REB_PCT: player.totalRBPercent ?? null,
+      AST_PCT: player.assistPercent ?? null,
+      WS: player.winShares ?? null,
+      VORP: player.vorp ?? null,
+      OBPM: player.offensiveBox ?? null,
+      DBPM: player.defensiveBox ?? null,
+      playerId: player.playerId
+    }));
+
     res.setHeader('Cache-Control', 's-maxage=1800, stale-while-revalidate=3600');
-    return res.status(200).json({ rows, season, type, source: 'NBA Stats' });
+    return res.status(200).json({ rows, season, type, source: 'NBA Stats API (community beta)' });
   } catch (error) {
-    return res.status(502).json({ error: 'NBA Stats 请求失败或响应格式变化', detail: String(error.message).slice(0, 240) });
+    return res.status(502).json({
+      error: 'NBA 球员数据获取失败',
+      detail: String(error.message || error).slice(0, 240)
+    });
   }
 };
+
