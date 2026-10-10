@@ -37,10 +37,19 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
         <option value="NET_RATING">NET RTG 净效率</option>
         <option value="OFF_RATING">OFF RTG 进攻效率</option>
         <option value="PIE">PIE 球员影响效率</option>
+        <option value="EFG_PCT">eFG% 有效命中率</option>
         <option value="TS_PCT">TS% 真实命中率</option>
         <option value="USG_PCT">USG% 使用率</option>
+        <option value="E_USG_PCT">E-USG% 预估使用率</option>
+        <option value="AST_TO">AST/TO 助攻失误比</option>
+        <option value="AST_RATIO">AST Ratio 助攻比</option>
+        <option value="OREB_PCT">OREB% 前场篮板率</option>
+        <option value="DREB_PCT">DREB% 后场篮板率</option>
         <option value="REB_PCT">REB% 篮板率</option>
         <option value="AST_PCT">AST% 助攻率</option>
+        <option value="E_TOV_PCT">E-TOV% 预估失误率（越低越好）</option>
+        <option value="PACE">PACE 回合节奏</option>
+        <option value="POSS">POSS 球员回合数</option>
       </select>
     </label>
     <label>最低场均出场时间
@@ -58,16 +67,17 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
     <table>
       <thead><tr>
         <th>排名</th><th>球员</th><th>球队</th><th>出场</th><th>场均分钟</th>
-        <th>OFF RTG</th><th>DEF RTG</th><th>NET RTG</th><th>TS%</th><th>USG%</th>
-        <th>REB%</th><th>AST%</th><th>PIE</th>
+        <th>OFF RTG</th><th>DEF RTG</th><th>NET RTG</th><th>eFG%</th><th>TS%</th>
+        <th>USG%</th><th>E-USG%</th><th>AST/TO</th><th>AST Ratio</th><th>OREB%</th>
+        <th>DREB%</th><th>REB%</th><th>AST%</th><th>E-TOV%</th><th>PACE</th><th>POSS</th><th>PIE</th>
       </tr></thead>
-      <tbody id="rows"><tr><td colspan="13">正在加载…</td></tr></tbody>
+      <tbody id="rows"><tr><td colspan="22">正在加载…</td></tr></tbody>
     </table>
   </div>
 
   <footer>
     数据为按赛季保存的 NBA Stats 历史档案；高级指标从 1996-97 赛季开始。<br>
-    指标说明：进攻/防守/净效率、真实命中率、使用率、篮板率、助攻率与 PIE。PER、WS、VORP、BPM 属于其他统计口径，不在本档案内。
+    指标说明：包括进攻/防守/净效率、有效/真实命中率、使用率、助攻与失误、前后场篮板率、回合节奏、球员回合数和 PIE。PER、WS、VORP、BPM 属于其他统计口径，不在本档案内。
   </footer>
 </main>
 <script>
@@ -98,8 +108,9 @@ function showRows() {
         Number.isFinite(games) && games >= minGames && Number.isFinite(minutesPerGame) &&
         minutesPerGame >= minMinutes;
     });
+  const lowerIsBetter = key === 'E_TOV_PCT';
   const rows = eligibleRows
-    .sort((a,b) => Number(b[key]) - Number(a[key]))
+    .sort((a,b) => lowerIsBetter ? Number(a[key]) - Number(b[key]) : Number(b[key]) - Number(a[key]))
     .slice(0,30);
 
   const seasonType = isRegularSeason ? '常规赛' : '季后赛';
@@ -118,15 +129,18 @@ function showRows() {
       <td>${escapeHtml(r.PLAYER_NAME)}</td><td>${escapeHtml(r.TEAM_ABBREVIATION)}</td>
       <td>${val('GP')}</td><td>${val('MIN')}</td>
       <td>${val('OFF_RATING')}</td><td>${val('DEF_RATING')}</td>
-      <td class="metric">${val('NET_RATING')}</td><td>${val('TS_PCT',true)}</td>
-      <td>${val('USG_PCT',true)}</td><td>${val('REB_PCT',true)}</td>
-      <td>${val('AST_PCT',true)}</td><td>${Number.isFinite(pie) ? pie.toFixed(3) : '—'}</td>
+      <td class="metric">${val('NET_RATING')}</td><td>${val('EFG_PCT',true)}</td>
+      <td>${val('TS_PCT',true)}</td><td>${val('USG_PCT',true)}</td><td>${val('E_USG_PCT',true)}</td>
+      <td>${val('AST_TO')}</td><td>${val('AST_RATIO')}</td><td>${val('OREB_PCT',true)}</td>
+      <td>${val('DREB_PCT',true)}</td><td>${val('REB_PCT',true)}</td><td>${val('AST_PCT',true)}</td>
+      <td>${val('E_TOV_PCT',true)}</td><td>${val('PACE')}</td><td>${val('POSS')}</td>
+      <td>${Number.isFinite(pie) ? pie.toFixed(3) : '—'}</td>
     </tr>`;
-  }).join('') || '<tr><td colspan="13">没有可显示的数据</td></tr>';
+  }).join('') || '<tr><td colspan="22">没有符合筛选条件的球员</td></tr>';
 }
 async function load() {
   $('status').textContent = '正在读取该赛季的历史档案…';
-  $('rows').innerHTML = '<tr><td colspan="13">正在加载…</td></tr>';
+    $('rows').innerHTML = '<tr><td colspan="22">正在加载…</td></tr>';
   try {
     const startingYear = Number($('season').value.slice(0, 4));
     const endingYear = startingYear + 1;
@@ -140,7 +154,7 @@ async function load() {
   } catch (error) {
     allRows = [];
     $('status').textContent = `加载失败：${error.message}`;
-    $('rows').innerHTML = '<tr><td colspan="13">该赛季档案尚未部署。请稍后刷新，或检查 GitHub Actions 是否已完成历史回填。</td></tr>';
+    $('rows').innerHTML = '<tr><td colspan="22">该赛季档案尚未部署。请稍后刷新，或检查 GitHub Actions 是否已完成历史回填。</td></tr>';
   }
 }
 $('refresh').addEventListener('click',load);
