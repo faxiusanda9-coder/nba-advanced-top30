@@ -26,6 +26,8 @@ tr:hover td{background:#192432}.rank{color:#f47b48}.metric{color:#a5f0c5;font-we
 @keyframes badge-pop{from{opacity:0;transform:scale(.75)}to{opacity:1;transform:scale(1)}}
 @media(prefers-reduced-motion:reduce){.rank-row,.rank-movement{animation:none!important}}
 .player-cell{display:flex;align-items:center;gap:10px;text-align:left!important}
+.player-open{display:flex;align-items:center;gap:10px;padding:0;border:0;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.player-open:hover{color:#a5f0c5}.player-open:focus-visible{outline:2px solid #a5f0c5;outline-offset:3px;border-radius:6px}
 .portrait{position:relative;display:inline-grid;place-items:center;flex:none;width:40px;height:40px;border-radius:50%;overflow:hidden;background:#263547;color:#a5f0c5;font-size:12px;font-weight:bold}
 .portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .view-tabs{display:flex;gap:8px;margin:22px 0 0}
@@ -113,13 +115,13 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
   </section>
 
   <section id="careerView" class="career-panel" hidden>
-    <p>选择两名球员，比较他们每个赛季的高阶数据走势。</p>
+    <p>查看单名球员的生涯走势，也可以选择第二名球员进行对比。</p>
     <section class="career-controls">
       <label>球员 A
         <input id="playerA" list="playerNames" placeholder="输入球员姓名" autocomplete="off">
       </label>
       <label>球员 B
-        <input id="playerB" list="playerNames" placeholder="输入球员姓名" autocomplete="off">
+        <input id="playerB" list="playerNames" placeholder="可选：添加第二名球员" autocomplete="off">
       </label>
       <datalist id="playerNames"></datalist>
       <label>赛制
@@ -211,7 +213,7 @@ function showRows() {
     const offset = oldRank == null ? 12 : Math.max(-90, Math.min(90, (oldRank - rank) * 8));
     return `<tr class="rank-row ${motionClass}" style="--row-delay:${Math.min(i * 22, 420)}ms;--row-offset:${offset}px">
       <td class="rank"><span class="rank-cell">${rank}${badge}</span></td>
-      <td class="player-cell"><span class="portrait"><span>${initials}</span>${headshot}</span>${escapeHtml(r.PLAYER_NAME)}</td>
+      <td class="player-cell"><button class="player-open" type="button" data-player-name="${escapeHtml(r.PLAYER_NAME)}" aria-label="查看 ${escapeHtml(r.PLAYER_NAME)} 的生涯走势"><span class="portrait"><span>${initials}</span>${headshot}</span>${escapeHtml(r.PLAYER_NAME)}</button></td>
       <td>${escapeHtml(r.TEAM_ABBREVIATION)}</td>
       <td>${val('GP')}</td><td>${val('MIN')}</td>
       <td>${val('OFF_RATING')}</td><td>${val('DEF_RATING')}</td>
@@ -332,21 +334,19 @@ function drawCareerComparison() {
   const type = $('careerType').value;
   const svg = $('careerChart');
   $('careerLegend').innerHTML = '';
-  if (!playerA || !playerB) {
-    $('careerStatus').textContent = '请从球员建议列表中选择两名球员。';
+  if (!playerA || (nameB && !playerB)) {
+    $('careerStatus').textContent = '请从球员建议列表中选择有效的球员姓名。';
     svg.innerHTML = '';
     return;
   }
-  if (playerA.id === playerB.id) {
+  if (playerB && playerA.id === playerB.id) {
     $('careerStatus').textContent = '请选择两名不同的球员进行对比。';
     svg.innerHTML = '';
     return;
   }
 
-  const series = [
-    { player: playerA, color: '#56d4ff', points: [] },
-    { player: playerB, color: '#ff9a5c', points: [] }
-  ];
+  const series = [{ player: playerA, color: '#56d4ff', points: [] }];
+  if (playerB) series.push({ player: playerB, color: '#ff9a5c', points: [] });
   for (const archive of careerArchives) {
     for (const item of series) {
       const row = (archive.rows?.[type] || []).find(candidate => String(candidate.playerId || candidate.PLAYER_NAME.toLowerCase()) === item.player.id);
@@ -407,10 +407,11 @@ function drawCareerComparison() {
   $('careerLegend').innerHTML = series.map(item => `<span class="legend-item"><i class="legend-dot" style="background:${item.color}"></i>${escapeHtml(item.player.name)}（${item.points.length} 个赛季）</span>`).join('');
   const typeName = type === 'REG' ? '常规赛' : '季后赛';
   const metricName = $('careerMetric').selectedOptions[0]?.textContent || metric;
-  $('careerStatus').textContent = `${typeName} · ${metricName}：${playerA.name} ${series[0].points.length} 个赛季，${playerB.name} ${series[1].points.length} 个赛季。悬停曲线上的圆点可查看该季详细数据。`;
+  const seasonCounts = series.map(item => `${item.player.name} ${item.points.length} 个赛季`).join('；');
+  $('careerStatus').textContent = `${typeName} · ${metricName}：${seasonCounts}。悬停曲线上的圆点可查看该季详细数据。`;
 }
 
-async function openCareerView() {
+async function openCareerView(playerName = '') {
   $('rankView').hidden = true;
   $('careerView').hidden = false;
   $('rankTab').classList.remove('active');
@@ -420,6 +421,12 @@ async function openCareerView() {
   $('careerStatus').textContent = '正在载入 30 个赛季的本地历史档案…';
   try {
     await loadCareerArchives();
+    if (playerName) {
+      const player = careerPlayersByName.get(playerName.trim().toLocaleLowerCase());
+      if (!player) throw new Error(`历史档案中没有找到 ${playerName}`);
+      $('playerA').value = player.name;
+      $('playerB').value = '';
+    }
     drawCareerComparison();
   } catch (error) {
     $('careerStatus').textContent = `生涯档案加载失败：${error.message}。请刷新页面后重试。`;
@@ -434,7 +441,11 @@ $('rankTab').addEventListener('click', () => {
   $('careerTab').setAttribute('aria-selected', 'false');
   $('rankTab').setAttribute('aria-selected', 'true');
 });
-$('careerTab').addEventListener('click', openCareerView);
+$('careerTab').addEventListener('click', () => openCareerView());
+$('rows').addEventListener('click', event => {
+  const button = event.target.closest('.player-open');
+  if (button) openCareerView(button.dataset.playerName);
+});
 $('comparePlayers').addEventListener('click', drawCareerComparison);
 $('careerType').addEventListener('change', drawCareerComparison);
 $('careerMetric').addEventListener('change', drawCareerComparison);
