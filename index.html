@@ -17,6 +17,21 @@ tr:hover td{background:#192432}.rank{color:#f47b48}.metric{color:#a5f0c5;font-we
 .player-cell{display:flex;align-items:center;gap:10px;text-align:left!important}
 .portrait{position:relative;display:inline-grid;place-items:center;flex:none;width:40px;height:40px;border-radius:50%;overflow:hidden;background:#263547;color:#a5f0c5;font-size:12px;font-weight:bold}
 .portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.view-tabs{display:flex;gap:8px;margin:22px 0 0}
+.view-tabs button{padding:11px 16px;border-radius:9px 9px 0 0;background:#111923;color:#9aa9bb}
+.view-tabs button.active{background:#192737;color:#a5f0c5;border-color:#40556c}
+.career-panel{padding:16px;background:#111923;border:1px solid #273342;border-radius:0 10px 10px}
+.career-controls{display:flex;gap:12px;flex-wrap:wrap;align-items:end;background:#151d28;padding:16px;border-radius:10px}
+.career-controls label{display:grid;gap:6px;color:#aab8c8}
+.career-controls input{min-width:190px;background:#0d141d;color:#eef;border:1px solid #344255;border-radius:7px;padding:10px 12px;font-size:14px}
+.career-status{min-height:24px;color:#a5f0c5;margin:14px 0}
+.career-legend{display:flex;gap:20px;flex-wrap:wrap;margin:12px 0;color:#dbe5ef}
+.legend-item{display:flex;gap:8px;align-items:center}
+.legend-dot{width:12px;height:12px;border-radius:50%}
+.chart-box{overflow:auto;border:1px solid #273342;border-radius:10px;background:#0e151e}
+#careerChart{display:block;width:100%;min-width:760px;height:auto}
+.chart-note{font-size:12px;color:#8290a2;margin:12px 0 2px}
+[hidden]{display:none!important}
 footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
 @media(max-width:600px){main{padding:22px 12px}h1{font-size:29px}}
 </style>
@@ -24,8 +39,14 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
 <body>
 <main>
   <h1>NBA 高阶数据 TOP 30</h1>
-  <p>按球员高阶统计指标查看联盟排名。</p>
+  <p>查看联盟单季排名，或比较球员跨赛季的高阶数据变化。</p>
 
+  <div class="view-tabs" role="tablist" aria-label="数据视图">
+    <button id="rankTab" class="active" type="button" role="tab" aria-selected="true">联盟 TOP 30</button>
+    <button id="careerTab" type="button" role="tab" aria-selected="false">球员生涯对比</button>
+  </div>
+
+  <section id="rankView">
   <section class="controls">
     <label>赛季
       <select id="season"></select>
@@ -77,6 +98,35 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
       <tbody id="rows"><tr><td colspan="22">正在加载…</td></tr></tbody>
     </table>
   </div>
+  </section>
+
+  <section id="careerView" class="career-panel" hidden>
+    <p>选择两名球员，比较他们每个赛季的高阶数据走势。</p>
+    <section class="career-controls">
+      <label>球员 A
+        <input id="playerA" list="playerNames" placeholder="输入球员姓名" autocomplete="off">
+      </label>
+      <label>球员 B
+        <input id="playerB" list="playerNames" placeholder="输入球员姓名" autocomplete="off">
+      </label>
+      <datalist id="playerNames"></datalist>
+      <label>赛制
+        <select id="careerType">
+          <option value="REG">常规赛</option><option value="PST">季后赛</option>
+        </select>
+      </label>
+      <label>对比指标
+        <select id="careerMetric"></select>
+      </label>
+      <button id="comparePlayers" type="button">生成对比图</button>
+    </section>
+    <div id="careerStatus" class="career-status" aria-live="polite">切换到此视图后会载入历史档案。</div>
+    <div id="careerLegend" class="career-legend"></div>
+    <div class="chart-box">
+      <svg id="careerChart" viewBox="0 0 1000 430" role="img" aria-label="两名球员的生涯高阶数据对比图"></svg>
+    </div>
+    <p class="chart-note">图表显示历史档案中该球员每个赛季的数据；悬停数据点可查看赛季、出场数、场均分钟与指标数值。生涯图展示档案原始赛季行，不套用榜单的资格门槛。</p>
+  </section>
 
   <footer>
     数据为按赛季保存的 NBA Stats 历史档案；高级指标从 1996-97 赛季开始。<br>
@@ -166,6 +216,187 @@ async function load() {
     $('rows').innerHTML = '<tr><td colspan="22">该赛季档案尚未部署。请稍后刷新，或检查 GitHub Actions 是否已完成历史回填。</td></tr>';
   }
 }
+
+let careerArchivesPromise = null;
+let careerArchives = [];
+let careerPlayersByName = new Map();
+$('careerMetric').innerHTML = $('metric').innerHTML;
+
+function seasonLabel(endingYear) {
+  return `${endingYear - 1}-${String(endingYear % 100).padStart(2, '0')}`;
+}
+async function loadCareerArchives() {
+  if (careerArchivesPromise) return careerArchivesPromise;
+  careerArchivesPromise = (async () => {
+    const years = Array.from({ length: 30 }, (_, index) => 1997 + index);
+    const loaded = [];
+    for (let start = 0; start < years.length; start += 5) {
+      const batch = years.slice(start, start + 5);
+      $('careerStatus').textContent = `正在载入历史赛季档案… ${Math.min(start + batch.length, years.length)}/${years.length}`;
+      const batchData = await Promise.all(batch.map(async endingYear => {
+        const response = await fetch(`/data/${endingYear}.json`, { signal: AbortSignal.timeout(30000) });
+        if (!response.ok) throw new Error(`${seasonLabel(endingYear)} 档案加载失败（HTTP ${response.status}）`);
+        return response.json();
+      }));
+      loaded.push(...batchData);
+    }
+    careerArchives = loaded.sort((a,b) => a.endingYear - b.endingYear);
+    buildCareerPlayerDirectory();
+    return careerArchives;
+  })().catch(error => {
+    careerArchivesPromise = null;
+    throw error;
+  });
+  return careerArchivesPromise;
+}
+
+function buildCareerPlayerDirectory() {
+  const playersById = new Map();
+  for (const archive of careerArchives) {
+    for (const type of ['REG','PST']) {
+      for (const row of archive.rows?.[type] || []) {
+        if (!row.PLAYER_NAME) continue;
+        const id = String(row.playerId || row.PLAYER_NAME.toLowerCase());
+        if (!playersById.has(id)) playersById.set(id, { id, name: row.PLAYER_NAME, seasons: new Set() });
+        playersById.get(id).seasons.add(archive.endingYear);
+      }
+    }
+  }
+  careerPlayersByName = new Map();
+  for (const player of playersById.values()) {
+    const key = player.name.trim().toLocaleLowerCase();
+    const current = careerPlayersByName.get(key);
+    if (!current || player.seasons.size > current.seasons.size) careerPlayersByName.set(key, player);
+  }
+  const names = [...careerPlayersByName.values()].map(player => player.name).sort((a,b) => a.localeCompare(b));
+  $('playerNames').replaceChildren(...names.map(name => new Option(name, name)));
+  if (!$('playerA').value && careerPlayersByName.has('lebron james')) $('playerA').value = careerPlayersByName.get('lebron james').name;
+  if (!$('playerB').value && careerPlayersByName.has('stephen curry')) $('playerB').value = careerPlayersByName.get('stephen curry').name;
+}
+
+function formatCareerValue(value, metric) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return '—';
+  return number.toFixed(1) + (metric.endsWith('_PCT') ? '%' : '');
+}
+
+function drawCareerComparison() {
+  const nameA = $('playerA').value.trim();
+  const nameB = $('playerB').value.trim();
+  const playerA = careerPlayersByName.get(nameA.toLocaleLowerCase());
+  const playerB = careerPlayersByName.get(nameB.toLocaleLowerCase());
+  const metric = $('careerMetric').value;
+  const type = $('careerType').value;
+  const svg = $('careerChart');
+  $('careerLegend').innerHTML = '';
+  if (!playerA || !playerB) {
+    $('careerStatus').textContent = '请从球员建议列表中选择两名球员。';
+    svg.innerHTML = '';
+    return;
+  }
+  if (playerA.id === playerB.id) {
+    $('careerStatus').textContent = '请选择两名不同的球员进行对比。';
+    svg.innerHTML = '';
+    return;
+  }
+
+  const series = [
+    { player: playerA, color: '#56d4ff', points: [] },
+    { player: playerB, color: '#ff9a5c', points: [] }
+  ];
+  for (const archive of careerArchives) {
+    for (const item of series) {
+      const row = (archive.rows?.[type] || []).find(candidate => String(candidate.playerId || candidate.PLAYER_NAME.toLowerCase()) === item.player.id);
+      if (!row || row[metric] == null || !Number.isFinite(Number(row[metric]))) continue;
+      item.points.push({
+        year: archive.endingYear,
+        value: Number(row[metric]),
+        games: row.GP,
+        minutes: row.MIN,
+        team: row.TEAM_ABBREVIATION || ''
+      });
+    }
+  }
+  const points = series.flatMap(item => item.points);
+  if (!points.length) {
+    $('careerStatus').textContent = '所选赛制和指标没有可用的历史记录。若选择的是新增指标，请等待历史档案回填完成。';
+    svg.innerHTML = '';
+    return;
+  }
+
+  const width = 1000, height = 430;
+  const margin = { top: 28, right: 28, bottom: 62, left: 76 };
+  const plotWidth = width - margin.left - margin.right;
+  const plotHeight = height - margin.top - margin.bottom;
+  let minValue = Math.min(...points.map(point => point.value));
+  let maxValue = Math.max(...points.map(point => point.value));
+  if (minValue === maxValue) { minValue -= 1; maxValue += 1; }
+  const padding = (maxValue - minValue) * 0.1;
+  minValue -= padding;
+  maxValue += padding;
+  const x = year => margin.left + ((year - 1997) / (2026 - 1997)) * plotWidth;
+  const y = value => margin.top + ((maxValue - value) / (maxValue - minValue)) * plotHeight;
+  const parts = [];
+
+  for (let tick = 0; tick <= 4; tick++) {
+    const value = maxValue - ((maxValue - minValue) * tick / 4);
+    const yPos = y(value);
+    parts.push(`<line x1="${margin.left}" y1="${yPos}" x2="${width - margin.right}" y2="${yPos}" stroke="#273342"/>`);
+    parts.push(`<text x="${margin.left - 12}" y="${yPos + 4}" fill="#9aa9bb" text-anchor="end" font-size="12">${formatCareerValue(value, metric)}</text>`);
+  }
+  for (let endingYear = 1997; endingYear <= 2026; endingYear += 5) {
+    const xPos = x(endingYear);
+    parts.push(`<line x1="${xPos}" y1="${margin.top}" x2="${xPos}" y2="${height - margin.bottom}" stroke="#1b2734"/>`);
+    parts.push(`<text x="${xPos}" y="${height - margin.bottom + 24}" fill="#9aa9bb" text-anchor="middle" font-size="12">${seasonLabel(endingYear)}</text>`);
+  }
+  parts.push(`<text x="${width / 2}" y="${height - 12}" fill="#9aa9bb" text-anchor="middle" font-size="13">赛季（1996-97 至 2025-26）</text>`);
+
+  for (const item of series) {
+    if (!item.points.length) continue;
+    const path = item.points.map((point,index) => `${index ? 'L' : 'M'}${x(point.year).toFixed(1)},${y(point.value).toFixed(1)}`).join(' ');
+    parts.push(`<path d="${path}" fill="none" stroke="${item.color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`);
+    for (const point of item.points) {
+      const title = `${seasonLabel(point.year)} · ${point.team} · ${point.games} 场 · ${formatCareerValue(point.minutes, 'MIN')} 分钟 · ${formatCareerValue(point.value, metric)}`;
+      parts.push(`<circle cx="${x(point.year).toFixed(1)}" cy="${y(point.value).toFixed(1)}" r="4.5" fill="${item.color}" stroke="#0e151e" stroke-width="2"><title>${escapeHtml(title)}</title></circle>`);
+    }
+  }
+  svg.innerHTML = parts.join('');
+  $('careerLegend').innerHTML = series.map(item => `<span class="legend-item"><i class="legend-dot" style="background:${item.color}"></i>${escapeHtml(item.player.name)}（${item.points.length} 个赛季）</span>`).join('');
+  const typeName = type === 'REG' ? '常规赛' : '季后赛';
+  const metricName = $('careerMetric').selectedOptions[0]?.textContent || metric;
+  $('careerStatus').textContent = `${typeName} · ${metricName}：${playerA.name} ${series[0].points.length} 个赛季，${playerB.name} ${series[1].points.length} 个赛季。悬停曲线上的圆点可查看该季详细数据。`;
+}
+
+async function openCareerView() {
+  $('rankView').hidden = true;
+  $('careerView').hidden = false;
+  $('rankTab').classList.remove('active');
+  $('careerTab').classList.add('active');
+  $('rankTab').setAttribute('aria-selected', 'false');
+  $('careerTab').setAttribute('aria-selected', 'true');
+  $('careerStatus').textContent = '正在载入 30 个赛季的本地历史档案…';
+  try {
+    await loadCareerArchives();
+    drawCareerComparison();
+  } catch (error) {
+    $('careerStatus').textContent = `生涯档案加载失败：${error.message}。请刷新页面后重试。`;
+  }
+}
+
+$('rankTab').addEventListener('click', () => {
+  $('careerView').hidden = true;
+  $('rankView').hidden = false;
+  $('careerTab').classList.remove('active');
+  $('rankTab').classList.add('active');
+  $('careerTab').setAttribute('aria-selected', 'false');
+  $('rankTab').setAttribute('aria-selected', 'true');
+});
+$('careerTab').addEventListener('click', openCareerView);
+$('comparePlayers').addEventListener('click', drawCareerComparison);
+$('careerType').addEventListener('change', drawCareerComparison);
+$('careerMetric').addEventListener('change', drawCareerComparison);
+$('playerA').addEventListener('change', drawCareerComparison);
+$('playerB').addEventListener('change', drawCareerComparison);
 $('refresh').addEventListener('click',load);
 $('metric').addEventListener('change',showRows);
 $('minMinutes').addEventListener('change',showRows);
