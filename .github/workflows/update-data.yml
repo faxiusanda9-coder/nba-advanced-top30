@@ -1,0 +1,44 @@
+name: Update NBA season archive
+
+on:
+  workflow_dispatch:
+    inputs:
+      backfill:
+        description: Download all seasons from 1996-97 through the current season
+        required: true
+        type: boolean
+        default: false
+  schedule:
+    - cron: '30 8 * * 1'
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Download and normalize NBA Stats archive
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.backfill }}" = "true" ]; then
+            node scripts/build-data.mjs --backfill
+          else
+            node scripts/build-data.mjs
+          fi
+      - name: Commit updated season files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/*.json
+          if git diff --cached --quiet; then
+            echo "No season data changes."
+          else
+            git commit -m "Update NBA season data archive"
+            git push
+          fi
