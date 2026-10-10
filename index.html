@@ -43,6 +43,16 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
         <option value="AST_PCT">AST% 助攻率</option>
       </select>
     </label>
+    <label>最低场均出场时间
+      <select id="minMinutes">
+        <option value="0">不限</option>
+        <option value="10">10 分钟</option>
+        <option value="15" selected>15 分钟</option>
+        <option value="20">20 分钟</option>
+        <option value="25">25 分钟</option>
+        <option value="30">30 分钟</option>
+      </select>
+    </label>
     <button id="refresh">刷新数据</button>
   </section>
 
@@ -50,7 +60,7 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
   <div class="box">
     <table>
       <thead><tr>
-        <th>排名</th><th>球员</th><th>球队</th><th>出场</th><th>分钟</th>
+        <th>排名</th><th>球员</th><th>球队</th><th>出场</th><th>场均分钟</th>
         <th>OFF RTG</th><th>DEF RTG</th><th>NET RTG</th><th>TS%</th><th>USG%</th>
         <th>REB%</th><th>AST%</th><th>PIE</th>
       </tr></thead>
@@ -80,10 +90,23 @@ function escapeHtml(value) {
 }
 function showRows() {
   const key = $('metric').value;
-  const rows = allRows
-    .filter(r => r.PLAYER_NAME && r[key] != null && Number.isFinite(Number(r[key])))
+  const minMinutes = Number($('minMinutes').value);
+  const eligibleRows = allRows
+    .filter(r => {
+      const games = Number(r.GP);
+      const totalMinutes = Number(r.MIN);
+      return r.PLAYER_NAME && r[key] != null && Number.isFinite(Number(r[key])) &&
+        Number.isFinite(games) && games > 0 && Number.isFinite(totalMinutes) &&
+        totalMinutes / games >= minMinutes;
+    });
+  const rows = eligibleRows
     .sort((a,b) => Number(b[key]) - Number(a[key]))
     .slice(0,30);
+
+  const seasonType = $('type').value === 'REG' ? '常规赛' : '季后赛';
+  const season = $('season').value;
+  const thresholdText = minMinutes ? `最低场均 ${minMinutes} 分钟` : '不限制场均分钟';
+  $('status').textContent = `已载入 ${season} ${seasonType}档案，共 ${allRows.length} 条球员记录；${thresholdText}，符合条件 ${eligibleRows.length} 人，显示按所选指标排序的前 30 名`;
 
   $('rows').innerHTML = rows.map((r,i) => {
     const val = (field, pct=false) => {
@@ -95,7 +118,7 @@ function showRows() {
     return `<tr>
       <td class="rank">${i+1}</td>
       <td>${escapeHtml(r.PLAYER_NAME)}</td><td>${escapeHtml(r.TEAM_ABBREVIATION)}</td>
-      <td>${val('GP')}</td><td>${val('MIN')}</td>
+      <td>${val('GP')}</td><td>${(Number(r.MIN) / Number(r.GP)).toFixed(1)}</td>
       <td>${val('OFF_RATING')}</td><td>${val('DEF_RATING')}</td>
       <td class="metric">${val('NET_RATING')}</td><td>${val('TS_PCT',true)}</td>
       <td>${val('USG_PCT',true)}</td><td>${val('REB_PCT',true)}</td>
@@ -124,6 +147,7 @@ async function load() {
 }
 $('refresh').addEventListener('click',load);
 $('metric').addEventListener('change',showRows);
+$('minMinutes').addEventListener('change',showRows);
 $('season').addEventListener('change',load);
 $('type').addEventListener('change',load);
 load();
