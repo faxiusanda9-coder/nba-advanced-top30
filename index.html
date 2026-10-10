@@ -132,6 +132,12 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
       <label>对比指标
         <select id="careerMetric"></select>
       </label>
+      <label>显示方式
+        <select id="careerMode">
+          <option value="raw">指标原值</option>
+          <option value="percentile">当季百分位</option>
+        </select>
+      </label>
       <button id="comparePlayers" type="button">生成对比图</button>
     </section>
     <div id="careerStatus" class="career-status" aria-live="polite">切换到此视图后会载入历史档案。</div>
@@ -139,7 +145,7 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
     <div class="chart-box">
       <svg id="careerChart" viewBox="0 0 1000 430" role="img" aria-label="两名球员的生涯高阶数据对比图"></svg>
     </div>
-    <p class="chart-note">图表显示历史档案中该球员每个赛季的数据；悬停数据点可查看赛季、出场数、场均分钟与指标数值。生涯图展示档案原始赛季行，不套用榜单的资格门槛。</p>
+    <p class="chart-note">合格球员：常规赛至少出场 58 场、季后赛至少出场 7 场，并达到榜单当前设置的场均分钟门槛（默认 20 分钟）；该赛季还必须有此指标数据。百分位按同赛季、同赛制的合格球员计算；并列名次按平均名次处理。百分位图只显示达标赛季，悬停数据点可查看原始数值、排名、合格人数和“联盟前 X%”。</p>
   </section>
 
   <footer>
@@ -163,19 +169,22 @@ function escapeHtml(value) {
     '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
   })[c]);
 }
+function getEligibleRows(rows, type, key, minMinutes) {
+  const minGames = type === 'REG' ? 58 : 7;
+  return rows.filter(row => {
+    const games = Number(row.GP);
+    const minutesPerGame = Number(row.MIN);
+    return row.PLAYER_NAME && row[key] != null && Number.isFinite(Number(row[key])) &&
+      Number.isFinite(games) && games >= minGames && Number.isFinite(minutesPerGame) &&
+      minutesPerGame >= minMinutes;
+  });
+}
 function showRows() {
   const key = $('metric').value;
   const minMinutes = Number($('minMinutes').value);
   const isRegularSeason = $('type').value === 'REG';
   const minGames = isRegularSeason ? 58 : 7;
-  const eligibleRows = allRows
-    .filter(r => {
-      const games = Number(r.GP);
-      const minutesPerGame = Number(r.MIN);
-      return r.PLAYER_NAME && r[key] != null && Number.isFinite(Number(r[key])) &&
-        Number.isFinite(games) && games >= minGames && Number.isFinite(minutesPerGame) &&
-        minutesPerGame >= minMinutes;
-    });
+  const eligibleRows = getEligibleRows(allRows, $('type').value, key, minMinutes);
   const lowerIsBetter = key === 'E_TOV_PCT';
   const rows = eligibleRows
     .sort((a,b) => lowerIsBetter ? Number(a[key]) - Number(b[key]) : Number(b[key]) - Number(a[key]))
@@ -332,6 +341,9 @@ function drawCareerComparison() {
   const playerB = careerPlayersByName.get(nameB.toLocaleLowerCase());
   const metric = $('careerMetric').value;
   const type = $('careerType').value;
+  const mode = $('careerMode').value;
+  const minMinutes = Number($('minMinutes').value);
+  const lowerIsBetter = metric === 'E_TOV_PCT';
   const svg = $('careerChart');
   $('careerLegend').innerHTML = '';
   if (!playerA || (nameB && !playerB)) {
@@ -348,12 +360,35 @@ function drawCareerComparison() {
   const series = [{ player: playerA, color: '#56d4ff', points: [] }];
   if (playerB) series.push({ player: playerB, color: '#ff9a5c', points: [] });
   for (const archive of careerArchives) {
+    const seasonRows = archive.rows?.[type] || [];
+    const eligible = mode === 'percentile' ? getEligibleRows(seasonRows, type, metric, minMinutes) : [];
     for (const item of series) {
-      const row = (archive.rows?.[type] || []).find(candidate => String(candidate.playerId || candidate.PLAYER_NAME.toLowerCase()) === item.player.id);
+      const sourceRows = mode === 'percentile' ? eligible : seasonRows;
+      const row = sourceRows.find(candidate => String(candidate.playerId || candidate.PLAYER_NAME.toLowerCase()) === item.player.id);
       if (!row || row[metric] == null || !Number.isFinite(Number(row[metric]))) continue;
+      const rawValue = Number(row[metric]);
+      let value = rawValue;
+      let rank = null;
+      let cohortSize = null;
+      let topPercent = null;
+      if (mode === 'percentile') {
+        cohortSize = eligible.length;
+        if (cohortSize < 2) continue;
+        const betterCount = eligible.filter(candidate => lowerIsBetter
+          ? Number(candidate[metric]) < rawValue
+          : Number(candidate[metric]) > rawValue).length;
+        const tiedCount = eligible.filter(candidate => Number(candidate[metric]) === rawValue).length;
+        rank = betterCount + (tiedCount + 1) / 2;
+        topPercent = rank / cohortSize * 100;
+        value = (cohortSize - rank) / (cohortSize - 1) * 100;
+      }
       item.points.push({
         year: archive.endingYear,
-        value: Number(row[metric]),
+        value,
+        rawValue,
+        rank,
+        cohortSize,
+        topPercent,
         games: row.GP,
         minutes: row.MIN,
         team: row.TEAM_ABBREVIATION || ''
@@ -362,7 +397,9 @@ function drawCareerComparison() {
   }
   const points = series.flatMap(item => item.points);
   if (!points.length) {
-    $('careerStatus').textContent = '所选赛制和指标没有可用的历史记录。若选择的是新增指标，请等待历史档案回填完成。';
+    $('careerStatus').textContent = mode === 'percentile'
+      ? `按当前门槛（场均至少 ${minMinutes} 分钟），所选球员在这些赛季没有符合条件的记录；百分位图只统计合格赛季。`
+      : '所选赛制和指标没有可用的历史记录。若选择的是新增指标，请等待历史档案回填完成。';
     svg.innerHTML = '';
     return;
   }
@@ -371,12 +408,14 @@ function drawCareerComparison() {
   const margin = { top: 28, right: 28, bottom: 62, left: 76 };
   const plotWidth = width - margin.left - margin.right;
   const plotHeight = height - margin.top - margin.bottom;
-  let minValue = Math.min(...points.map(point => point.value));
-  let maxValue = Math.max(...points.map(point => point.value));
-  if (minValue === maxValue) { minValue -= 1; maxValue += 1; }
-  const padding = (maxValue - minValue) * 0.1;
-  minValue -= padding;
-  maxValue += padding;
+  let minValue = mode === 'percentile' ? 0 : Math.min(...points.map(point => point.value));
+  let maxValue = mode === 'percentile' ? 100 : Math.max(...points.map(point => point.value));
+  if (mode === 'raw') {
+    if (minValue === maxValue) { minValue -= 1; maxValue += 1; }
+    const padding = (maxValue - minValue) * 0.1;
+    minValue -= padding;
+    maxValue += padding;
+  }
   const x = year => margin.left + ((year - 1997) / (2026 - 1997)) * plotWidth;
   const y = value => margin.top + ((maxValue - value) / (maxValue - minValue)) * plotHeight;
   const parts = [];
@@ -385,21 +424,35 @@ function drawCareerComparison() {
     const value = maxValue - ((maxValue - minValue) * tick / 4);
     const yPos = y(value);
     parts.push(`<line x1="${margin.left}" y1="${yPos}" x2="${width - margin.right}" y2="${yPos}" stroke="#273342"/>`);
-    parts.push(`<text x="${margin.left - 12}" y="${yPos + 4}" fill="#9aa9bb" text-anchor="end" font-size="12">${formatCareerValue(value, metric)}</text>`);
+    const tickLabel = mode === 'percentile' ? `${Math.round(value)}` : formatCareerValue(value, metric);
+    parts.push(`<text x="${margin.left - 12}" y="${yPos + 4}" fill="#9aa9bb" text-anchor="end" font-size="12">${tickLabel}</text>`);
   }
   for (let endingYear = 1997; endingYear <= 2026; endingYear += 5) {
     const xPos = x(endingYear);
     parts.push(`<line x1="${xPos}" y1="${margin.top}" x2="${xPos}" y2="${height - margin.bottom}" stroke="#1b2734"/>`);
     parts.push(`<text x="${xPos}" y="${height - margin.bottom + 24}" fill="#9aa9bb" text-anchor="middle" font-size="12">${seasonLabel(endingYear)}</text>`);
   }
+  if (mode === 'percentile') parts.push(`<text x="${margin.left - 10}" y="${margin.top - 10}" fill="#9aa9bb" text-anchor="start" font-size="12">越高越突出（100 = 当季第 1）</text>`);
   parts.push(`<text x="${width / 2}" y="${height - 12}" fill="#9aa9bb" text-anchor="middle" font-size="13">赛季（1996-97 至 2025-26）</text>`);
 
   for (const item of series) {
     if (!item.points.length) continue;
-    const path = item.points.map((point,index) => `${index ? 'L' : 'M'}${x(point.year).toFixed(1)},${y(point.value).toFixed(1)}`).join(' ');
-    parts.push(`<path d="${path}" fill="none" stroke="${item.color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`);
+    const segments = [];
     for (const point of item.points) {
-      const title = `${seasonLabel(point.year)} · ${point.team} · ${point.games} 场 · ${formatCareerValue(point.minutes, 'MIN')} 分钟 · ${formatCareerValue(point.value, metric)}`;
+      const segment = segments[segments.length - 1];
+      if (!segment || point.year !== segment[segment.length - 1].year + 1) segments.push([point]);
+      else segment.push(point);
+    }
+    for (const segment of segments) {
+      if (segment.length < 2) continue;
+      const path = segment.map((point,index) => `${index ? 'L' : 'M'}${x(point.year).toFixed(1)},${y(point.value).toFixed(1)}`).join(' ');
+      parts.push(`<path d="${path}" fill="none" stroke="${item.color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`);
+    }
+    for (const point of item.points) {
+      const pointDescription = mode === 'percentile'
+        ? `指标值 ${formatCareerValue(point.rawValue, metric)} · 第 ${Number.isInteger(point.rank) ? point.rank : point.rank.toFixed(1)} / ${point.cohortSize} · 当季合格球员前 ${point.topPercent.toFixed(1)}%`
+        : `指标值 ${formatCareerValue(point.rawValue, metric)}`;
+      const title = `${seasonLabel(point.year)} · ${point.team} · ${point.games} 场 · ${formatCareerValue(point.minutes, 'MIN')} 分钟 · ${pointDescription}`;
       parts.push(`<circle cx="${x(point.year).toFixed(1)}" cy="${y(point.value).toFixed(1)}" r="4.5" fill="${item.color}" stroke="#0e151e" stroke-width="2"><title>${escapeHtml(title)}</title></circle>`);
     }
   }
@@ -408,7 +461,8 @@ function drawCareerComparison() {
   const typeName = type === 'REG' ? '常规赛' : '季后赛';
   const metricName = $('careerMetric').selectedOptions[0]?.textContent || metric;
   const seasonCounts = series.map(item => `${item.player.name} ${item.points.length} 个赛季`).join('；');
-  $('careerStatus').textContent = `${typeName} · ${metricName}：${seasonCounts}。悬停曲线上的圆点可查看该季详细数据。`;
+  const modeName = mode === 'percentile' ? `当季百分位（场均至少 ${minMinutes} 分钟）` : '指标原值';
+  $('careerStatus').textContent = `${typeName} · ${metricName} · ${modeName}：${seasonCounts}。悬停曲线上的圆点可查看原始值、排名和合格人数。`;
 }
 
 async function openCareerView(playerName = '') {
@@ -426,6 +480,9 @@ async function openCareerView(playerName = '') {
       if (!player) throw new Error(`历史档案中没有找到 ${playerName}`);
       $('playerA').value = player.name;
       $('playerB').value = '';
+      $('careerMetric').value = $('metric').value;
+      $('careerType').value = $('type').value;
+      $('careerMode').value = 'percentile';
     }
     drawCareerComparison();
   } catch (error) {
@@ -449,11 +506,15 @@ $('rows').addEventListener('click', event => {
 $('comparePlayers').addEventListener('click', drawCareerComparison);
 $('careerType').addEventListener('change', drawCareerComparison);
 $('careerMetric').addEventListener('change', drawCareerComparison);
+$('careerMode').addEventListener('change', drawCareerComparison);
 $('playerA').addEventListener('change', drawCareerComparison);
 $('playerB').addEventListener('change', drawCareerComparison);
 $('refresh').addEventListener('click',load);
 $('metric').addEventListener('change',showRows);
-$('minMinutes').addEventListener('change',showRows);
+$('minMinutes').addEventListener('change', () => {
+  showRows();
+  if (careerArchives.length) drawCareerComparison();
+});
 $('season').addEventListener('change',load);
 $('type').addEventListener('change',load);
 load();
