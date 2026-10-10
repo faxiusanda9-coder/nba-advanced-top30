@@ -14,6 +14,17 @@ button{cursor:pointer;color:#a5f0c5}#status{min-height:24px;color:#a5f0c5;margin
 table{border-collapse:collapse;width:100%;min-width:1000px}th,td{padding:12px 10px;border-bottom:1px solid #273342;text-align:right;white-space:nowrap}
 th{color:#aab8c8;background:#17212d;position:sticky;top:0}td:nth-child(2),td:nth-child(3),th:nth-child(2),th:nth-child(3){text-align:left}
 tr:hover td{background:#192432}.rank{color:#f47b48}.metric{color:#a5f0c5;font-weight:bold}
+.rank-cell{display:flex;justify-content:flex-end;align-items:center;gap:8px}
+.rank-movement{display:inline-block;min-width:42px;padding:3px 6px;border-radius:999px;font-size:11px;font-weight:bold;text-align:center;animation:badge-pop .35s ease-out both}
+.rank-movement.up{color:#8df0bb;background:#123b2b}.rank-movement.down{color:#ff9b87;background:#48251f}
+.rank-movement.new{color:#9ed0ff;background:#193756}
+.rank-row{animation:rank-enter .48s cubic-bezier(.2,.75,.25,1) both;animation-delay:var(--row-delay,0ms)}
+.rank-row.moved-up td:first-child{box-shadow:inset 3px 0 #45d99a}.rank-row.moved-down td:first-child{box-shadow:inset 3px 0 #ff8069}
+#movement{min-height:0;margin:-4px 0 12px;color:#aab8c8;font-size:13px;line-height:1.7}
+#movement:empty{display:none}
+@keyframes rank-enter{from{opacity:.25;transform:translateY(var(--row-offset,0px))}to{opacity:1;transform:translateY(0)}}
+@keyframes badge-pop{from{opacity:0;transform:scale(.75)}to{opacity:1;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.rank-row,.rank-movement{animation:none!important}}
 .player-cell{display:flex;align-items:center;gap:10px;text-align:left!important}
 .portrait{position:relative;display:inline-grid;place-items:center;flex:none;width:40px;height:40px;border-radius:50%;overflow:hidden;background:#263547;color:#a5f0c5;font-size:12px;font-weight:bold}
 .portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -87,6 +98,7 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
   </section>
 
   <div id="status">正在读取历史数据档案…</div>
+  <div id="movement" aria-live="polite"></div>
   <div class="box">
     <table>
       <thead><tr>
@@ -136,6 +148,7 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
 <script>
 const $ = id => document.getElementById(id);
 let allRows = [];
+let previousBoard = null;
 const seasonSelect = $('season');
 for (let year = 2025; year >= 1996; year--) {
   const label = `${year}-${String((year + 1) % 100).padStart(2, '0')}`;
@@ -166,11 +179,23 @@ function showRows() {
     .sort((a,b) => lowerIsBetter ? Number(a[key]) - Number(b[key]) : Number(b[key]) - Number(a[key]))
     .slice(0,30);
 
+  const playerKey = row => String(row.playerId || row.PLAYER_NAME || '').trim().toLocaleLowerCase();
+  const previousRanks = new Map((previousBoard || []).map((row, index) => [playerKey(row), index + 1]));
+  const currentKeys = new Set(rows.map(playerKey));
+  const dropped = (previousBoard || []).filter(row => !currentKeys.has(playerKey(row)));
+
   const seasonType = isRegularSeason ? '常规赛' : '季后赛';
   const season = $('season').value;
   $('status').textContent = `已载入 ${season} ${seasonType}档案，共 ${allRows.length} 条球员记录；筛选条件：场均至少 ${minMinutes} 分钟、至少出场 ${minGames} 场；符合条件 ${eligibleRows.length} 人，显示按所选指标排序的前 30 名`;
 
   $('rows').innerHTML = rows.map((r,i) => {
+    const rank = i + 1;
+    const oldRank = previousRanks.get(playerKey(r));
+    const change = oldRank == null ? (previousBoard ? 'new' : '') : oldRank > rank ? 'up' : oldRank < rank ? 'down' : 'same';
+    const delta = oldRank == null ? '' : oldRank - rank;
+    const badge = change === 'new' ? '<span class="rank-movement new">NEW</span>'
+      : change === 'up' ? `<span class="rank-movement up">↑ ${delta}</span>`
+      : change === 'down' ? `<span class="rank-movement down">↓ ${Math.abs(delta)}</span>` : '';
     const val = (field, pct=false) => {
       const n = Number(r[field]);
       if (r[field] == null || !Number.isFinite(n)) return '—';
@@ -182,8 +207,10 @@ function showRows() {
     const headshot = playerId
       ? `<img src="https://cdn.nba.com/headshots/nba/latest/260x190/${playerId}.png" alt="" loading="lazy" onerror="this.remove()">`
       : '';
-    return `<tr>
-      <td class="rank">${i+1}</td>
+    const motionClass = change === 'up' ? 'moved-up' : change === 'down' ? 'moved-down' : '';
+    const offset = oldRank == null ? 12 : Math.max(-90, Math.min(90, (oldRank - rank) * 8));
+    return `<tr class="rank-row ${motionClass}" style="--row-delay:${Math.min(i * 22, 420)}ms;--row-offset:${offset}px">
+      <td class="rank"><span class="rank-cell">${rank}${badge}</span></td>
       <td class="player-cell"><span class="portrait"><span>${initials}</span>${headshot}</span>${escapeHtml(r.PLAYER_NAME)}</td>
       <td>${escapeHtml(r.TEAM_ABBREVIATION)}</td>
       <td>${val('GP')}</td><td>${val('MIN')}</td>
@@ -196,6 +223,22 @@ function showRows() {
       <td>${Number.isFinite(pie) ? pie.toFixed(3) : '—'}</td>
     </tr>`;
   }).join('') || '<tr><td colspan="22">没有符合筛选条件的球员</td></tr>';
+  if (!previousBoard) {
+    $('movement').textContent = '榜单变化动画将在你切换赛季、赛制、排名指标或筛选条件后显示。';
+  } else {
+    const entered = rows.filter(row => !previousRanks.has(playerKey(row)));
+    const summary = [];
+    const upward = rows.filter(row => previousRanks.has(playerKey(row)) && previousRanks.get(playerKey(row)) > rows.indexOf(row) + 1).length;
+    const downward = rows.filter(row => previousRanks.has(playerKey(row)) && previousRanks.get(playerKey(row)) < rows.indexOf(row) + 1).length;
+    if (upward) summary.push(`${upward} 人上升`);
+    if (downward) summary.push(`${downward} 人下降`);
+    if (entered.length) summary.push(`新进榜 ${entered.map(row => escapeHtml(row.PLAYER_NAME)).join('、')}`);
+    if (dropped.length) summary.push(`掉出前 30 ${dropped.map(row => escapeHtml(row.PLAYER_NAME)).join('、')}`);
+    $('movement').innerHTML = summary.length
+      ? `与上一次榜单相比：${summary.join('；')}。`
+      : '与上一次榜单相比：前 30 名和名次都没有变化。';
+  }
+  previousBoard = rows.slice();
 }
 async function load() {
   $('status').textContent = '正在读取该赛季的历史档案…';
