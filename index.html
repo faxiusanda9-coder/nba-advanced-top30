@@ -74,6 +74,14 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
         <option value="NET_RATING">NET RTG 净效率</option>
         <option value="OFF_RATING">OFF RTG 进攻效率</option>
         <option value="PIE">PIE 球员影响效率</option>
+        <option value="RAPTOR_538">538 RAPTOR 总值</option>
+        <option value="RAPTOR_538_OFF">538 RAPTOR 进攻</option>
+        <option value="RAPTOR_538_DEF">538 RAPTOR 防守</option>
+        <option value="RAPTOR_538_WAR">538 RAPTOR WAR</option>
+        <option value="EST_RAPTOR">Estimated RAPTOR 总值</option>
+        <option value="EST_RAPTOR_OFF">Estimated RAPTOR 进攻</option>
+        <option value="EST_RAPTOR_DEF">Estimated RAPTOR 防守</option>
+        <option value="EST_RAPTOR_WAR">Estimated RAPTOR WAR</option>
         <option value="EFG_PCT">eFG% 有效命中率</option>
         <option value="TS_PCT">TS% 真实命中率</option>
         <option value="USG_PCT">USG% 使用率</option>
@@ -87,10 +95,6 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
         <option value="E_TOV_PCT">E-TOV% 预估失误率（越低越好）</option>
         <option value="PACE">PACE 回合节奏</option>
         <option value="POSS">POSS 球员回合数</option>
-        <option value="RAPTOR">RAPTOR 综合影响</option>
-        <option value="RAPTOR_OFF">RAPTOR 进攻</option>
-        <option value="RAPTOR_DEF">RAPTOR 防守</option>
-        <option value="RAPTOR_WAR">RAPTOR 替代胜场</option>
       </select>
     </label>
     <label>最低场均出场时间
@@ -112,9 +116,9 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
         <th>OFF RTG</th><th>DEF RTG</th><th>NET RTG</th><th>eFG%</th><th>TS%</th>
         <th>USG%</th><th>E-USG%</th><th>AST/TO</th><th>AST Ratio</th><th>OREB%</th>
         <th>DREB%</th><th>REB%</th><th>AST%</th><th>E-TOV%</th><th>PACE</th><th>POSS</th><th>PIE</th>
-        <th>RAPTOR</th><th>RAPTOR O</th><th>RAPTOR D</th><th>RAPTOR WAR</th>
+        <th>538 RAPTOR</th><th>538 进攻</th><th>538 防守</th><th>538 WAR</th><th>eRAPTOR</th><th>eRAPTOR-O</th><th>eRAPTOR-D</th><th>eRAPTOR WAR</th>
       </tr></thead>
-      <tbody id="rows"><tr><td colspan="26">正在加载…</td></tr></tbody>
+      <tbody id="rows"><tr><td colspan="30">正在加载…</td></tr></tbody>
     </table>
   </div>
   </section>
@@ -150,12 +154,12 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
     <div class="chart-box">
       <svg id="careerChart" viewBox="0 0 1000 430" role="img" aria-label="两名球员的生涯高阶数据对比图"></svg>
     </div>
-    <p class="chart-note">合格球员：常规赛至少出场 58 场、季后赛至少出场 7 场，并达到榜单当前设置的场均分钟门槛（默认 20 分钟）；该赛季还必须有此指标数据。百分位按同赛季、同赛制的合格球员计算；并列名次按平均名次处理。百分位图只显示达标赛季，悬停数据点可查看原始数值、排名、合格人数和“联盟前 X%”。RAPTOR 数据来自 FiveThirtyEight，当前档案覆盖至 2021-22 赛季，历史版本在不同年代采用不同模型口径。</p>
+    <p class="chart-note">合格球员：常规赛至少出场 58 场、季后赛至少出场 7 场，并达到榜单当前设置的场均分钟门槛（默认 20 分钟）；该赛季还必须有此指标数据。百分位按同赛季、同赛制的合格球员计算；并列名次按平均名次处理。百分位图只显示达标赛季，悬停数据点可查看原始数值、排名、合格人数和“联盟前 X%”。</p>
   </section>
 
   <footer>
-    数据为按赛季保存的 NBA Stats 历史档案；高级指标从 1996-97 赛季开始。<br>
-    指标说明：包括进攻/防守/净效率、有效/真实命中率、使用率、助攻与失误、前后场篮板率、回合节奏、球员回合数、PIE，以及 RAPTOR 进攻/防守/综合与 WAR。RAPTOR 历史档案源自 FiveThirtyEight（CC BY 4.0），覆盖至 2021-22 赛季；1996-97 至 2000-01 仅使用 box-score 版本，2001-02 至 2013-14 使用 box-score 与 RAPM，2014-15 之后使用 tracking 版本。BPM、VORP、LEBRON 等还未纳入。
+    NBA Stats 高级数据覆盖 1996-97 至 2025-26。FiveThirtyEight RAPTOR 原版覆盖至 2021-22；为补上后续赛季，另列 Neil Paine 的 Estimated RAPTOR（估算版）至 2024-25。两种口径分列，不视为完全相同指标；538 RAPTOR 总值是赛季级数据，因此常规赛和季后赛行共用该值，WAR 按赛制拆分。2024-25 季后赛和 2025-26 估算版暂无公开档案。<br>
+    数据来源：<a href="https://github.com/fivethirtyeight/data/tree/master/nba-raptor" target="_blank" rel="noreferrer">FiveThirtyEight RAPTOR</a> · <a href="https://github.com/Neil-Paine-1/NBA-elo/blob/main/nba-estimated-raptor.csv" target="_blank" rel="noreferrer">Estimated RAPTOR 数据 CSV</a> · <a href="https://github.com/Neil-Paine-1/NBA-elo/blob/main/README.md" target="_blank" rel="noreferrer">估算方法说明</a> · <a href="https://github.com/sportsdataverse/sportsdataverse-data/releases/tag/nba_stats_player_season_stats" target="_blank" rel="noreferrer">SportsDataverse NBA Stats 档案</a>。
   </footer>
 </main>
 <script>
@@ -190,6 +194,7 @@ function showRows() {
   const isRegularSeason = $('type').value === 'REG';
   const minGames = isRegularSeason ? 58 : 7;
   const eligibleRows = getEligibleRows(allRows, $('type').value, key, minMinutes);
+  const metricRows = allRows.filter(row => row[key] != null && Number.isFinite(Number(row[key]))).length;
   const lowerIsBetter = key === 'E_TOV_PCT';
   const rows = eligibleRows
     .sort((a,b) => lowerIsBetter ? Number(a[key]) - Number(b[key]) : Number(b[key]) - Number(a[key]))
@@ -202,7 +207,10 @@ function showRows() {
 
   const seasonType = isRegularSeason ? '常规赛' : '季后赛';
   const season = $('season').value;
-  $('status').textContent = `已载入 ${season} ${seasonType}档案，共 ${allRows.length} 条球员记录；筛选条件：场均至少 ${minMinutes} 分钟、至少出场 ${minGames} 场；符合条件 ${eligibleRows.length} 人，显示按所选指标排序的前 30 名`;
+  const sourceHint = key.startsWith('RAPTOR_538') ? '；指标来源：FiveThirtyEight 原版 RAPTOR'
+    : key.startsWith('EST_RAPTOR') ? '；指标来源：Neil Paine Estimated RAPTOR（估算版）' : '';
+  const missingMetricHint = metricRows ? '' : '；该赛季没有此来源的指标数据';
+  $('status').textContent = `已载入 ${season} ${seasonType}档案，共 ${allRows.length} 条球员记录；筛选条件：场均至少 ${minMinutes} 分钟、至少出场 ${minGames} 场；符合条件 ${eligibleRows.length} 人${sourceHint}${missingMetricHint}`;
 
   $('rows').innerHTML = rows.map((r,i) => {
     const rank = i + 1;
@@ -237,9 +245,12 @@ function showRows() {
       <td>${val('DREB_PCT',true)}</td><td>${val('REB_PCT',true)}</td><td>${val('AST_PCT',true)}</td>
       <td>${val('E_TOV_PCT',true)}</td><td>${val('PACE')}</td><td>${val('POSS')}</td>
       <td>${Number.isFinite(pie) ? pie.toFixed(3) : '—'}</td>
-      <td>${val('RAPTOR')}</td><td>${val('RAPTOR_OFF')}</td><td>${val('RAPTOR_DEF')}</td><td>${val('RAPTOR_WAR')}</td>
+      <td>${val('RAPTOR_538')}</td><td>${val('RAPTOR_538_OFF')}</td>
+      <td>${val('RAPTOR_538_DEF')}</td><td>${val('RAPTOR_538_WAR')}</td>
+      <td>${val('EST_RAPTOR')}</td><td>${val('EST_RAPTOR_OFF')}</td>
+      <td>${val('EST_RAPTOR_DEF')}</td><td>${val('EST_RAPTOR_WAR')}</td>
     </tr>`;
-  }).join('') || '<tr><td colspan="26">没有符合筛选条件的球员</td></tr>';
+  }).join('') || '<tr><td colspan="30">没有符合筛选条件的球员</td></tr>';
   if (!previousBoard) {
     $('movement').textContent = '榜单变化动画将在你切换赛季、赛制、排名指标或筛选条件后显示。';
   } else {
@@ -259,7 +270,7 @@ function showRows() {
 }
 async function load() {
   $('status').textContent = '正在读取该赛季的历史档案…';
-    $('rows').innerHTML = '<tr><td colspan="26">正在加载…</td></tr>';
+    $('rows').innerHTML = '<tr><td colspan="30">正在加载…</td></tr>';
   try {
     const startingYear = Number($('season').value.slice(0, 4));
     const endingYear = startingYear + 1;
@@ -273,7 +284,7 @@ async function load() {
   } catch (error) {
     allRows = [];
     $('status').textContent = `加载失败：${error.message}`;
-    $('rows').innerHTML = '<tr><td colspan="26">该赛季档案尚未部署。请稍后刷新，或检查 GitHub Actions 是否已完成历史回填。</td></tr>';
+    $('rows').innerHTML = '<tr><td colspan="30">该赛季档案尚未部署。请稍后刷新，或检查 GitHub Actions 是否已完成历史回填。</td></tr>';
   }
 }
 
