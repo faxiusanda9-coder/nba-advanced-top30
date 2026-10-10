@@ -25,7 +25,7 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
 
   <section class="controls">
     <label>赛季
-      <select id="season">
+      <select id="season"></select>
         <option>2025-26</option><option>2024-25</option><option>2023-24</option>
         <option>2022-23</option><option>2021-22</option><option>2020-21</option>
       </select>
@@ -68,7 +68,13 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
 <script>
 const $ = id => document.getElementById(id);
 let allRows = [];
-
+const seasonSelect = $('season');
+for (let year = 2025; year >= 1996; year--) {
+  const label = `${year}-${String((year + 1) % 100).padStart(2, '0')}`;
+  seasonSelect.add(
+    new Option(label, label, year === 2025, year === 2025)
+  );
+}
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, c => ({
     '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
