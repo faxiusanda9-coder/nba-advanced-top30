@@ -13,13 +13,13 @@
 
 ## RAPTOR 指标
 
-- FiveThirtyEight 原版 RAPTOR 档案提供 RAPTOR 进攻、防守、总值，覆盖至 2021–22。原始 RAPTOR 是赛季级数据，常规赛与季后赛行会共用当季 RAPTOR 值；WAR 则按赛制拆分。
-- 为补充后续赛季，网页提供 Neil Paine 的 Estimated RAPTOR 估算版（进攻、防守、总值与 WAR），公开 CSV 覆盖至 2024–25 常规赛。排行榜和生涯曲线新增“RAPTOR 自动接续”选项：优先使用 FiveThirtyEight 原版，缺失时接续 Estimated RAPTOR；表格显示每名球员实际使用的数据来源。两种模型口径不同，跨来源的连续曲线应谨慎解读；2024–25 季后赛和 2025–26 赛季暂无公开 Estimated RAPTOR 档案。
-- 数据来源：[FiveThirtyEight RAPTOR 历史档案](https://github.com/fivethirtyeight/data/tree/master/nba-raptor)、[Neil Paine Estimated RAPTOR CSV](https://github.com/Neil-Paine-1/NBA-elo/blob/main/nba-estimated-raptor.csv)、[估算方法说明](https://github.com/Neil-Paine-1/NBA-elo/blob/main/README.md)。
+- RAPTOR 统一采用 Neil Paine 的 Estimated RAPTOR 历史版，提供总值、进攻、防守和 WAR，避免把截止于 2021–22 的 FiveThirtyEight 原版与另一个模型拼成一条曲线。
+- 当前公开 CSV 覆盖至 2024–25 常规赛；2024–25 季后赛和 2025–26 完整赛季暂未包含在公开 CSV 中。作者已将 2025–26 Estimated RAPTOR 改名为 LAKER，并发布了赛季排行榜；但完整历史表格位于付费订阅内容中，项目不会把不完整快照冒充全季档案。
+- 数据来源：[Neil Paine Estimated RAPTOR CSV](https://github.com/Neil-Paine-1/NBA-elo/blob/main/nba-estimated-raptor.csv)、[LAKER/RAPTOR 方法说明](https://github.com/Neil-Paine-1/NBA-elo/blob/main/README.md)、[2025–26 LAKER 页面](https://neilpaine.substack.com/p/2025-26-nba-elo-forecast-and-player)。
 
 ## 更新历史数据
 
-`scripts/build-data.mjs` 使用 Node.js 从公开 CSV 档案提取 NBA 高级数据，`scripts/add-raptor.mjs` 合并 RAPTOR 与 Estimated RAPTOR 数据；都不需要 Python。GitHub Actions 每周检查并刷新数据；也可以手动回填全部 30 个赛季：
+`scripts/build-data.mjs` 使用 Node.js 从公开 CSV 档案提取 NBA 高级数据，`scripts/add-raptor.mjs` 合并统一口径的 Estimated RAPTOR 数据；都不需要 Python。GitHub Actions 每周检查并刷新数据；也可以手动回填全部 30 个赛季：
 
 1. 打开仓库的 **Actions** 页面。
 2. 选择 **Update NBA season archive**。

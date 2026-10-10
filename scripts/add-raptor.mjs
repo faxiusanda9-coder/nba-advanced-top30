@@ -5,7 +5,6 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dataDir = path.join(root, 'data');
 const sourceUrls = {
-  fiveThirtyEight: 'https://raw.githubusercontent.com/fivethirtyeight/data/master/nba-raptor/historical_RAPTOR_by_player.csv',
   estimated: 'https://raw.githubusercontent.com/Neil-Paine-1/NBA-elo/main/nba-estimated-raptor.csv'
 };
 
@@ -66,16 +65,7 @@ async function downloadCsv(url) {
   return csvRows(await response.text());
 }
 
-const [officialRows, estimatedRows] = await Promise.all([
-  downloadCsv(sourceUrls.fiveThirtyEight),
-  downloadCsv(sourceUrls.estimated)
-]);
-
-const officialByYearAndName = new Map();
-for (const row of officialRows) {
-  const key = `${row.season}|${playerKey(row.player_name)}`;
-  officialByYearAndName.set(key, row);
-}
+const estimatedRows = await downloadCsv(sourceUrls.estimated);
 
 const estimatedByYearTypeAndName = new Map();
 for (const row of estimatedRows) {
@@ -122,7 +112,6 @@ function findEstimated(endingYear, type, identity) {
 }
 
 const years = Array.from({ length: 30 }, (_, index) => 1997 + index);
-let matchedOfficial = 0;
 let matchedEstimated = 0;
 let rowsSeen = 0;
 
@@ -140,19 +129,7 @@ for (const endingYear of years) {
     for (const row of archive.rows?.[type] ?? []) {
       rowsSeen += 1;
       const identity = playerKey(row.PLAYER_NAME);
-      const official = officialByYearAndName.get(`${endingYear}|${identity}`);
-      if (official) {
-        row.RAPTOR_538_OFF = numberOrNull(official.raptor_offense);
-        row.RAPTOR_538_DEF = numberOrNull(official.raptor_defense);
-        row.RAPTOR_538 = numberOrNull(official.raptor_total);
-        row.RAPTOR_538_WAR = numberOrNull(type === 'REG' ? official.war_reg_season : official.war_playoffs);
-        matchedOfficial += 1;
-      } else {
-        delete row.RAPTOR_538_OFF;
-        delete row.RAPTOR_538_DEF;
-        delete row.RAPTOR_538;
-        delete row.RAPTOR_538_WAR;
-      }
+      for (const field of ['RAPTOR', 'RAPTOR_OFF', 'RAPTOR_DEF', 'RAPTOR_WAR', 'RAPTOR_538', 'RAPTOR_538_OFF', 'RAPTOR_538_DEF', 'RAPTOR_538_WAR', 'PREDATOR', 'PREDATOR_OFF', 'PREDATOR_DEF', 'PACE_IMPACT']) delete row[field];
 
       const estimated = findEstimated(endingYear, type, identity);
       if (estimated && estimated.minutes > 0) {
@@ -171,10 +148,10 @@ for (const endingYear of years) {
   }
 
   archive.raptorSources = {
-    fiveThirtyEight: endingYear <= 2022 ? 'FiveThirtyEight historical RAPTOR; season-level rating, WAR split by phase' : null,
     estimated: endingYear <= 2025 ? 'Neil Paine Estimated RAPTOR; phase-specific; season ending 2025 has regular season only' : null
   };
+  archive.supplementalSources = { ...archive.supplementalSources, raptor: archive.raptorSources.estimated };
   await writeFile(filePath, `${JSON.stringify(archive)}\n`, 'utf8');
 }
 
-console.log(`RAPTOR 合并完成：档案球员记录 ${rowsSeen} 条；FiveThirtyEight 匹配 ${matchedOfficial} 条；Estimated RAPTOR 匹配 ${matchedEstimated} 条。`);
+console.log(`Estimated RAPTOR 合并完成：档案球员记录 ${rowsSeen} 条；匹配 ${matchedEstimated} 条。`);
