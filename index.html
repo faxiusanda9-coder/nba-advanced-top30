@@ -87,6 +87,10 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
         <option value="E_TOV_PCT">E-TOV% 预估失误率（越低越好）</option>
         <option value="PACE">PACE 回合节奏</option>
         <option value="POSS">POSS 球员回合数</option>
+        <option value="RAPTOR">RAPTOR 综合影响</option>
+        <option value="RAPTOR_OFF">RAPTOR 进攻</option>
+        <option value="RAPTOR_DEF">RAPTOR 防守</option>
+        <option value="RAPTOR_WAR">RAPTOR 替代胜场</option>
       </select>
     </label>
     <label>最低场均出场时间
@@ -108,8 +112,9 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
         <th>OFF RTG</th><th>DEF RTG</th><th>NET RTG</th><th>eFG%</th><th>TS%</th>
         <th>USG%</th><th>E-USG%</th><th>AST/TO</th><th>AST Ratio</th><th>OREB%</th>
         <th>DREB%</th><th>REB%</th><th>AST%</th><th>E-TOV%</th><th>PACE</th><th>POSS</th><th>PIE</th>
+        <th>RAPTOR</th><th>RAPTOR O</th><th>RAPTOR D</th><th>RAPTOR WAR</th>
       </tr></thead>
-      <tbody id="rows"><tr><td colspan="22">正在加载…</td></tr></tbody>
+      <tbody id="rows"><tr><td colspan="26">正在加载…</td></tr></tbody>
     </table>
   </div>
   </section>
@@ -145,12 +150,12 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
     <div class="chart-box">
       <svg id="careerChart" viewBox="0 0 1000 430" role="img" aria-label="两名球员的生涯高阶数据对比图"></svg>
     </div>
-    <p class="chart-note">合格球员：常规赛至少出场 58 场、季后赛至少出场 7 场，并达到榜单当前设置的场均分钟门槛（默认 20 分钟）；该赛季还必须有此指标数据。百分位按同赛季、同赛制的合格球员计算；并列名次按平均名次处理。百分位图只显示达标赛季，悬停数据点可查看原始数值、排名、合格人数和“联盟前 X%”。</p>
+    <p class="chart-note">合格球员：常规赛至少出场 58 场、季后赛至少出场 7 场，并达到榜单当前设置的场均分钟门槛（默认 20 分钟）；该赛季还必须有此指标数据。百分位按同赛季、同赛制的合格球员计算；并列名次按平均名次处理。百分位图只显示达标赛季，悬停数据点可查看原始数值、排名、合格人数和“联盟前 X%”。RAPTOR 数据来自 FiveThirtyEight，当前档案覆盖至 2021-22 赛季，历史版本在不同年代采用不同模型口径。</p>
   </section>
 
   <footer>
     数据为按赛季保存的 NBA Stats 历史档案；高级指标从 1996-97 赛季开始。<br>
-    指标说明：包括进攻/防守/净效率、有效/真实命中率、使用率、助攻与失误、前后场篮板率、回合节奏、球员回合数和 PIE。PER、WS、VORP、BPM 属于其他统计口径，不在本档案内。
+    指标说明：包括进攻/防守/净效率、有效/真实命中率、使用率、助攻与失误、前后场篮板率、回合节奏、球员回合数、PIE，以及 RAPTOR 进攻/防守/综合与 WAR。RAPTOR 历史档案源自 FiveThirtyEight（CC BY 4.0），覆盖至 2021-22 赛季；1996-97 至 2000-01 仅使用 box-score 版本，2001-02 至 2013-14 使用 box-score 与 RAPM，2014-15 之后使用 tracking 版本。BPM、VORP、LEBRON 等还未纳入。
   </footer>
 </main>
 <script>
@@ -232,8 +237,9 @@ function showRows() {
       <td>${val('DREB_PCT',true)}</td><td>${val('REB_PCT',true)}</td><td>${val('AST_PCT',true)}</td>
       <td>${val('E_TOV_PCT',true)}</td><td>${val('PACE')}</td><td>${val('POSS')}</td>
       <td>${Number.isFinite(pie) ? pie.toFixed(3) : '—'}</td>
+      <td>${val('RAPTOR')}</td><td>${val('RAPTOR_OFF')}</td><td>${val('RAPTOR_DEF')}</td><td>${val('RAPTOR_WAR')}</td>
     </tr>`;
-  }).join('') || '<tr><td colspan="22">没有符合筛选条件的球员</td></tr>';
+  }).join('') || '<tr><td colspan="26">没有符合筛选条件的球员</td></tr>';
   if (!previousBoard) {
     $('movement').textContent = '榜单变化动画将在你切换赛季、赛制、排名指标或筛选条件后显示。';
   } else {
@@ -253,7 +259,7 @@ function showRows() {
 }
 async function load() {
   $('status').textContent = '正在读取该赛季的历史档案…';
-    $('rows').innerHTML = '<tr><td colspan="22">正在加载…</td></tr>';
+    $('rows').innerHTML = '<tr><td colspan="26">正在加载…</td></tr>';
   try {
     const startingYear = Number($('season').value.slice(0, 4));
     const endingYear = startingYear + 1;
@@ -267,7 +273,7 @@ async function load() {
   } catch (error) {
     allRows = [];
     $('status').textContent = `加载失败：${error.message}`;
-    $('rows').innerHTML = '<tr><td colspan="22">该赛季档案尚未部署。请稍后刷新，或检查 GitHub Actions 是否已完成历史回填。</td></tr>';
+    $('rows').innerHTML = '<tr><td colspan="26">该赛季档案尚未部署。请稍后刷新，或检查 GitHub Actions 是否已完成历史回填。</td></tr>';
   }
 }
 
