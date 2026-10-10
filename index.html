@@ -74,14 +74,18 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
         <option value="NET_RATING">NET RTG 净效率</option>
         <option value="OFF_RATING">OFF RTG 进攻效率</option>
         <option value="PIE">PIE 球员影响效率</option>
-        <option value="RAPTOR_538">538 RAPTOR 总值</option>
-        <option value="RAPTOR_538_OFF">538 RAPTOR 进攻</option>
-        <option value="RAPTOR_538_DEF">538 RAPTOR 防守</option>
-        <option value="RAPTOR_538_WAR">538 RAPTOR WAR</option>
-        <option value="EST_RAPTOR">Estimated RAPTOR 总值</option>
-        <option value="EST_RAPTOR_OFF">Estimated RAPTOR 进攻</option>
-        <option value="EST_RAPTOR_DEF">Estimated RAPTOR 防守</option>
-        <option value="EST_RAPTOR_WAR">Estimated RAPTOR WAR</option>
+        <option value="RAPTOR_AUTO">RAPTOR 综合（自动接续后续赛季）</option>
+        <option value="RAPTOR_AUTO_OFF">RAPTOR 进攻（自动接续）</option>
+        <option value="RAPTOR_AUTO_DEF">RAPTOR 防守（自动接续）</option>
+        <option value="RAPTOR_AUTO_WAR">RAPTOR WAR（自动接续）</option>
+        <option value="RAPTOR_538">原版 538 RAPTOR 总值（至 2021–22）</option>
+        <option value="RAPTOR_538_OFF">原版 538 RAPTOR 进攻（至 2021–22）</option>
+        <option value="RAPTOR_538_DEF">原版 538 RAPTOR 防守（至 2021–22）</option>
+        <option value="RAPTOR_538_WAR">原版 538 RAPTOR WAR（至 2021–22）</option>
+        <option value="EST_RAPTOR">Estimated RAPTOR 总值（至 2024–25）</option>
+        <option value="EST_RAPTOR_OFF">Estimated RAPTOR 进攻（至 2024–25）</option>
+        <option value="EST_RAPTOR_DEF">Estimated RAPTOR 防守（至 2024–25）</option>
+        <option value="EST_RAPTOR_WAR">Estimated RAPTOR WAR（至 2024–25）</option>
         <option value="EFG_PCT">eFG% 有效命中率</option>
         <option value="TS_PCT">TS% 真实命中率</option>
         <option value="USG_PCT">USG% 使用率</option>
@@ -116,9 +120,9 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
         <th>OFF RTG</th><th>DEF RTG</th><th>NET RTG</th><th>eFG%</th><th>TS%</th>
         <th>USG%</th><th>E-USG%</th><th>AST/TO</th><th>AST Ratio</th><th>OREB%</th>
         <th>DREB%</th><th>REB%</th><th>AST%</th><th>E-TOV%</th><th>PACE</th><th>POSS</th><th>PIE</th>
-        <th>538 RAPTOR</th><th>538 进攻</th><th>538 防守</th><th>538 WAR</th><th>eRAPTOR</th><th>eRAPTOR-O</th><th>eRAPTOR-D</th><th>eRAPTOR WAR</th>
+        <th>RAPTOR 综合</th><th>RAPTOR O</th><th>RAPTOR D</th><th>RAPTOR WAR</th><th>数据来源</th>
       </tr></thead>
-      <tbody id="rows"><tr><td colspan="30">正在加载…</td></tr></tbody>
+      <tbody id="rows"><tr><td colspan="27">正在加载…</td></tr></tbody>
     </table>
   </div>
   </section>
@@ -154,11 +158,11 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
     <div class="chart-box">
       <svg id="careerChart" viewBox="0 0 1000 430" role="img" aria-label="两名球员的生涯高阶数据对比图"></svg>
     </div>
-    <p class="chart-note">合格球员：常规赛至少出场 58 场、季后赛至少出场 7 场，并达到榜单当前设置的场均分钟门槛（默认 20 分钟）；该赛季还必须有此指标数据。百分位按同赛季、同赛制的合格球员计算；并列名次按平均名次处理。百分位图只显示达标赛季，悬停数据点可查看原始数值、排名、合格人数和“联盟前 X%”。</p>
+    <p class="chart-note">合格球员：常规赛至少出场 58 场、季后赛至少出场 7 场，并达到榜单当前设置的场均分钟门槛（默认 20 分钟）；该赛季还必须有此指标数据。百分位按同赛季、同赛制的合格球员计算；并列名次按平均名次处理。百分位图只显示达标赛季，悬停数据点可查看原始数值、排名、合格人数和“联盟前 X%”。RAPTOR 自动接续版在 2021-22 后切换为 Estimated RAPTOR，来源不同，跨来源比较需谨慎。</p>
   </section>
 
   <footer>
-    NBA Stats 高级数据覆盖 1996-97 至 2025-26。FiveThirtyEight RAPTOR 原版覆盖至 2021-22；为补上后续赛季，另列 Neil Paine 的 Estimated RAPTOR（估算版）至 2024-25。两种口径分列，不视为完全相同指标；538 RAPTOR 总值是赛季级数据，因此常规赛和季后赛行共用该值，WAR 按赛制拆分。2024-25 季后赛和 2025-26 估算版暂无公开档案。<br>
+    NBA Stats 高级数据覆盖 1996-97 至 2025-26。RAPTOR 自动接续版优先使用 FiveThirtyEight 原版（至 2021-22），之后使用 Neil Paine Estimated RAPTOR（至 2024-25 常规赛）；来源切换处模型口径不同，数值不应视为完全同一模型。2024-25 季后赛和 2025-26 赛季暂无公开 Estimated RAPTOR 档案。FiveThirtyEight RAPTOR 总值是赛季级数据，因此常规赛和季后赛行共用该值，WAR 按赛制拆分。<br>
     数据来源：<a href="https://github.com/fivethirtyeight/data/tree/master/nba-raptor" target="_blank" rel="noreferrer">FiveThirtyEight RAPTOR</a> · <a href="https://github.com/Neil-Paine-1/NBA-elo/blob/main/nba-estimated-raptor.csv" target="_blank" rel="noreferrer">Estimated RAPTOR 数据 CSV</a> · <a href="https://github.com/Neil-Paine-1/NBA-elo/blob/main/README.md" target="_blank" rel="noreferrer">估算方法说明</a> · <a href="https://github.com/sportsdataverse/sportsdataverse-data/releases/tag/nba_stats_player_season_stats" target="_blank" rel="noreferrer">SportsDataverse NBA Stats 档案</a>。
   </footer>
 </main>
@@ -178,12 +182,42 @@ function escapeHtml(value) {
     '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
   })[c]);
 }
+const autoRaptorFields = {
+  RAPTOR_AUTO: ['RAPTOR_538', 'EST_RAPTOR', 'RAPTOR'],
+  RAPTOR_AUTO_OFF: ['RAPTOR_538_OFF', 'EST_RAPTOR_OFF', 'RAPTOR_OFF'],
+  RAPTOR_AUTO_DEF: ['RAPTOR_538_DEF', 'EST_RAPTOR_DEF', 'RAPTOR_DEF'],
+  RAPTOR_AUTO_WAR: ['RAPTOR_538_WAR', 'EST_RAPTOR_WAR', 'RAPTOR_WAR']
+};
+function metricValue(row, key) {
+  const fields = autoRaptorFields[key] || [key];
+  for (const field of fields) {
+    if (row[field] == null || row[field] === '') continue;
+    const value = Number(row[field]);
+    if (Number.isFinite(value)) return value;
+  }
+  return null;
+}
+function metricSourceForRow(row, key) {
+  const fields = autoRaptorFields[key];
+  if (!fields) return '';
+  const field = fields.find(name => row[name] != null && Number.isFinite(Number(row[name])));
+  if (!field) return '';
+  if (field.startsWith('RAPTOR_538')) return 'FiveThirtyEight';
+  if (field.startsWith('EST_RAPTOR')) return 'Estimated RAPTOR';
+  return 'FiveThirtyEight';
+}
+function raptorSource(row) {
+  if (row.RAPTOR_538 != null) return 'FiveThirtyEight';
+  if (row.EST_RAPTOR != null) return 'Estimated RAPTOR';
+  if (row.RAPTOR != null) return 'FiveThirtyEight';
+  return '—';
+}
 function getEligibleRows(rows, type, key, minMinutes) {
   const minGames = type === 'REG' ? 58 : 7;
   return rows.filter(row => {
     const games = Number(row.GP);
     const minutesPerGame = Number(row.MIN);
-    return row.PLAYER_NAME && row[key] != null && Number.isFinite(Number(row[key])) &&
+    return row.PLAYER_NAME && metricValue(row, key) != null &&
       Number.isFinite(games) && games >= minGames && Number.isFinite(minutesPerGame) &&
       minutesPerGame >= minMinutes;
   });
@@ -194,10 +228,10 @@ function showRows() {
   const isRegularSeason = $('type').value === 'REG';
   const minGames = isRegularSeason ? 58 : 7;
   const eligibleRows = getEligibleRows(allRows, $('type').value, key, minMinutes);
-  const metricRows = allRows.filter(row => row[key] != null && Number.isFinite(Number(row[key]))).length;
+  const metricRows = allRows.filter(row => metricValue(row, key) != null).length;
   const lowerIsBetter = key === 'E_TOV_PCT';
   const rows = eligibleRows
-    .sort((a,b) => lowerIsBetter ? Number(a[key]) - Number(b[key]) : Number(b[key]) - Number(a[key]))
+    .sort((a,b) => lowerIsBetter ? metricValue(a, key) - metricValue(b, key) : metricValue(b, key) - metricValue(a, key))
     .slice(0,30);
 
   const playerKey = row => String(row.playerId || row.PLAYER_NAME || '').trim().toLocaleLowerCase();
@@ -207,8 +241,11 @@ function showRows() {
 
   const seasonType = isRegularSeason ? '常规赛' : '季后赛';
   const season = $('season').value;
-  const sourceHint = key.startsWith('RAPTOR_538') ? '；指标来源：FiveThirtyEight 原版 RAPTOR'
-    : key.startsWith('EST_RAPTOR') ? '；指标来源：Neil Paine Estimated RAPTOR（估算版）' : '';
+  const autoSources = [...new Set(allRows.map(row => metricSourceForRow(row, key)).filter(Boolean))];
+  const sourceHint = key.startsWith('RAPTOR_AUTO')
+    ? `；自动接续来源：${autoSources.join(' + ') || '该赛季暂无数据'}`
+    : key.startsWith('RAPTOR_538') ? '；指标来源：FiveThirtyEight 原版 RAPTOR'
+      : key.startsWith('EST_RAPTOR') ? '；指标来源：Neil Paine Estimated RAPTOR（估算版）' : '';
   const missingMetricHint = metricRows ? '' : '；该赛季没有此来源的指标数据';
   $('status').textContent = `已载入 ${season} ${seasonType}档案，共 ${allRows.length} 条球员记录；筛选条件：场均至少 ${minMinutes} 分钟、至少出场 ${minGames} 场；符合条件 ${eligibleRows.length} 人${sourceHint}${missingMetricHint}`;
 
@@ -221,8 +258,8 @@ function showRows() {
       : change === 'up' ? `<span class="rank-movement up">↑ ${delta}</span>`
       : change === 'down' ? `<span class="rank-movement down">↓ ${Math.abs(delta)}</span>` : '';
     const val = (field, pct=false) => {
-      const n = Number(r[field]);
-      if (r[field] == null || !Number.isFinite(n)) return '—';
+      const n = metricValue(r, field);
+      if (n == null) return '—';
       return n.toFixed(1) + (pct ? '%' : '');
     };
     const pie = Number(r.PIE);
@@ -245,12 +282,10 @@ function showRows() {
       <td>${val('DREB_PCT',true)}</td><td>${val('REB_PCT',true)}</td><td>${val('AST_PCT',true)}</td>
       <td>${val('E_TOV_PCT',true)}</td><td>${val('PACE')}</td><td>${val('POSS')}</td>
       <td>${Number.isFinite(pie) ? pie.toFixed(3) : '—'}</td>
-      <td>${val('RAPTOR_538')}</td><td>${val('RAPTOR_538_OFF')}</td>
-      <td>${val('RAPTOR_538_DEF')}</td><td>${val('RAPTOR_538_WAR')}</td>
-      <td>${val('EST_RAPTOR')}</td><td>${val('EST_RAPTOR_OFF')}</td>
-      <td>${val('EST_RAPTOR_DEF')}</td><td>${val('EST_RAPTOR_WAR')}</td>
+      <td>${val('RAPTOR_AUTO')}</td><td>${val('RAPTOR_AUTO_OFF')}</td>
+      <td>${val('RAPTOR_AUTO_DEF')}</td><td>${val('RAPTOR_AUTO_WAR')}</td><td>${raptorSource(r)}</td>
     </tr>`;
-  }).join('') || '<tr><td colspan="30">没有符合筛选条件的球员</td></tr>';
+  }).join('') || '<tr><td colspan="27">没有符合筛选条件的球员</td></tr>';
   if (!previousBoard) {
     $('movement').textContent = '榜单变化动画将在你切换赛季、赛制、排名指标或筛选条件后显示。';
   } else {
@@ -270,7 +305,7 @@ function showRows() {
 }
 async function load() {
   $('status').textContent = '正在读取该赛季的历史档案…';
-    $('rows').innerHTML = '<tr><td colspan="30">正在加载…</td></tr>';
+    $('rows').innerHTML = '<tr><td colspan="27">正在加载…</td></tr>';
   try {
     const startingYear = Number($('season').value.slice(0, 4));
     const endingYear = startingYear + 1;
@@ -284,7 +319,7 @@ async function load() {
   } catch (error) {
     allRows = [];
     $('status').textContent = `加载失败：${error.message}`;
-    $('rows').innerHTML = '<tr><td colspan="30">该赛季档案尚未部署。请稍后刷新，或检查 GitHub Actions 是否已完成历史回填。</td></tr>';
+    $('rows').innerHTML = '<tr><td colspan="27">该赛季档案尚未部署。请稍后刷新，或检查 GitHub Actions 是否已完成历史回填。</td></tr>';
   }
 }
 
@@ -382,8 +417,8 @@ function drawCareerComparison() {
     for (const item of series) {
       const sourceRows = mode === 'percentile' ? eligible : seasonRows;
       const row = sourceRows.find(candidate => String(candidate.playerId || candidate.PLAYER_NAME.toLowerCase()) === item.player.id);
-      if (!row || row[metric] == null || !Number.isFinite(Number(row[metric]))) continue;
-      const rawValue = Number(row[metric]);
+      if (!row || metricValue(row, metric) == null) continue;
+      const rawValue = metricValue(row, metric);
       let value = rawValue;
       let rank = null;
       let cohortSize = null;
@@ -392,9 +427,9 @@ function drawCareerComparison() {
         cohortSize = eligible.length;
         if (cohortSize < 2) continue;
         const betterCount = eligible.filter(candidate => lowerIsBetter
-          ? Number(candidate[metric]) < rawValue
-          : Number(candidate[metric]) > rawValue).length;
-        const tiedCount = eligible.filter(candidate => Number(candidate[metric]) === rawValue).length;
+          ? metricValue(candidate, metric) < rawValue
+          : metricValue(candidate, metric) > rawValue).length;
+        const tiedCount = eligible.filter(candidate => metricValue(candidate, metric) === rawValue).length;
         rank = betterCount + (tiedCount + 1) / 2;
         topPercent = rank / cohortSize * 100;
         value = (cohortSize - rank) / (cohortSize - 1) * 100;
@@ -408,7 +443,8 @@ function drawCareerComparison() {
         topPercent,
         games: row.GP,
         minutes: row.MIN,
-        team: row.TEAM_ABBREVIATION || ''
+        team: row.TEAM_ABBREVIATION || '',
+        source: metricSourceForRow(row, metric)
       });
     }
   }
@@ -466,9 +502,10 @@ function drawCareerComparison() {
       parts.push(`<path d="${path}" fill="none" stroke="${item.color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`);
     }
     for (const point of item.points) {
+      const sourceDescription = point.source ? ` · 来源 ${point.source}` : '';
       const pointDescription = mode === 'percentile'
-        ? `指标值 ${formatCareerValue(point.rawValue, metric)} · 第 ${Number.isInteger(point.rank) ? point.rank : point.rank.toFixed(1)} / ${point.cohortSize} · 当季合格球员前 ${point.topPercent.toFixed(1)}%`
-        : `指标值 ${formatCareerValue(point.rawValue, metric)}`;
+        ? `指标值 ${formatCareerValue(point.rawValue, metric)} · 第 ${Number.isInteger(point.rank) ? point.rank : point.rank.toFixed(1)} / ${point.cohortSize} · 当季合格球员前 ${point.topPercent.toFixed(1)}%${sourceDescription}`
+        : `指标值 ${formatCareerValue(point.rawValue, metric)}${sourceDescription}`;
       const title = `${seasonLabel(point.year)} · ${point.team} · ${point.games} 场 · ${formatCareerValue(point.minutes, 'MIN')} 分钟 · ${pointDescription}`;
       parts.push(`<circle cx="${x(point.year).toFixed(1)}" cy="${y(point.value).toFixed(1)}" r="4.5" fill="${item.color}" stroke="#0e151e" stroke-width="2"><title>${escapeHtml(title)}</title></circle>`);
     }

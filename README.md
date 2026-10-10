@@ -14,7 +14,7 @@
 ## RAPTOR 指标
 
 - FiveThirtyEight 原版 RAPTOR 档案提供 RAPTOR 进攻、防守、总值，覆盖至 2021–22。原始 RAPTOR 是赛季级数据，常规赛与季后赛行会共用当季 RAPTOR 值；WAR 则按赛制拆分。
-- 为补充后续赛季，网页也提供 Neil Paine 的 Estimated RAPTOR 估算版（进攻、防守、总值与 WAR），公开 CSV 覆盖至 2024–25 常规赛。它和 FiveThirtyEight 原版不是完全相同的模型，所以网页分列并标出来源；2024–25 季后赛和 2025–26 估算档案未包含在公开文件中。
+- 为补充后续赛季，网页提供 Neil Paine 的 Estimated RAPTOR 估算版（进攻、防守、总值与 WAR），公开 CSV 覆盖至 2024–25 常规赛。排行榜和生涯曲线新增“RAPTOR 自动接续”选项：优先使用 FiveThirtyEight 原版，缺失时接续 Estimated RAPTOR；表格显示每名球员实际使用的数据来源。两种模型口径不同，跨来源的连续曲线应谨慎解读；2024–25 季后赛和 2025–26 赛季暂无公开 Estimated RAPTOR 档案。
 - 数据来源：[FiveThirtyEight RAPTOR 历史档案](https://github.com/fivethirtyeight/data/tree/master/nba-raptor)、[Neil Paine Estimated RAPTOR CSV](https://github.com/Neil-Paine-1/NBA-elo/blob/main/nba-estimated-raptor.csv)、[估算方法说明](https://github.com/Neil-Paine-1/NBA-elo/blob/main/README.md)。
 
 ## 更新历史数据
