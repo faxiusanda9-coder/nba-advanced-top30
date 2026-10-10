@@ -35,6 +35,8 @@ jobs:
           else
             node scripts/build-data.mjs
           fi
+      - name: Merge FiveThirtyEight and Estimated RAPTOR ratings
+        run: node scripts/add-raptor.mjs
       - name: Commit updated season files
         run: |
           git config user.name "github-actions[bot]"
