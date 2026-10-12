@@ -107,9 +107,9 @@ for (let year = 1997; year <= 2026; year++) {
     }
     matched++;
   }
-  archive.basketballReferenceSource = { REG: sourcePage, PST: null };
+  archive.basketballReferenceSource = { ...archive.basketballReferenceSource, REG: sourcePage };
   totalMatched += matched;
   console.log(`${year}: 常规赛匹配 ${matched}/${archive.rows.REG.length}；未匹配 ${unmatched.length}${unmatched.length && dryRun ? `（${unmatched.slice(0, 15).join('、')}）` : ''}`);
   if (!dryRun) await writeFile(file, `${JSON.stringify(archive)}\n`, 'utf8');
 }
-console.log(`合计匹配 ${totalMatched} 条常规赛记录；季后赛保持空白。`);
+console.log(`合计匹配 ${totalMatched} 条常规赛记录。`);
