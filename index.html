@@ -172,8 +172,8 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
   </section>
 
   <footer>
-    NBA Stats 高级数据覆盖 1996-97 至 2025-26。VORP、WS、WS/48、BPM、OBPM、DBPM、PER、OWS、DWS 来自 Basketball Reference 衍生档案，覆盖这 30 个赛季的常规赛；季后赛暂缺可靠的完整档案，相关数值显示为空。WS、VORP 是赛季累计值；WS/48、BPM 是效率指标。RAPTOR 自动接续版优先使用 FiveThirtyEight 原版（至 2021-22），之后使用 Neil Paine Estimated RAPTOR（至 2024-25 常规赛）；来源切换处模型口径不同，数值不应视为完全同一模型。2024-25 季后赛和 2025-26 赛季暂无公开 Estimated RAPTOR 档案。FiveThirtyEight RAPTOR 总值是赛季级数据，因此常规赛和季后赛行共用该值，WAR 按赛制拆分。<br>
-    数据来源：<a href="https://www.kaggle.com/datasets/sumitrodatta/nba-aba-baa-stats" target="_blank" rel="noreferrer">Basketball Reference 衍生高级数据档案</a> · <a href="https://github.com/fivethirtyeight/data/tree/master/nba-raptor" target="_blank" rel="noreferrer">FiveThirtyEight RAPTOR</a> · <a href="https://github.com/Neil-Paine-1/NBA-elo/blob/main/nba-estimated-raptor.csv" target="_blank" rel="noreferrer">Estimated RAPTOR 数据 CSV</a> · <a href="https://github.com/Neil-Paine-1/NBA-elo/blob/main/README.md" target="_blank" rel="noreferrer">估算方法说明</a> · <a href="https://github.com/sportsdataverse/sportsdataverse-data/releases/tag/nba_stats_player_season_stats" target="_blank" rel="noreferrer">SportsDataverse NBA Stats 档案</a>。
+    NBA Stats 高级数据覆盖 1996-97 至 2025-26。VORP、WS、WS/48、BPM、OBPM、DBPM、PER、OWS、DWS 的常规赛档案覆盖 1996-97 至 2025-26，季后赛档案覆盖 1996-97 至 2021-22；2022-23 至 2025-26 季后赛尚无已导入数据，不拿常规赛数值代替。WS、VORP 是赛季累计值；WS/48、BPM 是效率指标。RAPTOR 自动接续版优先使用 FiveThirtyEight 原版（至 2021-22），之后使用 Neil Paine Estimated RAPTOR（至 2024-25 常规赛）；来源切换处模型口径不同，数值不应视为完全同一模型。2024-25 季后赛和 2025-26 赛季暂无公开 Estimated RAPTOR 档案。FiveThirtyEight RAPTOR 总值是赛季级数据，因此常规赛和季后赛行共用该值，WAR 按赛制拆分。<br>
+    数据来源：<a href="https://www.kaggle.com/datasets/sumitrodatta/nba-aba-baa-stats" target="_blank" rel="noreferrer">Basketball Reference 衍生常规赛档案</a> · <a href="https://www.kaggle.com/datasets/robertsunderhaft/nba-playoffs" target="_blank" rel="noreferrer">Basketball Reference 衍生季后赛档案</a> · <a href="https://github.com/fivethirtyeight/data/tree/master/nba-raptor" target="_blank" rel="noreferrer">FiveThirtyEight RAPTOR</a> · <a href="https://github.com/Neil-Paine-1/NBA-elo/blob/main/nba-estimated-raptor.csv" target="_blank" rel="noreferrer">Estimated RAPTOR 数据 CSV</a> · <a href="https://github.com/Neil-Paine-1/NBA-elo/blob/main/README.md" target="_blank" rel="noreferrer">估算方法说明</a> · <a href="https://github.com/sportsdataverse/sportsdataverse-data/releases/tag/nba_stats_player_season_stats" target="_blank" rel="noreferrer">SportsDataverse NBA Stats 档案</a>。
   </footer>
 </main>
 <script>
@@ -257,9 +257,9 @@ function showRows() {
     : key.startsWith('RAPTOR_538') ? '；指标来源：FiveThirtyEight 原版 RAPTOR'
       : key.startsWith('EST_RAPTOR') ? '；指标来源：Neil Paine Estimated RAPTOR（估算版）'
         : ['VORP','WS','WS_48','BPM','OBPM','DBPM','PER','OWS','DWS'].includes(key)
-          ? '；指标来源：Basketball Reference 衍生档案（仅常规赛）' : '';
+          ? `；指标来源：Basketball Reference 衍生${isRegularSeason ? '常规赛' : '季后赛'}档案` : '';
   const missingMetricHint = metricRows ? '' : $('type').value === 'PST' && sourceHint.includes('Basketball Reference')
-    ? '；季后赛暂无此指标的可靠档案' : '；该赛季没有此来源的指标数据';
+    ? '；本来源的季后赛数据只覆盖至 2021–22' : '；该赛季没有此来源的指标数据';
   $('status').textContent = `已载入 ${season} ${seasonType}档案，共 ${allRows.length} 条球员记录；筛选条件：场均至少 ${minMinutes} 分钟、至少出场 ${minGames} 场；符合条件 ${eligibleRows.length} 人${sourceHint}${missingMetricHint}`;
 
   $('rows').innerHTML = rows.map((r,i) => {

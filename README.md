@@ -9,7 +9,7 @@
 - 例如 `data/1997.json` 对应 1996–97 赛季，`data/2026.json` 对应 2025–26 赛季。
 - 数据来自 [SportsDataverse 的 NBA Stats 历史档案](https://github.com/sportsdataverse/sportsdataverse-data/releases/tag/nba_stats_player_season_stats)，该档案基于 NBA Stats 数据并发布常规赛和季后赛记录。
 
-网页展示的 NBA Stats 高级指标包括 OFF RTG、DEF RTG、NET RTG、TS%、USG%、REB%、AST% 和 PIE。另从 [Basketball Reference 衍生高级数据档案](https://www.kaggle.com/datasets/sumitrodatta/nba-aba-baa-stats)合并常规赛的 PER、OWS、DWS、WS、WS/48、OBPM、DBPM、BPM 和 VORP，覆盖 1996–97 至 2025–26。季后赛暂缺可信的完整历史档案，页面会显示为空，不拿常规赛值代替。
+网页展示的 NBA Stats 高级指标包括 OFF RTG、DEF RTG、NET RTG、TS%、USG%、REB%、AST% 和 PIE。另从 [Basketball Reference 衍生常规赛档案](https://www.kaggle.com/datasets/sumitrodatta/nba-aba-baa-stats)合并 PER、OWS、DWS、WS、WS/48、OBPM、DBPM、BPM 和 VORP，覆盖 1996–97 至 2025–26；从 [季后赛历史档案](https://www.kaggle.com/datasets/robertsunderhaft/nba-playoffs)合并同一组季后赛指标，覆盖 1996–97 至 2021–22。2022–23 至 2025–26 暂无已导入的季后赛数值；页面显示为空，不拿常规赛值代替。
 
 WS、VORP 是累计贡献值，比较时受出场时间影响；WS/48、BPM 等更适合看效率。档案按球员姓名和赛季出场场次匹配，遇到转队球员使用 Basketball Reference 的赛季合计行；姓名或场次对不上的少数记录留空。历史 CSV 由 Kaggle 作者整理，原始统计口径来自 Basketball Reference，并非 NBA Stats 官方指标。
 
@@ -21,7 +21,7 @@ WS、VORP 是累计贡献值，比较时受出场时间影响；WS/48、BPM 等�
 
 ## 更新历史数据
 
-`scripts/build-data.mjs` 使用 Node.js 从公开 CSV 档案提取 NBA 高级数据，`scripts/add-raptor.mjs` 合并 RAPTOR 与 Estimated RAPTOR，`scripts/add-bbref.mjs` 合并 Basketball Reference 衍生常规赛高级指标；都不需要 Python。GitHub Actions 每周检查并刷新数据；也可以手动回填全部 30 个赛季：
+`scripts/build-data.mjs` 使用 Node.js 从公开 CSV 档案提取 NBA 高级数据，`scripts/add-raptor.mjs` 合并 RAPTOR 与 Estimated RAPTOR，`scripts/add-bbref.mjs` 合并 Basketball Reference 衍生常规赛高级指标，`scripts/add-bbref-playoffs.mjs` 合并历史季后赛高级指标；都不需要 Python。GitHub Actions 每周检查并刷新数据；也可以手动回填全部 30 个赛季：
 
 1. 打开仓库的 **Actions** 页面。
 2. 选择 **Update NBA season archive**。
