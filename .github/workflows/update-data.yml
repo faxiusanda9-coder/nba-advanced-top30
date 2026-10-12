@@ -38,6 +38,8 @@ jobs:
           fi
       - name: Merge FiveThirtyEight and Estimated RAPTOR ratings
         run: node scripts/add-raptor.mjs
+      - name: Merge 2025-26 LAKER successor ratings from public leaderboards or saved snapshots
+        run: node scripts/add-laker.mjs --refresh
       - name: Merge Basketball Reference regular-season advanced metrics
         run: node scripts/add-bbref.mjs
       - name: Merge Basketball Reference playoff advanced metrics through 2021-22
@@ -48,7 +50,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/*.json sources/bbref-playoffs/*.json
+          git add data/*.json sources/bbref-playoffs/*.json sources/laker/*.json
           if git diff --cached --quiet; then
             echo "No season data changes."
           else
