@@ -37,6 +37,8 @@ jobs:
           fi
       - name: Merge FiveThirtyEight and Estimated RAPTOR ratings
         run: node scripts/add-raptor.mjs
+      - name: Merge Basketball Reference regular-season advanced metrics
+        run: node scripts/add-bbref.mjs
       - name: Commit updated season files
         run: |
           git config user.name "github-actions[bot]"

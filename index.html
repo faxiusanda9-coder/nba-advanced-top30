@@ -74,6 +74,15 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
         <option value="NET_RATING">NET RTG 净效率</option>
         <option value="OFF_RATING">OFF RTG 进攻效率</option>
         <option value="PIE">PIE 球员影响效率</option>
+        <option value="VORP">VORP 替代球员价值</option>
+        <option value="WS">WS 胜利贡献值</option>
+        <option value="WS_48">WS/48 每 48 分钟胜利贡献</option>
+        <option value="BPM">BPM 每百回合贡献</option>
+        <option value="OBPM">OBPM 进攻贡献</option>
+        <option value="DBPM">DBPM 防守贡献</option>
+        <option value="PER">PER 球员效率</option>
+        <option value="OWS">OWS 进攻胜利贡献</option>
+        <option value="DWS">DWS 防守胜利贡献</option>
         <option value="RAPTOR_AUTO">RAPTOR 综合（自动接续后续赛季）</option>
         <option value="RAPTOR_AUTO_OFF">RAPTOR 进攻（自动接续）</option>
         <option value="RAPTOR_AUTO_DEF">RAPTOR 防守（自动接续）</option>
@@ -121,8 +130,9 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
         <th>USG%</th><th>E-USG%</th><th>AST/TO</th><th>AST Ratio</th><th>OREB%</th>
         <th>DREB%</th><th>REB%</th><th>AST%</th><th>E-TOV%</th><th>PACE</th><th>POSS</th><th>PIE</th>
         <th>RAPTOR 综合</th><th>RAPTOR O</th><th>RAPTOR D</th><th>RAPTOR WAR</th><th>数据来源</th>
+        <th>VORP</th><th>WS</th><th>WS/48</th><th>BPM</th><th>OBPM</th><th>DBPM</th><th>PER</th><th>OWS</th><th>DWS</th>
       </tr></thead>
-      <tbody id="rows"><tr><td colspan="27">正在加载…</td></tr></tbody>
+      <tbody id="rows"><tr><td colspan="36">正在加载…</td></tr></tbody>
     </table>
   </div>
   </section>
@@ -162,8 +172,8 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
   </section>
 
   <footer>
-    NBA Stats 高级数据覆盖 1996-97 至 2025-26。RAPTOR 自动接续版优先使用 FiveThirtyEight 原版（至 2021-22），之后使用 Neil Paine Estimated RAPTOR（至 2024-25 常规赛）；来源切换处模型口径不同，数值不应视为完全同一模型。2024-25 季后赛和 2025-26 赛季暂无公开 Estimated RAPTOR 档案。FiveThirtyEight RAPTOR 总值是赛季级数据，因此常规赛和季后赛行共用该值，WAR 按赛制拆分。<br>
-    数据来源：<a href="https://github.com/fivethirtyeight/data/tree/master/nba-raptor" target="_blank" rel="noreferrer">FiveThirtyEight RAPTOR</a> · <a href="https://github.com/Neil-Paine-1/NBA-elo/blob/main/nba-estimated-raptor.csv" target="_blank" rel="noreferrer">Estimated RAPTOR 数据 CSV</a> · <a href="https://github.com/Neil-Paine-1/NBA-elo/blob/main/README.md" target="_blank" rel="noreferrer">估算方法说明</a> · <a href="https://github.com/sportsdataverse/sportsdataverse-data/releases/tag/nba_stats_player_season_stats" target="_blank" rel="noreferrer">SportsDataverse NBA Stats 档案</a>。
+    NBA Stats 高级数据覆盖 1996-97 至 2025-26。VORP、WS、WS/48、BPM、OBPM、DBPM、PER、OWS、DWS 来自 Basketball Reference 衍生档案，覆盖这 30 个赛季的常规赛；季后赛暂缺可靠的完整档案，相关数值显示为空。WS、VORP 是赛季累计值；WS/48、BPM 是效率指标。RAPTOR 自动接续版优先使用 FiveThirtyEight 原版（至 2021-22），之后使用 Neil Paine Estimated RAPTOR（至 2024-25 常规赛）；来源切换处模型口径不同，数值不应视为完全同一模型。2024-25 季后赛和 2025-26 赛季暂无公开 Estimated RAPTOR 档案。FiveThirtyEight RAPTOR 总值是赛季级数据，因此常规赛和季后赛行共用该值，WAR 按赛制拆分。<br>
+    数据来源：<a href="https://www.kaggle.com/datasets/sumitrodatta/nba-aba-baa-stats" target="_blank" rel="noreferrer">Basketball Reference 衍生高级数据档案</a> · <a href="https://github.com/fivethirtyeight/data/tree/master/nba-raptor" target="_blank" rel="noreferrer">FiveThirtyEight RAPTOR</a> · <a href="https://github.com/Neil-Paine-1/NBA-elo/blob/main/nba-estimated-raptor.csv" target="_blank" rel="noreferrer">Estimated RAPTOR 数据 CSV</a> · <a href="https://github.com/Neil-Paine-1/NBA-elo/blob/main/README.md" target="_blank" rel="noreferrer">估算方法说明</a> · <a href="https://github.com/sportsdataverse/sportsdataverse-data/releases/tag/nba_stats_player_season_stats" target="_blank" rel="noreferrer">SportsDataverse NBA Stats 档案</a>。
   </footer>
 </main>
 <script>
@@ -245,8 +255,11 @@ function showRows() {
   const sourceHint = key.startsWith('RAPTOR_AUTO')
     ? `；自动接续来源：${autoSources.join(' + ') || '该赛季暂无数据'}`
     : key.startsWith('RAPTOR_538') ? '；指标来源：FiveThirtyEight 原版 RAPTOR'
-      : key.startsWith('EST_RAPTOR') ? '；指标来源：Neil Paine Estimated RAPTOR（估算版）' : '';
-  const missingMetricHint = metricRows ? '' : '；该赛季没有此来源的指标数据';
+      : key.startsWith('EST_RAPTOR') ? '；指标来源：Neil Paine Estimated RAPTOR（估算版）'
+        : ['VORP','WS','WS_48','BPM','OBPM','DBPM','PER','OWS','DWS'].includes(key)
+          ? '；指标来源：Basketball Reference 衍生档案（仅常规赛）' : '';
+  const missingMetricHint = metricRows ? '' : $('type').value === 'PST' && sourceHint.includes('Basketball Reference')
+    ? '；季后赛暂无此指标的可靠档案' : '；该赛季没有此来源的指标数据';
   $('status').textContent = `已载入 ${season} ${seasonType}档案，共 ${allRows.length} 条球员记录；筛选条件：场均至少 ${minMinutes} 分钟、至少出场 ${minGames} 场；符合条件 ${eligibleRows.length} 人${sourceHint}${missingMetricHint}`;
 
   $('rows').innerHTML = rows.map((r,i) => {
@@ -260,7 +273,7 @@ function showRows() {
     const val = (field, pct=false) => {
       const n = metricValue(r, field);
       if (n == null) return '—';
-      return n.toFixed(1) + (pct ? '%' : '');
+      return n.toFixed(field === 'WS_48' ? 3 : 1) + (pct ? '%' : '');
     };
     const pie = Number(r.PIE);
     const initials = escapeHtml(String(r.PLAYER_NAME).trim().split(/\s+/).map(part => part[0] || '').slice(-2).join('').toUpperCase());
@@ -284,8 +297,11 @@ function showRows() {
       <td>${Number.isFinite(pie) ? pie.toFixed(3) : '—'}</td>
       <td>${val('RAPTOR_AUTO')}</td><td>${val('RAPTOR_AUTO_OFF')}</td>
       <td>${val('RAPTOR_AUTO_DEF')}</td><td>${val('RAPTOR_AUTO_WAR')}</td><td>${raptorSource(r)}</td>
+      <td>${val('VORP')}</td><td>${val('WS')}</td><td>${val('WS_48')}</td>
+      <td>${val('BPM')}</td><td>${val('OBPM')}</td><td>${val('DBPM')}</td>
+      <td>${val('PER')}</td><td>${val('OWS')}</td><td>${val('DWS')}</td>
     </tr>`;
-  }).join('') || '<tr><td colspan="27">没有符合筛选条件的球员</td></tr>';
+  }).join('') || '<tr><td colspan="36">没有符合筛选条件的球员</td></tr>';
   if (!previousBoard) {
     $('movement').textContent = '榜单变化动画将在你切换赛季、赛制、排名指标或筛选条件后显示。';
   } else {
@@ -305,7 +321,7 @@ function showRows() {
 }
 async function load() {
   $('status').textContent = '正在读取该赛季的历史档案…';
-    $('rows').innerHTML = '<tr><td colspan="27">正在加载…</td></tr>';
+    $('rows').innerHTML = '<tr><td colspan="36">正在加载…</td></tr>';
   try {
     const startingYear = Number($('season').value.slice(0, 4));
     const endingYear = startingYear + 1;
@@ -319,7 +335,7 @@ async function load() {
   } catch (error) {
     allRows = [];
     $('status').textContent = `加载失败：${error.message}`;
-    $('rows').innerHTML = '<tr><td colspan="27">该赛季档案尚未部署。请稍后刷新，或检查 GitHub Actions 是否已完成历史回填。</td></tr>';
+    $('rows').innerHTML = '<tr><td colspan="36">该赛季档案尚未部署。请稍后刷新，或检查 GitHub Actions 是否已完成历史回填。</td></tr>';
   }
 }
 
@@ -383,7 +399,7 @@ function buildCareerPlayerDirectory() {
 function formatCareerValue(value, metric) {
   const number = Number(value);
   if (!Number.isFinite(number)) return '—';
-  return number.toFixed(1) + (metric.endsWith('_PCT') ? '%' : '');
+  return number.toFixed(metric === 'WS_48' ? 3 : 1) + (metric.endsWith('_PCT') ? '%' : '');
 }
 
 function drawCareerComparison() {
