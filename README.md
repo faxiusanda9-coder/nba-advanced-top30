@@ -13,11 +13,11 @@
 
 WS、VORP 是累计贡献值，比较时受出场时间影响；WS/48、BPM 等更适合看效率。档案按球员姓名和赛季出场场次匹配，遇到转队球员使用 Basketball Reference 的赛季合计行；姓名或场次对不上的少数记录留空。历史 CSV 由 Kaggle 作者整理，原始统计口径来自 Basketball Reference，并非 NBA Stats 官方指标。
 
-## RAPTOR 指标
+## RAPTOR / LAKER 指标
 
 - FiveThirtyEight 原版 RAPTOR 档案提供 RAPTOR 进攻、防守、总值，覆盖至 2021–22。原始 RAPTOR 是赛季级数据，常规赛与季后赛行会共用当季 RAPTOR 值；WAR 则按赛制拆分。
 - Neil Paine 的 Estimated RAPTOR 估算版提供进攻、防守、总值与 WAR，GitHub CSV 覆盖至 2024–25 常规赛。作者将后续模型改名为 LAKER，2025–26 常规赛和季后赛的同一组指标已从作者公开榜单导入，分别匹配 582/582 和 230/230 名球员。来源快照保存在 `sources/laker/`；常规赛榜单更新于 2026-04-13，季后赛更新于 2026-06-14，球员场次及出场时间与本项目对应赛制的全季记录一致。保留作者公开的总值与 WAR，部分源单元格经过四舍五入。
-- 排行榜和生涯曲线提供“RAPTOR / LAKER 自动接续”：优先使用 FiveThirtyEight 原版，然后 Estimated RAPTOR，再接续 LAKER；表格和曲线悬停显示实际来源。2025–26 也可单独选择 LAKER 综合、进攻、防守或 WAR。各版本模型口径不同，跨来源的连续曲线需谨慎解读；2024–25 季后赛仍缺少已导入的接续指标。
+- 排行榜和生涯曲线提供“RAPTOR / LAKER 自动接续”：优先使用 FiveThirtyEight 原版，然后 Estimated RAPTOR，再接续 LAKER；表格和曲线悬停显示实际来源。网页保留自动接续及 LAKER 综合、进攻、防守和 WAR 的单独入口；已移除旧版 RAPTOR 与 Estimated RAPTOR 的单独选择项。各版本模型口径不同，跨来源的连续曲线需谨慎解读；2024–25 季后赛仍缺少已导入的接续指标。
 - 数据来源：[FiveThirtyEight RAPTOR 历史档案](https://github.com/fivethirtyeight/data/tree/master/nba-raptor)、[Neil Paine Estimated RAPTOR CSV](https://github.com/Neil-Paine-1/NBA-elo/blob/main/nba-estimated-raptor.csv)、[估算方法说明](https://github.com/Neil-Paine-1/NBA-elo/blob/main/README.md)。
 - LAKER 来源：[作者 2025–26 页面](https://neilpaine.substack.com/p/2025-26-nba-elo-forecast-and-player)、[公开常规赛榜单](https://datawrapper.dwcdn.net/t5PSm/)、[公开季后赛榜单](https://datawrapper.dwcdn.net/5L6UD/)。导入使用页面公开加载的数据文件；不依赖订阅区的历史电子表格。
 
