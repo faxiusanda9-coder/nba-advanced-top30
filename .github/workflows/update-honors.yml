@@ -1,0 +1,85 @@
+name: Update NBA player honors
+
+on:
+  schedule:
+    - cron: '0 10 5 7 *'
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Refresh active careers, all players, or fetch only missing players
+        type: choice
+        options: [active, all, missing]
+        default: active
+      through:
+        description: Last completed season ending year (blank uses the latest completed season)
+        type: string
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nba-player-honors-update
+  cancel-in-progress: false
+
+jobs:
+  update-honors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Resolve completed season year
+        env:
+          REQUESTED_YEAR: ${{ inputs.through }}
+        run: |
+          completed="$(date -u +%Y)"
+          if [ "$(date -u +%-m)" -lt 7 ]; then completed=$((completed - 1)); fi
+          year="${REQUESTED_YEAR:-$completed}"
+          if ! [[ "$year" =~ ^[0-9]{4}$ ]] || [ "$year" -lt 1970 ] || [ "$year" -gt 2100 ]; then
+            echo "Invalid season ending year"; exit 1
+          fi
+          echo "HONOR_YEAR=$year" >> "$GITHUB_ENV"
+      - name: Refresh official PlayerAwards; preserve snapshots if NBA is unavailable
+        id: awards
+        continue-on-error: true
+        env:
+          REFRESH_SCOPE: ${{ inputs.scope || 'active' }}
+        run: |
+          case "$REFRESH_SCOPE" in
+            all) node scripts/fetch-player-honors.mjs --all --refresh --through="$HONOR_YEAR" ;;
+            missing) node scripts/fetch-player-honors.mjs --all --through="$HONOR_YEAR" ;;
+            active) node scripts/fetch-player-honors.mjs --active --refresh --through="$HONOR_YEAR" ;;
+            *) exit 1 ;;
+          esac
+      - name: Refresh official statistical title lists; preserve saved lists on failure
+        id: leaders
+        continue-on-error: true
+        run: node scripts/fetch-honor-leaders.mjs --refresh --since="$HONOR_YEAR" --through="$HONOR_YEAR"
+      - name: Build honors and existing profile fixtures without changing season data
+        run: |
+          node scripts/build-player-honors.mjs
+          node scripts/build-player-profiles.mjs
+      - name: Verify honor accuracy, missing-data behavior and ID matching
+        run: node --test tests/player-honors.test.mjs
+      - name: Commit only honor source snapshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sources/honors/*.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update official NBA player honor snapshots"
+            git pull --rebase origin main
+            git push
+          fi
+      - name: Report source availability
+        env:
+          AWARDS_STATUS: ${{ steps.awards.outcome }}
+          LEADERS_STATUS: ${{ steps.leaders.outcome }}
+        run: |
+          echo "PlayerAwards refresh: $AWARDS_STATUS; official title refresh: $LEADERS_STATUS" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$AWARDS_STATUS" != success ] || [ "$LEADERS_STATUS" != success ]; then
+            echo "Source refresh was unavailable or incomplete. Saved verified data was preserved; missing data was not replaced with zero." >> "$GITHUB_STEP_SUMMARY"
+          fi

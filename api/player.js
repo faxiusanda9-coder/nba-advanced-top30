@@ -31,7 +31,17 @@ module.exports = async function handler(req, res) {
     if (!/^\d+$/.test(String(player.player_id))) throw new Error('Invalid player ID');
     const career = JSON.parse(await fs.readFile(path.join(process.cwd(), 'api', '_data', 'profiles', `${player.player_id}.json`), 'utf8'));
     if (career.player_id !== player.player_id) throw new Error('Player ID mismatch');
-    return res.status(200).json({ player: profile, career });
+    let honors;
+    try {
+      honors = JSON.parse(await fs.readFile(path.join(process.cwd(), 'api', '_data', 'honors', `${player.player_id}.json`), 'utf8'));
+      if (honors.player_id !== player.player_id || !Array.isArray(honors.records)
+          || honors.records.some(record => record.player_id !== player.player_id)) throw new Error('Honor ID mismatch');
+    } catch {
+      // Honor data failure must not take down the existing career page. Missing
+      // coverage is displayed as unavailable, never as zero championship wins.
+      honors = { schema_version: 1, player_id: player.player_id, coverage: {}, records: [] };
+    }
+    return res.status(200).json({ player: profile, career, honors });
   } catch (error) {
     console.error('Player database could not be read');
     return res.status(503).json({ error: 'Player profile temporarily unavailable' });

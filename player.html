@@ -4,6 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b1017">
 <title>球员档案 · NBA 高阶数据</title>
 <link rel="stylesheet" href="/assets/player-search.css"><link rel="stylesheet" href="/assets/player-profile.css">
+<link rel="stylesheet" href="/assets/player-honors.css">
 </head>
 <body><main>
   <header class="site-header"><div class="site-intro"><a class="back-link" href="/">← 返回联盟排行榜</a><h1>球员档案</h1><p>逐季回看表现，让数字串起生涯。</p></div><player-search></player-search></header>
@@ -14,6 +15,14 @@
       <dl id="profileFacts" class="profile-facts"></dl>
       <p class="coverage-note">本站覆盖 1996–97 至 2025–26。下列年份是档案中实际出现的赛季，完整生涯尚未核验；早期生涯可能不在覆盖期内。缺失值以「—」表示，不当作 0。</p>
     </div>
+  </section>
+  <section id="honorsSection" class="profile-card honors-card" aria-labelledby="honorsTitle" hidden>
+    <h2 id="honorsTitle">生涯荣誉</h2>
+    <div id="coreHonors" class="core-honors"></div>
+    <p class="honors-source">数据来源：<a href="https://www.nba.com/" target="_blank" rel="noopener noreferrer">NBA.com</a> · 官方荣誉记录</p>
+    <p class="honors-note">采用 NBA 官方生涯荣誉记录，包含本站统计覆盖期以前的获奖年份；不随下方常规赛／季后赛切换改变。数据暂缺与 0 次获奖分别显示。</p>
+    <details id="otherHonors" class="other-honors"><summary>查看其他荣誉</summary><div id="otherHonorsList"></div></details>
+    <p id="honorsCoverage" class="honors-note"></p>
   </section>
   <div id="careerContent" hidden>
     <section class="career-toolbar" aria-label="赛制和赛季选择">
@@ -39,4 +48,8 @@
     <section class="profile-card history-card"><h2>球队与档案年份</h2><p class="muted">按档案登记球队汇总；同季转队显示合计标识，不拆造球队分段数据。缺席年份不补零。</p><div id="teamHistory" class="history-list"></div></section>
   </div>
   <footer>NBA Advanced · 历史档案 1996–2026 · 不同高阶模型的数值不能视为同一统计口径。</footer>
-</main><script type="module" src="/assets/player-search.js"></script><script type="module" src="/assets/player-profile.js"></script></body></html>
+</main>
+<dialog id="seasonHonorsDialog" class="season-honors-dialog" aria-labelledby="seasonHonorsTitle">
+  <div class="honors-dialog-heading"><h2 id="seasonHonorsTitle">赛季荣誉</h2><button id="closeSeasonHonors" aria-label="关闭赛季荣誉">关闭</button></div><ul id="seasonHonorsList"></ul>
+</dialog>
+<script type="module" src="/assets/player-search.js"></script><script type="module" src="/assets/player-profile.js"></script></body></html>
