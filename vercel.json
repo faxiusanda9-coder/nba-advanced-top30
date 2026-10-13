@@ -1,8 +1,8 @@
 {
-  "buildCommand": "node scripts/build-player-index.mjs && node scripts/build-site.mjs",
+  "buildCommand": "node scripts/add-player-basic.mjs && node scripts/build-player-index.mjs && node scripts/build-player-profiles.mjs && node scripts/build-site.mjs",
   "outputDirectory": "public",
   "functions": {
-    "api/player.js": { "includeFiles": "api/_data/players.json" }
+    "api/player.js": { "includeFiles": "api/_data/**" }
   },
   "rewrites": [
     { "source": "/player/:slug", "destination": "/player.html?slug=:slug" }
