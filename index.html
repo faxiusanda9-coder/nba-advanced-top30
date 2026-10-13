@@ -253,14 +253,15 @@ function showRows() {
   const seasonType = isRegularSeason ? '常规赛' : '季后赛';
   const season = $('season').value;
   const autoSources = [...new Set(allRows.map(row => metricSourceForRow(row, key)).filter(Boolean))];
+  const missing2025PlayoffRaptor = season === '2024-25' && !isRegularSeason && key.startsWith('RAPTOR_AUTO') && metricRows === 0;
   const sourceHint = key.startsWith('RAPTOR_AUTO')
-    ? `；自动接续来源：${autoSources.join(' + ') || '该赛季暂无数据'}`
+    ? missing2025PlayoffRaptor ? '；2024–25 季后赛 RAPTOR：作者公开 CSV 仅有常规赛记录，暂无可核验的完整季后赛数据' : `；自动接续来源：${autoSources.join(' + ') || '该赛季暂无数据'}`
     : key.startsWith('RAPTOR_538') ? '；指标来源：FiveThirtyEight 原版 RAPTOR'
       : key.startsWith('EST_RAPTOR') ? '；指标来源：Neil Paine Estimated RAPTOR（估算版）'
         : key.startsWith('LAKER') ? '；指标来源：Neil Paine LAKER（Estimated RAPTOR 接续版）'
         : ['VORP','WS','WS_48','BPM','OBPM','DBPM','PER','OWS','DWS'].includes(key)
           ? `；指标来源：Basketball Reference 衍生${isRegularSeason ? '常规赛' : '季后赛'}档案` : '';
-  const missingMetricHint = metricRows ? '' : $('type').value === 'PST' && sourceHint.includes('Basketball Reference')
+  const missingMetricHint = metricRows || missing2025PlayoffRaptor ? '' : $('type').value === 'PST' && sourceHint.includes('Basketball Reference')
     ? '；该赛季此指标暂缺可匹配的季后赛记录' : '；该赛季没有此来源的指标数据';
   $('status').textContent = `已载入 ${season} ${seasonType}档案，共 ${allRows.length} 条球员记录；筛选条件：场均至少 ${minMinutes} 分钟、至少出场 ${minGames} 场；符合条件 ${eligibleRows.length} 人${sourceHint}${missingMetricHint}`;
 
