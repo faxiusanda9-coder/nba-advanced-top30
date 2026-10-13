@@ -1,5 +1,5 @@
 {
-  "buildCommand": "node scripts/add-player-basic.mjs && node scripts/build-player-index.mjs && node scripts/build-player-profiles.mjs && node scripts/build-site.mjs",
+  "buildCommand": "node scripts/add-player-basic.mjs && node scripts/build-player-index.mjs && node scripts/build-player-profiles.mjs && node scripts/build-player-honors.mjs && node scripts/build-site.mjs",
   "outputDirectory": "public",
   "functions": {
     "api/player.js": { "includeFiles": "api/_data/**" }

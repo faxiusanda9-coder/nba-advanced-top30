@@ -1,7 +1,8 @@
 import { metrics, numeric, formatMetric, sortSeasons, metricSource, trendSegments } from './player-profile-core.mjs';
+import { renderHonors, seasonHonorMarker } from './player-honors.js';
 const $ = id => document.getElementById(id);
 const element = (tag, text, className) => { const node = document.createElement(tag); if (text != null) node.textContent = text; if (className) node.className = className; return node; };
-let player, career, phase = 'REG', selectedYear, metricKey = 'BPM', tableGroup = 'basic', sortKey = 'season', sortDirection = 'desc';
+let player, career, honors, phase = 'REG', selectedYear, metricKey = 'BPM', tableGroup = 'basic', sortKey = 'season', sortDirection = 'desc';
 const rows = () => career?.seasons[phase] || [];
 const selected = () => rows().find(row => row.ending_year === selectedYear);
 function teamLabel(row) { return row.team_count > 1 ? `${row.team_count} 队合计 · 登记 ${row.registered_team || '未知'}` : row.registered_team || '球队未提供'; }
@@ -57,6 +58,7 @@ function renderTable() {
     const tr=element('tr'); tr.dataset.year=String(row.ending_year); tr.classList.toggle('is-selected',row.ending_year === selectedYear);
     const td=element('td'), button=element('button',row.season,'season-link'); button.setAttribute('aria-label',`查看 ${row.season} 赛季速览`);
     button.addEventListener('click',() => { selectYear(row.ending_year); $('seasonTitle').scrollIntoView({block:'start',behavior:'auto'}); }); td.append(button); tr.append(td,element('td',teamLabel(row)));
+    const trophy = seasonHonorMarker(honors,row); if (trophy) td.append(trophy);
     for (const item of columns) { const cell=element('td',formatMetric(row.stats[item.key],item.key)); cell.title=numeric(row.stats[item.key]) == null ? '来源未提供此指标' : metricSource(row,item.key); tr.append(cell); }
     if (tableGroup === 'advanced') tr.append(element('td',row.raptor_source?.label || '—','model-cell')); return tr;
   }));
@@ -107,6 +109,7 @@ function renderIdentity() {
 }
 async function loadProfile() {
   $('retryProfile').hidden=true; $('profileState').hidden=false; $('profileContent').hidden=true; $('careerContent').hidden=true;
+  $('honorsSection').hidden=true;
   document.querySelector('.hero').setAttribute('aria-busy','true');
   try{
     const path=location.pathname.match(/^\/player\/([^/]+)\/?$/),slug=path?decodeURIComponent(path[1]):new URLSearchParams(location.search).get('slug');
@@ -114,9 +117,9 @@ async function loadProfile() {
     const response=await fetch(`/api/player?slug=${encodeURIComponent(slug)}`,{signal:AbortSignal.timeout(15000)});
     if(response.status===404)throw new Error('未找到这位球员，试试右上角的搜索框。');
     if(!response.ok)throw new Error('档案暂时无法读取，请稍后重试。');
-    const payload=await response.json();player=payload.player;career=payload.career;
+    const payload=await response.json();player=payload.player;career=payload.career;honors=payload.honors;
     if(!player?.full_name||career?.player_id!==player.player_id||!Array.isArray(career.seasons?.REG)||!Array.isArray(career.seasons?.PST))throw new Error('档案格式异常，暂时无法显示。');
-    renderIdentity(); $('profileState').hidden=true; $('profileContent').hidden=false; $('careerContent').hidden=false;renderPhase();
+    renderIdentity(); renderHonors(honors); $('profileState').hidden=true; $('profileContent').hidden=false; $('careerContent').hidden=false;renderPhase();
   }catch(error){$('profileState').textContent=error.message; $('retryProfile').hidden=false;}
   finally{document.querySelector('.hero').setAttribute('aria-busy','false');}
 }

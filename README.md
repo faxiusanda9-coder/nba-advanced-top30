@@ -126,3 +126,9 @@ GitHub Actions 在赛季指标更新后重建并验证索引，再一起提交�
 后续补充位置、完整生涯年份或逐队分段时，将有来源的字段接入构建步骤；详细字段仍放在独立球员文件中，不扩大搜索索引。走势图指标列表与单位集中于 `player-profile-core.mjs`。
 
 验收记录见 [球员档案实现及验收](docs/player-profiles.md)。
+
+## 球员生涯荣誉
+
+球员主页增加 NBA 总冠军、FMVP、常规赛 MVP 三张核心卡片、指定其他荣誉折叠列表及逐赛季奖杯。荣誉采用 NBA 官方 PlayerAwards 与官方赛季回顾统计王名单，按稳定 NBA ID 关联；没有使用高阶数值推断获奖。已读取本站全部 2,860 人的官方记录，截止 2025–26；缺失状态与 0 次明确区分。
+
+Vercel 构建增加 `node scripts/build-player-honors.mjs`，仅从本地快照生成单人档案。独立 **Update NBA player honors** 工作流在每年 7 月 5 日及手动触发时更新荣誉，不改变原赛季更新任务。来源、数据结构、许可说明、文件清单与测试结果见 [生涯荣誉实现及验收](docs/player-honors.md)。
