@@ -39,12 +39,16 @@
         <div class="section-heading"><div><div class="eyebrow">CAREER TREND</div><h2 id="trendTitle">生涯高阶趋势</h2></div><label>趋势指标 <select id="profileMetric"></select></label></div>
         <p class="muted chart-help">点击或轻触圆点查看该赛季。缺失赛季、缺失值及模型切换处保留断点。</p><div id="trendChart" class="chart-container"></div><p id="chartReadout" class="chart-readout" role="status"></p><div id="chartModels" class="model-tags"></div>
       </section>
-      <section class="profile-card table-card" aria-labelledby="tableTitle">
-        <div class="section-heading"><div><div class="eyebrow">SEASON BY SEASON</div><h2 id="tableTitle">逐赛季统计</h2></div><div class="segmented" role="group" aria-label="数据表类别"><button data-table="basic" aria-pressed="true">基础统计</button><button data-table="advanced" aria-pressed="false">高阶统计</button></div></div>
-        <p class="muted">点表头排序；手机左右滑动查看。点击赛季返回速览。</p>
-        <div class="table-scroll" tabindex="0" role="region" aria-label="可横向滚动的赛季数据表"><table id="seasonTable"><caption class="sr-only">球员逐赛季统计</caption><thead></thead><tbody></tbody></table></div>
-      </section>
     </div>
+    <section class="profile-card table-card" aria-labelledby="tableTitle">
+      <div class="section-heading"><div><div class="eyebrow">SEASON BY SEASON</div><h2 id="tableTitle">逐赛季统计</h2></div></div>
+      <div class="table-controls">
+        <div class="table-control"><span>比赛类型</span><div class="segmented" role="group" aria-label="逐赛季统计比赛类型"><button data-table-phase="REG" aria-pressed="true">常规赛</button><button data-table-phase="PST" aria-pressed="false">季后赛</button></div></div>
+        <div class="table-control"><span>统计类型</span><div class="segmented" role="group" aria-label="数据表类别"><button data-table="basic" aria-pressed="true">基础统计</button><button data-table="advanced" aria-pressed="false">高阶统计</button></div></div>
+      </div>
+      <p class="muted">点表头排序；手机左右滑动查看。点击赛季返回速览。</p>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="可横向滚动的赛季数据表"><table id="seasonTable"><caption class="sr-only">球员逐赛季统计</caption><thead></thead><tbody></tbody></table></div>
+    </section>
     <section class="profile-card history-card"><h2>球队与档案年份</h2><p class="muted">按档案登记球队汇总；同季转队显示合计标识，不拆造球队分段数据。缺席年份不补零。</p><div id="teamHistory" class="history-list"></div></section>
   </div>
   <footer>NBA Advanced · 历史档案 1996–2026 · 不同高阶模型的数值不能视为同一统计口径。</footer>

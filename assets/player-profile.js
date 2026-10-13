@@ -2,8 +2,9 @@ import { metrics, numeric, formatMetric, sortSeasons, metricSource, trendSegment
 import { renderHonors, seasonHonorMarker } from './player-honors.js';
 const $ = id => document.getElementById(id);
 const element = (tag, text, className) => { const node = document.createElement(tag); if (text != null) node.textContent = text; if (className) node.className = className; return node; };
-let player, career, honors, phase = 'REG', selectedYear, metricKey = 'BPM', tableGroup = 'basic', sortKey = 'season', sortDirection = 'desc';
+let player, career, honors, phase = 'REG', tablePhase = 'REG', selectedYear, metricKey = 'BPM', tableGroup = 'basic', sortKey = 'season', sortDirection = 'desc';
 const rows = () => career?.seasons[phase] || [];
+const tableRows = () => career?.seasons[tablePhase] || [];
 const selected = () => rows().find(row => row.ending_year === selectedYear);
 function teamLabel(row) { return row.team_count > 1 ? `${row.team_count} 队合计 · 登记 ${row.registered_team || '未知'}` : row.registered_team || '球队未提供'; }
 function sourceLink(label, url) {
@@ -32,7 +33,7 @@ function renderPhase() {
   $('phaseCount').textContent = `${phase === 'REG' ? '常规赛' : '季后赛'} · ${list.length} 个已收录赛季 · 不套用 TOP30 入榜门槛`;
   $('profileSeason').disabled = !list.length; $('phaseEmpty').hidden = Boolean(list.length); $('phaseContent').hidden = !list.length;
   $('profileSeason').replaceChildren(...[...list].reverse().map(row => new Option(row.season,String(row.ending_year))));
-  if (!list.length) return;
+  if (!list.length) { renderTable(); return; }
   if (!list.some(row => row.ending_year === selectedYear)) selectedYear = list.at(-1).ending_year;
   const available = metrics.filter(item => list.some(row => numeric(row.stats[item.key]) != null));
   if (!available.some(item => item.key === metricKey)) metricKey = available.some(item => item.key === 'BPM') ? 'BPM' : available[0]?.key;
@@ -41,8 +42,9 @@ function renderPhase() {
 }
 function renderTable() {
   const table = $('seasonTable'), columns = metrics.filter(item => item.group === tableGroup);
+  document.querySelectorAll('[data-table-phase]').forEach(button => button.setAttribute('aria-pressed',String(button.dataset.tablePhase === tablePhase)));
   document.querySelectorAll('[data-table]').forEach(button => button.setAttribute('aria-pressed',String(button.dataset.table === tableGroup)));
-  table.querySelector('caption').textContent = `${player.full_name} ${phase === 'REG' ? '常规赛' : '季后赛'}逐赛季${tableGroup === 'basic' ? '基础' : '高阶'}统计`;
+  table.querySelector('caption').textContent = `${player.full_name} ${tablePhase === 'REG' ? '常规赛' : '季后赛'}逐赛季${tableGroup === 'basic' ? '基础' : '高阶'}统计`;
   const tr = element('tr');
   for (const column of [{ key:'season',label:'赛季' },{key:'team',label:'球队 / 合计'},...columns,...(tableGroup === 'advanced' ? [{key:'model',label:'RAPTOR / LAKER 来源'}] : [])]) {
     const th = element('th'); th.scope = 'col';
@@ -54,14 +56,16 @@ function renderTable() {
     tr.append(th);
   }
   table.querySelector('thead').replaceChildren(tr);
-  table.querySelector('tbody').replaceChildren(...sortSeasons(rows(),sortKey,sortDirection).map(row => {
-    const tr=element('tr'); tr.dataset.year=String(row.ending_year); tr.classList.toggle('is-selected',row.ending_year === selectedYear);
+  const renderedRows=sortSeasons(tableRows(),sortKey,sortDirection).map(row => {
+    const tr=element('tr'); tr.dataset.year=String(row.ending_year); tr.classList.toggle('is-selected',tablePhase === phase && row.ending_year === selectedYear);
     const td=element('td'), button=element('button',row.season,'season-link'); button.setAttribute('aria-label',`查看 ${row.season} 赛季速览`);
-    button.addEventListener('click',() => { selectYear(row.ending_year); $('seasonTitle').scrollIntoView({block:'start',behavior:'auto'}); }); td.append(button); tr.append(td,element('td',teamLabel(row)));
+    button.addEventListener('click',() => { if (phase !== tablePhase) { phase=tablePhase; renderPhase(); } selectYear(row.ending_year); $('seasonTitle').scrollIntoView({block:'start',behavior:'auto'}); }); td.append(button); tr.append(td,element('td',teamLabel(row)));
     const trophy = seasonHonorMarker(honors,row); if (trophy) td.append(trophy);
-    for (const item of columns) { const cell=element('td',formatMetric(row.stats[item.key],item.key)); cell.title=numeric(row.stats[item.key]) == null ? '来源未提供此指标' : metricSource(row,item.key); tr.append(cell); }
-    if (tableGroup === 'advanced') tr.append(element('td',row.raptor_source?.label || '—','model-cell')); return tr;
-  }));
+    for (const item of columns) { const cell=element('td',numeric(row.stats[item.key]) == null ? '暂无数据' : formatMetric(row.stats[item.key],item.key)); cell.title=numeric(row.stats[item.key]) == null ? '来源未提供此指标' : metricSource(row,item.key); tr.append(cell); }
+    if (tableGroup === 'advanced') tr.append(element('td',row.raptor_source?.label || '暂无数据','model-cell')); return tr;
+  });
+  if (!renderedRows.length) { const tr=element('tr'),td=element('td','该比赛类型暂无逐赛季统计数据。');td.colSpan=2+columns.length+(tableGroup==='advanced'?1:0);tr.append(td);renderedRows.push(tr); }
+  table.querySelector('tbody').replaceChildren(...renderedRows);
 }
 function renderChart() {
   const container = $('trendChart'), list=rows(), segments=trendSegments(list,metricKey), points=segments.flat();
@@ -119,11 +123,13 @@ async function loadProfile() {
     if(!response.ok)throw new Error('档案暂时无法读取，请稍后重试。');
     const payload=await response.json();player=payload.player;career=payload.career;honors=payload.honors;
     if(!player?.full_name||career?.player_id!==player.player_id||!Array.isArray(career.seasons?.REG)||!Array.isArray(career.seasons?.PST))throw new Error('档案格式异常，暂时无法显示。');
+    phase='REG'; tablePhase='REG'; tableGroup='basic'; sortKey='season'; sortDirection='desc';
     renderIdentity(); renderHonors(honors); $('profileState').hidden=true; $('profileContent').hidden=false; $('careerContent').hidden=false;renderPhase();
   }catch(error){$('profileState').textContent=error.message; $('retryProfile').hidden=false;}
   finally{document.querySelector('.hero').setAttribute('aria-busy','false');}
 }
-document.querySelectorAll('[data-phase]').forEach(button=>button.addEventListener('click',()=>{phase=button.dataset.phase;renderPhase();}));
+document.querySelectorAll('[data-phase]').forEach(button=>button.addEventListener('click',()=>{phase=button.dataset.phase;tablePhase=phase;renderPhase();}));
+document.querySelectorAll('[data-table-phase]').forEach(button=>button.addEventListener('click',()=>{tablePhase=button.dataset.tablePhase;renderTable();}));
 document.querySelectorAll('[data-table]').forEach(button=>button.addEventListener('click',()=>{tableGroup=button.dataset.table;sortKey='season';sortDirection='desc';renderTable();}));
 $('profileSeason').addEventListener('change',()=>selectYear(Number($('profileSeason').value)));
 $('profileMetric').addEventListener('change',()=>{metricKey=$('profileMetric').value;renderChart();});

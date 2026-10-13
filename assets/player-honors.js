@@ -36,9 +36,11 @@ function openSeasonHonors(records,row,trigger){
   $('seasonHonorsDialog').showModal();
 }
 export function seasonHonorMarker(honors,row){
-  const records=honorsForSeason(honors,row.ending_year,row.phase);
+  if(String(honors?.player_id)!==String(row.player_id))return null;
+  const records=honorsForSeason(honors,row.ending_year,row.phase).filter(record=>record.season===row.season&&String(record.player_id)===String(row.player_id));
   if(!records.length)return null;
-  const button=node('button','🏆','season-honor-marker');button.type='button';button.setAttribute('aria-label',`查看 ${row.season} ${row.phase==='PST'?'季后赛':'常规赛'}的 ${records.length} 项荣誉`);
+  const isTrophy=row.phase==='PST'?records.some(record=>record.award_type==='championship'):records.some(record=>record.award_type==='mvp');
+  const button=node('button',isTrophy?'🏆':'🏅','season-honor-marker');button.type='button';button.setAttribute('aria-label',`查看 ${row.season} ${row.phase==='PST'?'季后赛':'常规赛'}的 ${records.length} 项荣誉`);
   button.setAttribute('aria-haspopup','dialog');button.addEventListener('click',()=>openSeasonHonors(records,row,button));return button;
 }
 $('closeSeasonHonors').addEventListener('click',()=>$('seasonHonorsDialog').close());
