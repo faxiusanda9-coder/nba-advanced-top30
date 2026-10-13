@@ -5,6 +5,7 @@
     "api/player.js": { "includeFiles": "api/_data/**" }
   },
   "rewrites": [
+    { "source": "/advanced-guide", "destination": "/advanced-guide.html" },
     { "source": "/player/:slug", "destination": "/player.html?slug=:slug" }
   ]
 }

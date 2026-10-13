@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-10-13",
+  "introduction": {
+    "title": "什么是高阶数据？",
+    "paragraphs": [
+      "得分、篮板、助攻记录了比赛中发生的事情。高阶数据从效率、使用情况和模型估算出发，为理解比赛提供另一种观察角度。",
+      "高阶数据应与传统数据、出场时间和比赛环境一起阅读。单个数字只能回答特定问题，无法覆盖球员的全部比赛影响。"
+    ]
+  },
+  "categories": [
+    { "id": "impact", "name": "综合影响力", "metrics": ["BPM", "OBPM", "DBPM", "VORP"] },
+    { "id": "efficiency", "name": "效率指标", "metrics": ["TS_PCT", "WS_48"] },
+    { "id": "usage", "name": "使用情况指标", "metrics": ["USG_PCT"] },
+    { "id": "models", "name": "综合模型", "metrics": ["RAPTOR", "LAKER"] }
+  ],
+  "reading_notes": {
+    "title": "阅读时先确认统计口径",
+    "items": [
+      "确认赛季和比赛类型。常规赛与季后赛的比赛数量、对手和样本规模不同。",
+      "确认效率值与累计值。BPM 等按单位回合衡量；VORP 会随出场时间和比赛数量变化。",
+      "确认来源与模型版本。不同年代可用数据不同，模型之间的数值不能直接视为同一把尺子。"
+    ]
+  },
+  "model_family": {
+    "symbol": "RAPTOR / LAKER",
+    "name": "RAPTOR / LAKER",
+    "short_description": "估算每 100 回合相对联盟平均水平的比赛影响。",
+    "reference_direction": "正值高于模型平均基准；具体模型见各赛季来源。",
+    "guide_key": "RAPTOR"
+  },
+  "metrics": {
+    "BPM": {
+      "symbol": "BPM",
+      "name": "Box Plus/Minus",
+      "short_description": "用技术统计估算每 100 回合相对联盟平均的净得分影响。",
+      "category": "综合影响力",
+      "reference_direction": "0 为平均基准；正值表示模型估算高于平均。",
+      "details": {
+        "meaning": "BPM 结合技术统计与球队表现，估算球员在场时对攻防整体的贡献，以每 100 回合相对联盟平均的分值表达。",
+        "usage": "它试图回答：在单位回合内，这名球员的整体比赛贡献相对平均水平如何？",
+        "limitation": "这是统计模型的估算。技术统计无法完整记录无球牵制、协防和战术配合；小样本及球队环境也会影响结果。"
+      },
+      "sources": [{ "label": "Basketball Reference · BPM 方法", "url": "https://www.basketball-reference.com/about/bpm2.html" }]
+    },
+    "OBPM": {
+      "symbol": "OBPM",
+      "name": "Offensive Box Plus/Minus",
+      "short_description": "BPM 的进攻部分，估算每 100 回合的相对进攻贡献。",
+      "category": "综合影响力",
+      "reference_direction": "正值表示模型估算的进攻贡献高于平均。",
+      "details": {
+        "meaning": "OBPM 是 BPM 的进攻分项，以联盟平均为基准，按每 100 回合表达估算的进攻影响。",
+        "usage": "它试图回答：技术统计所反映的进攻贡献，相对平均水平有多大？",
+        "limitation": "得分、传球等统计不能完整记录所有进攻作用，尤其是无球跑动与牵制。应同时查看使用率和比赛环境。"
+      },
+      "sources": [{ "label": "Sports Reference · BPM 2.0 说明", "url": "https://www.sports-reference.com/blog/2020/02/introducing-bpm-2-0/" }]
+    },
+    "DBPM": {
+      "symbol": "DBPM",
+      "name": "Defensive Box Plus/Minus",
+      "short_description": "BPM 的防守部分，估算每 100 回合的相对防守贡献。",
+      "category": "综合影响力",
+      "reference_direction": "正值表示模型估算的防守贡献高于平均。",
+      "details": {
+        "meaning": "DBPM 是 BPM 的防守分项；在该模型中，BPM 等于 OBPM 与 DBPM 之和。",
+        "usage": "它试图回答：模型分配给防守端的贡献，相对联盟平均水平如何？",
+        "limitation": "技术统计对防守的记录较少，DBPM 的精度尤其有限。它不能完整衡量对位难度、协防选择和防守战术执行。"
+      },
+      "sources": [{ "label": "Sports Reference · BPM 2.0 说明", "url": "https://www.sports-reference.com/blog/2020/02/introducing-bpm-2-0/" }]
+    },
+    "VORP": {
+      "symbol": "VORP",
+      "name": "Value Over Replacement Player",
+      "short_description": "结合 BPM 和出场时间，估算超过替代水平的累计贡献。",
+      "category": "综合影响力",
+      "reference_direction": "0 为替代水平基准；数值受出场时间影响。",
+      "details": {
+        "meaning": "VORP 把 BPM 的效率值结合出场时间与球队比赛数量，衡量相对理论替代球员的累计贡献。Basketball Reference 使用 BPM −2.0 作为替代基准。",
+        "usage": "它试图回答：在这一统计周期内，球员累计提供了多少超过替代水平的贡献？",
+        "limitation": "VORP 的基准是替代水平，区别于 BPM 的联盟平均基准；它继承 BPM 的局限，并受出场时间、赛程长度影响，数值也不能直接读作赢了多少场。"
+      },
+      "sources": [{ "label": "Basketball Reference · VORP 方法", "url": "https://www.basketball-reference.com/about/bpm2.html" }]
+    },
+    "TS_PCT": {
+      "symbol": "TS%",
+      "name": "True Shooting Percentage",
+      "short_description": "把两分、三分和罚球统一衡量的得分效率。",
+      "category": "效率指标",
+      "reference_direction": "数值越高，单位估算出手机会的得分效率越高。",
+      "details": {
+        "meaning": "TS% 将运动战得分与罚球放在同一效率尺度上，常见计算采用得分与估算出手机会之比。",
+        "usage": "它试图回答：把两分、三分和罚球一起考虑时，得分机会被转化得有多有效率？",
+        "limitation": "TS% 不衡量传球、防守或全部失误成本。比较时应同时看出手量、使用率、同季环境及样本规模。"
+      },
+      "sources": [{ "label": "Basketball Reference · TS% 词条", "url": "https://www.basketball-reference.com/about/glossary.html" }]
+    },
+    "WS_48": {
+      "symbol": "WS/48",
+      "name": "Win Shares Per 48 Minutes",
+      "short_description": "把估算的胜利贡献换算为每 48 分钟的效率。",
+      "category": "效率指标",
+      "reference_direction": "数值越高，模型估算的单位时间胜利贡献越多。",
+      "details": {
+        "meaning": "WS/48 将 Win Shares 按出场分钟标准化，用于观察单位时间的估算胜利贡献；Basketball Reference 给出的联盟平均参考约为 0.100。",
+        "usage": "它试图回答：排除出场分钟数量差异后，每 48 分钟的估算贡献如何？",
+        "limitation": "它依赖 Win Shares 对攻防贡献的分配方式，受到球队环境影响。短时间样本可能波动很大，也不代表实际单打 48 分钟能赢多少场。"
+      },
+      "sources": [
+        { "label": "Basketball Reference · WS/48 词条", "url": "https://www.basketball-reference.com/about/glossary.html" },
+        { "label": "Basketball Reference · Win Shares 方法", "url": "https://www.basketball-reference.com/about/ws.html" }
+      ]
+    },
+    "USG_PCT": {
+      "symbol": "USG%",
+      "name": "Usage Percentage",
+      "short_description": "估算球员在场时，以出手、罚球或失误使用的球队回合比例。",
+      "category": "使用情况指标",
+      "reference_direction": "越高表示使用的进攻回合占比越大。",
+      "details": {
+        "meaning": "USG% 衡量球员在场时使用了多少球队进攻机会，主要依据出手、罚球和失误。",
+        "usage": "它试图回答：球队的进攻回合有多大比例由这名球员使用？",
+        "limitation": "使用率不等于持球时间，也不直接衡量效率或组织价值。不同来源的计算细节可能不同，应核对统计口径。"
+      },
+      "sources": [{ "label": "Basketball Reference · USG% 词条", "url": "https://www.basketball-reference.com/about/glossary.html" }]
+    },
+    "RAPTOR": {
+      "symbol": "RAPTOR",
+      "name": "RAPTOR",
+      "full_name": "Robust Algorithm (using) Player Tracking (and) On/Off Ratings",
+      "short_description": "FiveThirtyEight 估算每 100 回合相对平均水平的攻防影响。",
+      "category": "综合模型",
+      "reference_direction": "正值高于模型平均基准；防守分项也以正值为有利方向。",
+      "details": {
+        "meaning": "FiveThirtyEight 的 RAPTOR 融合技术统计、追踪数据及在场／不在场表现，给出进攻、防守与总影响的估算。历史版本使用的数据并不完全相同。",
+        "usage": "它试图回答：结合个人统计与球队在场表现，球员每 100 回合相对平均水平的影响如何？",
+        "limitation": "数据覆盖、阵容搭配和模型假设都会影响结果。本站自动接续还使用 Estimated RAPTOR 和 LAKER，需查看各赛季来源；不同模型没有绝对正确的单一答案。"
+      },
+      "sources": [{ "label": "FiveThirtyEight · RAPTOR 方法", "url": "https://fivethirtyeight.com/features/how-our-raptor-metric-works/" }],
+      "variants": {
+        "estimated": {
+          "symbol": "Estimated RAPTOR",
+          "name": "Estimated RAPTOR",
+          "short_description": "Neil Paine 用技术统计及在场表现估算的 RAPTOR 接续指标。",
+          "reference_direction": "正值高于模型平均基准；与原版 RAPTOR 的方法有区别。",
+          "details": {
+            "meaning": "Estimated RAPTOR 是 Neil Paine 的简化估算模型，以技术统计和在场表现拟合原版 RAPTOR 的攻防评级。",
+            "usage": "它提供每 100 回合相对平均水平的估算影响，用于公开数据条件下的历史与近期记录。",
+            "limitation": "它没有复现原版的全部追踪数据输入。与原版或 LAKER 对照时，需核对来源与版本。"
+          },
+          "sources": [{ "label": "Neil Paine · Estimated RAPTOR 方法", "url": "https://github.com/Neil-Paine-1/NBA-elo/blob/main/README.md" }]
+        }
+      }
+    },
+    "LAKER": {
+      "symbol": "LAKER",
+      "name": "Neil Paine LAKER",
+      "short_description": "Neil Paine 的接续模型，估算每 100 回合的相对攻防影响。",
+      "category": "综合模型",
+      "reference_direction": "正值高于模型平均基准；比较前应确认版本与来源。",
+      "details": {
+        "meaning": "LAKER 是 Neil Paine 继 Estimated RAPTOR 后发布的球员评级模型。本站保留作者公开的进攻、防守和综合值，并逐季标明来源。",
+        "usage": "它试图回答：在作者这一版本的模型中，球员每 100 回合相对平均水平的攻防贡献如何？",
+        "limitation": "名称接续不代表算法和输入完全相同。作者公开赛季页面未详列全部新版本权重，此处不推测公式；与 RAPTOR 等模型比较时应核对版本和样本。"
+      },
+      "sources": [{ "label": "Neil Paine · LAKER 作者说明", "url": "https://neilpaine.substack.com/p/2025-26-nba-elo-forecast-and-player" }]
+    }
+  }
+}

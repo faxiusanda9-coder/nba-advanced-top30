@@ -56,7 +56,7 @@ jobs:
       - name: Build individual player career archives
         run: node scripts/build-player-profiles.mjs
       - name: Verify player search and single-player API
-        run: node --test tests/player-search.test.mjs tests/player-profile.test.mjs
+        run: node --test tests/player-search.test.mjs tests/player-profile.test.mjs tests/metric-explanations.test.mjs
       - name: Commit updated season files
         run: |
           git config user.name "github-actions[bot]"

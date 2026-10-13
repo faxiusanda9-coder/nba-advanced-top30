@@ -1,5 +1,6 @@
 import { metrics, numeric, formatMetric, sortSeasons, metricSource, trendSegments } from './player-profile-core.mjs';
 import { renderHonors, seasonHonorMarker } from './player-honors.js';
+import { createExplanationButton } from './metric-explanations.mjs';
 const $ = id => document.getElementById(id);
 const element = (tag, text, className) => { const node = document.createElement(tag); if (text != null) node.textContent = text; if (className) node.className = className; return node; };
 let player, career, honors, phase = 'REG', tablePhase = 'REG', selectedYear, metricKey = 'BPM', tableGroup = 'basic', sortKey = 'season', sortDirection = 'desc';
@@ -18,7 +19,9 @@ function renderSeason() {
   $('seasonTeam').textContent = teamLabel(row);
   $('seasonStats').replaceChildren(...['PTS','REB','AST','MIN','TS_PCT','USG_PCT','BPM','VORP','WS_48','RAPTOR_PHASE'].map(key => {
     const item = metrics.find(item => item.key === key), tile = element('div',null,'stat-tile');
-    tile.append(element('span',item.label,'stat-label'),element('span',formatMetric(row.stats[key],key),'stat-value'));
+    const label = element('div',null,'stat-label-row'); label.append(element('span',item.label,'stat-label'));
+    const info = createExplanationButton(key,item.label,row.raptor_source?.label); if (info) label.append(info);
+    tile.append(label,element('span',formatMetric(row.stats[key],key),'stat-value'));
     tile.title = numeric(row.stats[key]) == null ? '来源缺失，未用 0 填充' : metricSource(row,key); return tile;
   }));
   $('seasonModel').textContent = `${row.stats.GP ?? '—'} 场 · ${row.raptor_source ? `影响力模型：${row.raptor_source.label}（${phase === 'REG' ? '常规赛' : '季后赛'}）` : '本季缺少分赛制 RAPTOR / LAKER，未使用共享赛季评级替代。'}`;
@@ -51,7 +54,9 @@ function renderTable() {
     if (!['team','model'].includes(column.key)) {
       th.setAttribute('aria-sort',sortKey === column.key ? sortDirection === 'asc' ? 'ascending' : 'descending' : 'none');
       const button = element('button',`${column.label}${sortKey === column.key ? sortDirection === 'asc' ? ' ↑' : ' ↓' : ''}`);
-      button.addEventListener('click',() => { sortDirection = sortKey === column.key && sortDirection === 'desc' ? 'asc' : 'desc'; sortKey=column.key; renderTable(); }); th.append(button);
+      button.addEventListener('click',() => { sortDirection = sortKey === column.key && sortDirection === 'desc' ? 'asc' : 'desc'; sortKey=column.key; renderTable(); });
+      const info = createExplanationButton(column.key,column.label);
+      if (info) { const header=element('div',null,'metric-header');header.append(button,info);th.append(header); } else th.append(button);
     } else th.textContent = column.label;
     tr.append(th);
   }
