@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "basis": "Archive-based popularity proxy; not measured live search traffic",
+  "weights": {
+    "career_vorp_log": 20,
+    "career_ws_log": 10,
+    "peak_bpm": 6,
+    "peak_per_above_average": 1.2,
+    "playoff_vorp_log": 24,
+    "playoff_ws_log": 12,
+    "recent_activity": 48,
+    "recent_bpm": 3,
+    "recent_per_above_average": 1.5
+  },
+  "recency_factors": [1, 0.55, 0.2],
+  "peak_min_games": 30,
+  "peak_min_minutes": 20,
+  "recent_min_games": 20,
+  "recent_min_minutes": 15
+}

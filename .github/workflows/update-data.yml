@@ -6,6 +6,7 @@ on:
     paths-ignore:
       - 'data/**'
       - 'sources/**'
+      - 'api/_data/**'
   workflow_dispatch:
     inputs:
       backfill:
@@ -46,11 +47,15 @@ jobs:
         run: node scripts/add-bbref-playoffs.mjs
       - name: Merge recent Basketball Reference playoff metrics from public API or saved snapshots
         run: node scripts/add-bbref-recent-playoffs.mjs --refresh
+      - name: Build player database and lightweight search index
+        run: node scripts/build-player-index.mjs
+      - name: Verify player search and single-player API
+        run: node --test tests/player-search.test.mjs
       - name: Commit updated season files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/*.json sources/bbref-playoffs/*.json sources/laker/*.json
+          git add data/*.json sources/bbref-playoffs/*.json sources/laker/*.json api/_data/players.json
           if git diff --cached --quiet; then
             echo "No season data changes."
           else

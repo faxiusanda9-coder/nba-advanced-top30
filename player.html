@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>球员主页 · NBA 高阶数据</title>
+<link rel="stylesheet" href="/assets/player-search.css">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0b1017;color:#edf2f8;font:15px Arial,"Microsoft YaHei",sans-serif}
+main{max-width:1200px;margin:auto;padding:32px 18px}a{color:#a5f0c5}h1{margin:8px 0;font-size:36px}
+.site-intro p{color:#9aa9bb}.back-link{text-decoration:none;display:inline-block;padding:8px 0}
+.profile-card{margin-top:34px;padding:32px;background:#111923;border:1px solid #273342;border-radius:14px;min-height:280px}
+.profile-heading{display:flex;gap:20px;align-items:center}.profile-avatar{position:relative;display:grid;place-items:center;width:90px;height:90px;flex:none;border-radius:50%;overflow:hidden;background:#263547;color:#a5f0c5;font-size:25px;font-weight:bold}
+.profile-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.profile-eyebrow{color:#56d4ff;font-size:12px;letter-spacing:2px;margin-bottom:9px}
+.profile-name{font-size:30px;margin:0;overflow-wrap:anywhere}.profile-placeholder{border-top:1px solid #273342;margin-top:28px;padding-top:24px;color:#9aa9bb;line-height:1.8}
+.profile-state{color:#aab8c8;line-height:1.8}.profile-status{color:#9aa9bb;margin-top:18px}[hidden]{display:none!important}
+@media(max-width:600px){main{padding:22px 12px}h1{font-size:29px}.profile-card{padding:22px}.profile-name{font-size:24px}.profile-avatar{width:68px;height:68px}}
+</style>
+</head>
+<body>
+<main>
+  <header class="site-header">
+    <div class="site-intro">
+      <a class="back-link" href="/">← 返回联盟排行榜</a>
+      <h1>球员主页</h1>
+      <p>每一位球员，都有自己的篮球故事。</p>
+    </div>
+    <player-search></player-search>
+  </header>
+  <section class="profile-card" aria-labelledby="profileName" aria-busy="true">
+    <div id="profileState" class="profile-state" role="status">正在打开球员主页…</div>
+    <div id="profileContent" hidden>
+      <div class="profile-heading">
+        <div id="profileAvatar" class="profile-avatar" aria-hidden="true"></div>
+        <div><div class="profile-eyebrow">NBA PLAYER</div><h2 id="profileName" class="profile-name"></h2></div>
+      </div>
+      <div class="profile-placeholder">球员资料、生涯数据和赛季表现将在这里陆续呈现。</div>
+    </div>
+  </section>
+</main>
+<script type="module" src="/assets/player-search.js"></script>
+<script type="module" src="/assets/player-profile.js"></script>
+</body>
+</html>
