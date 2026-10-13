@@ -15,7 +15,7 @@ function raptor(row, archive, phase) {
     : archive.endingYear <= 2013 ? 'FiveThirtyEight RAPTOR · 箱分+正则化正负值版' : 'FiveThirtyEight RAPTOR · 追踪数据版';
   const models = [
     ['RAPTOR', officialLabel, 'https://github.com/fivethirtyeight/data/blob/master/nba-raptor/historical_RAPTOR_by_team.csv', archive.supplementalSources?.raptor?.includes('historical_RAPTOR_by_team')],
-    ['EST_RAPTOR', 'Neil Paine Estimated RAPTOR', 'https://github.com/Neil-Paine-1/NBA-elo/blob/main/nba-estimated-raptor.csv', Boolean(archive.raptorSources?.estimated)],
+    ['EST_RAPTOR', 'Neil Paine Estimated RAPTOR', archive.raptorSources?.estimatedByPhase?.[phase]?.source || 'https://github.com/Neil-Paine-1/NBA-elo/blob/main/nba-estimated-raptor.csv', Boolean(archive.raptorSources?.estimated)],
     ['LAKER', 'Neil Paine LAKER', archive.raptorSources?.laker?.[phase]?.source, Boolean(archive.raptorSources?.laker?.[phase])]
   ];
   for (const [prefix,label,url,valid] of models) {

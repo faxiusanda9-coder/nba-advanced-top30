@@ -39,6 +39,8 @@ jobs:
           fi
       - name: Merge FiveThirtyEight and Estimated RAPTOR ratings
         run: node scripts/add-raptor.mjs
+      - name: Merge final 2024-25 playoff Estimated RAPTOR leaderboard or saved snapshot
+        run: node scripts/add-estimated-raptor-playoffs.mjs --refresh
       - name: Merge per-game basic statistics by NBA player ID
         run: node scripts/add-player-basic.mjs --refresh
       - name: Merge 2025-26 LAKER successor ratings from public leaderboards or saved snapshots
@@ -59,7 +61,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/*.json sources/bbref-playoffs/*.json sources/laker/*.json sources/player-basic/*.json api/_data/players.json
+          git add data/*.json sources/bbref-playoffs/*.json sources/laker/*.json sources/estimated-raptor/*.json sources/player-basic/*.json api/_data/players.json
           if git diff --cached --quiet; then
             echo "No season data changes."
           else

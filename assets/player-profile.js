@@ -21,11 +21,9 @@ function renderSeason() {
     tile.append(element('span',item.label,'stat-label'),element('span',formatMetric(row.stats[key],key),'stat-value'));
     tile.title = numeric(row.stats[key]) == null ? '来源缺失，未用 0 填充' : metricSource(row,key); return tile;
   }));
-  const missing2025PlayoffRaptor = row.ending_year === 2025 && phase === 'PST' && !row.raptor_source;
-  $('seasonModel').textContent = `${row.stats.GP ?? '—'} 场 · ${row.raptor_source ? `影响力模型：${row.raptor_source.label}（${phase === 'REG' ? '常规赛' : '季后赛'}）` : missing2025PlayoffRaptor ? '2024–25 季后赛 RAPTOR 暂无可核验的完整公开数据；作者公开 CSV 仅收录该季常规赛，因此保留空值。' : '本季缺少分赛制 RAPTOR / LAKER，未使用共享赛季评级替代。'}`;
+  $('seasonModel').textContent = `${row.stats.GP ?? '—'} 场 · ${row.raptor_source ? `影响力模型：${row.raptor_source.label}（${phase === 'REG' ? '常规赛' : '季后赛'}）` : '本季缺少分赛制 RAPTOR / LAKER，未使用共享赛季评级替代。'}`;
   const sources = [['基础及 NBA 高阶统计 · NBA Stats / SportsDataverse',row.sources.nba], ['BPM、WS、VORP 等 · Basketball Reference 衍生档案',row.sources.basketball_reference]];
   if (row.raptor_source) sources.push([row.raptor_source.label,row.raptor_source.url]);
-  if (missing2025PlayoffRaptor) sources.push(['Estimated RAPTOR 公开 CSV（2025 年仅有常规赛记录）','https://github.com/Neil-Paine-1/NBA-elo/blob/main/nba-estimated-raptor.csv']);
   $('seasonSources').replaceChildren(...sources.map(([label,url]) => { const li=element('li'); li.append(sourceLink(label,url)); return li; }));
 }
 function selectYear(year) { selectedYear = year; renderSeason(); renderTable(); renderChart(); }
