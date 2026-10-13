@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { metrics, sortSeasons, trendSegments, formatMetric } from '../assets/player-profile-core.mjs';
 import { applyBasic, extractBasic, parseCsv } from '../scripts/lib/player-basic.mjs';
+import { applySnapshot, validateSnapshot } from '../scripts/add-estimated-raptor-playoffs.mjs';
 const root=new URL('../',import.meta.url);
 const read=async file=>JSON.parse(await readFile(new URL(file,root),'utf8'));
 const handler=createRequire(import.meta.url)('../api/player.js');
@@ -48,7 +49,7 @@ test('Jordan, LeBron, Curry and a role player have independent profiles; comebac
   assert.equal(jordan.coverage.complete_career_verified,false);
   assert.equal(trendSegments(jordan.seasons.REG,'BPM').length,2);
   const curry=(await api('stephen-curry')).body.career;
-  assert.equal(curry.seasons.PST.find(row=>row.ending_year===2025).stats.RAPTOR_PHASE,null);
+  assert.equal(curry.seasons.PST.find(row=>row.ending_year===2025).stats.RAPTOR_PHASE,2.079392342);
   const lebron=(await api('lebron-james')).body.career;
   assert.equal(lebron.seasons.REG.at(-1).raptor_source.label,'Neil Paine LAKER');
   assert.equal(lebron.seasons.REG.at(-1).stats.PTS,20.9);
@@ -56,6 +57,34 @@ test('Jordan, LeBron, Curry and a role player have independent profiles; comebac
   const database=await read('api/_data/players.json');
   const ewings=database.players.filter(p=>p.full_name==='Patrick Ewing');
   assert.equal(ewings.length,2);assert.notEqual((await api(ewings[0].slug)).body.career.player_id,(await api(ewings[1].slug)).body.career.player_id);
+});
+
+test('2024-25 playoff RAPTOR keeps the complete final leaderboard, stable IDs and separate regular-season stats',async()=>{
+  const snapshot=await read('sources/estimated-raptor/2025-PST.json');
+  const archive=await read('data/2025.json');
+  const regular=structuredClone(archive.rows.REG), original=structuredClone(archive.rows.PST);
+  const target=structuredClone(archive);
+  for(const row of target.rows.PST)for(const key of ['EST_RAPTOR','EST_RAPTOR_OFF','EST_RAPTOR_DEF','EST_RAPTOR_WAR'])delete row[key];
+  assert.equal(applySnapshot(target,snapshot),219);assert.deepEqual(target.rows.REG,regular);
+  for(const source of snapshot.records){
+    const row=target.rows.PST.find(row=>String(row.playerId)===source.player_id);
+    const profile=await read(`api/_data/profiles/${source.player_id}.json`);
+    const season=profile.seasons.PST.find(row=>row.ending_year===2025);
+    assert.equal(row.EST_RAPTOR,source.total);assert.equal(row.EST_RAPTOR_OFF,source.offense);
+    assert.equal(row.EST_RAPTOR_DEF,source.defense);assert.equal(row.EST_RAPTOR_WAR,source.war);
+    assert.equal(season.stats.RAPTOR_PHASE,source.total);assert.equal(season.raptor_source.url,snapshot.chartUrl);
+    const before=original.find(row=>String(row.playerId)===source.player_id);
+    for(const key of ['GP','MIN','PTS','BPM','VORP'])assert.equal(row[key],before[key]);
+  }
+  assert.equal(snapshot.records.find(row=>row.player_id==='1628983').total,4.806357679);
+  assert.equal(snapshot.records.find(row=>row.player_id==='2544').total,4.927340952);
+  const bad=structuredClone(snapshot);bad.records[0].player_id=bad.records[1].player_id;
+  assert.throws(()=>validateSnapshot(bad),/记录异常/);
+  const partial=structuredClone(snapshot);partial.records.find(row=>row.player_id==='1628983').games=22;
+  assert.throws(()=>validateSnapshot(partial),/完整 23 场/);
+  const switched=structuredClone(archive);switched.rows.PST[0].GP++;
+  assert.throws(()=>applySnapshot(switched,snapshot),/不一致/);
+  assert.deepEqual(switched.rows.PST[0].EST_RAPTOR,archive.rows.PST[0].EST_RAPTOR);
 });
 
 test('LeBron 2019-20 regular season and playoffs retain distinct games, averages, advanced stats and honors',async()=>{
