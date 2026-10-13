@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { extractBasic, applyBasic } from './lib/player-basic.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outputDir = path.join(root, 'data');
@@ -145,6 +146,9 @@ async function writeSeason(endingYear) {
     }
   };
   if (!data.rows.REG.length) throw new Error(`${endingYear} 未找到常规赛高级数据，未写入文件`);
+  applyBasic(data, extractBasic(rows, endingYear));
+  data.basicSource = { source: `${releaseBase}/player_season_stats_${endingYear}.csv`, units: 'per_game',
+    join: 'NBA player_id + season + phase; verified GP/MIN' };
   await writeFile(path.join(outputDir, `${endingYear}.json`), `${JSON.stringify(data)}\n`, 'utf8');
   return { endingYear, regular: data.rows.REG.length, playoffs: data.rows.PST.length };
 }

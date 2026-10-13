@@ -39,6 +39,8 @@ jobs:
           fi
       - name: Merge FiveThirtyEight and Estimated RAPTOR ratings
         run: node scripts/add-raptor.mjs
+      - name: Merge per-game basic statistics by NBA player ID
+        run: node scripts/add-player-basic.mjs --refresh
       - name: Merge 2025-26 LAKER successor ratings from public leaderboards or saved snapshots
         run: node scripts/add-laker.mjs --refresh
       - name: Merge Basketball Reference regular-season advanced metrics
@@ -49,13 +51,15 @@ jobs:
         run: node scripts/add-bbref-recent-playoffs.mjs --refresh
       - name: Build player database and lightweight search index
         run: node scripts/build-player-index.mjs
+      - name: Build individual player career archives
+        run: node scripts/build-player-profiles.mjs
       - name: Verify player search and single-player API
-        run: node --test tests/player-search.test.mjs
+        run: node --test tests/player-search.test.mjs tests/player-profile.test.mjs
       - name: Commit updated season files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/*.json sources/bbref-playoffs/*.json sources/laker/*.json api/_data/players.json
+          git add data/*.json sources/bbref-playoffs/*.json sources/laker/*.json sources/player-basic/*.json api/_data/players.json
           if git diff --cached --quiet; then
             echo "No season data changes."
           else
