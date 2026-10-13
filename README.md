@@ -47,10 +47,16 @@ WS、VORP 是累计贡献值，比较时受出场时间影响；WS/48、BPM 等�
 | `config/player-popularity.json` | 可维护的评分权重、版本和近期活跃系数 |
 | `assets/player-search-core.mjs` | 名称标准化、部分拼写、关键词、轻量拼写容错和排序 |
 | `assets/player-search.js` / `player-search.css` | 首页及球员主页共用的下拉搜索组件，支持上下键、回车、Esc 和手机布局 |
-| `player.html` / `assets/player-profile.js` | `/player/:slug` 基础主页，目前只显示球员名、头像与内容占位 |
-| `api/player.js` | 按 slug 读取一个球员，返回 400/404/405 等明确状态 |
+| `player.html` / `assets/player-profile.js` / `player-profile.css` | `/player/:slug` 共用档案模板、赛制切换、赛季速览、趋势图及可排序表格 |
+| `assets/player-profile-core.mjs` | 指标单位、格式化、排序及缺失/模型切换处的图表断点规则 |
+| `scripts/add-player-basic.mjs` / `scripts/lib/player-basic.mjs` | 按 NBA ID、赛季和赛制补入 PTS、REB、AST 等场均数据，核对 GP/MIN |
+| `sources/player-basic/{1997..2026}.json` | 同一 NBA Stats / SportsDataverse CSV 提取的精简基础统计快照；无网络也能构建 |
+| `scripts/build-player-profiles.mjs` | 从赛季档案生成每个 NBA ID 的独立 JSON；生成文件不提交到 Git |
+| `api/_data/profiles/{player_id}.json` | 构建时生成的后端球员赛季档案，不发布到静态目录 |
+| `api/player.js` | 按 slug 返回一个球员及其 REG/PST 生涯记录，返回 400/404/405 等明确状态 |
 | `scripts/build-site.mjs` | 仅把页面、浏览器资源与公开索引/赛季数据输出到 `public/` |
 | `tests/player-search.test.mjs` | 索引覆盖、同名去重、搜索排序、拼写与 API 验证 |
+| `tests/player-profile.test.mjs` | 全档案值一致性、四位球员、转队合计、复出断点、分赛制模型、排序及缺失值验证 |
 
 `index.html`、`vercel.json` 和更新工作流同步接入搜索与主页路由；`.gitignore` 排除生成的 `public/` 目录。排行榜原有脚本、RAPTOR 自动接续和生涯对比行为保持原样。
 
@@ -92,11 +98,31 @@ WS、VORP 是累计贡献值，比较时受出场时间影响；WS/48、BPM 等�
 ### 自动更新与扩展
 
 ```sh
+node scripts/add-player-basic.mjs
 node scripts/build-player-index.mjs
-node --test tests/player-search.test.mjs
+node scripts/build-player-profiles.mjs
+node --test tests/player-search.test.mjs tests/player-profile.test.mjs
 node scripts/build-site.mjs
 ```
 
 GitHub Actions 在赛季指标更新后重建并验证索引，再一起提交；Vercel 部署时也重建索引和静态输出。生成数据无变化时不会因时间戳制造额外提交。
 
-后续在 `api/player.js` 中按 `player_id` 加载独立资料或赛季数据，在 `player.html` 中扩展资料卡与生涯模块即可；搜索组件继续只使用轻量索引。主页路由示例：`/player/lebron-james`，单球员接口：`/api/player?slug=lebron-james`。
+球员主页现在通过 `api/player.js` 按稳定 NBA `player_id` 读取独立档案，前端只获取所选球员，不下载全联盟详细数据或 30 个全量赛季。搜索组件、排序和入口保持不变。主页路由示例：`/player/lebron-james`，单球员接口：`/api/player?slug=lebron-james`。
+
+### 档案数据与口径
+
+- 常规赛、季后赛保存在 `career.seasons.REG` / `PST`，各自包含 `season`、`ending_year`、`phase`、`player_id`、`registered_team`、`team_count`、`aggregation`、`stats`、`raptor_source`、`sources`。每条数据只有一个球员、一个赛季、一个赛制。
+- PTS、REB、AST、STL、BLK、TOV 来自同一 SportsDataverse CSV 的 `base/pergame` 记录，按 ID 合并，核对场次及分钟；不根据高阶指标反推。快照包含原来源 URL 与场均单位。`--refresh` 更新快照，失败回退已保存文件；场次/分钟对不上时留空。
+- MIN 已是场均分钟，不再除以 GP。TS%、USG%、eFG%、REB%、AST% 已是 0–100 百分数，不重复乘 100。WS、VORP、WAR 是累计值；WS/48 为每 48 分钟值。
+- 高阶统计复用现有 NBA Stats 和 Basketball Reference 衍生数据。新页面只使用分赛制 FiveThirtyEight `historical_RAPTOR_by_team` 评级（旧档案字段 `RAPTOR*`），然后接续 Estimated RAPTOR、LAKER；不使用共享赛季评级 `RAPTOR_538*`。因此个别值可能与原排行榜的自动接续口径不同。各模型逐季标来源，切换处断线，不声称模型相同。FiveThirtyEight 自身的 1977–2000 箱分版、2001–2013 箱分+正则化正负值版、2014 起追踪数据版也分别标注并断线。原排行榜逻辑不变。
+- 转队球员的数据已经是全季合计，不把同季合计和球队分段重复累加。`TEAM_COUNT > 1` 显示“多队合计”，登记队不是完整转会名单；现有来源没有逐队分段记录，未虚构球队历史。
+- 全部球员都显示 `observed_archive` 覆盖范围、`complete_career_verified: false`。位置未在来源提供时显示“来源未提供”；不推测退役/在役，也不把缺席年标成统计为零。
+- 2024–25 季后赛仍没有接续 RAPTOR；其余未匹配的指标显示「—」。不引入 EPM、RAPM、DPM、每日 GmSc、逐场 Box Score 或 AI 能力评分。
+
+### 手机显示与后续扩展
+
+页面支持触屏选点、指标切换、表头排序及表格左右滚动；赛季列固定在左侧。没有季后赛、只有单季记录、网络错误和头像失败都有基础状态。图表不使用第三方库，数值点可通过键盘操作。
+
+后续补充位置、完整生涯年份或逐队分段时，将有来源的字段接入构建步骤；详细字段仍放在独立球员文件中，不扩大搜索索引。走势图指标列表与单位集中于 `player-profile-core.mjs`。
+
+验收记录见 [球员档案实现及验收](docs/player-profiles.md)。

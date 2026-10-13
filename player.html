@@ -1,44 +1,42 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>球员主页 · NBA 高阶数据</title>
-<link rel="stylesheet" href="/assets/player-search.css">
-<style>
-*{box-sizing:border-box}body{margin:0;background:#0b1017;color:#edf2f8;font:15px Arial,"Microsoft YaHei",sans-serif}
-main{max-width:1200px;margin:auto;padding:32px 18px}a{color:#a5f0c5}h1{margin:8px 0;font-size:36px}
-.site-intro p{color:#9aa9bb}.back-link{text-decoration:none;display:inline-block;padding:8px 0}
-.profile-card{margin-top:34px;padding:32px;background:#111923;border:1px solid #273342;border-radius:14px;min-height:280px}
-.profile-heading{display:flex;gap:20px;align-items:center}.profile-avatar{position:relative;display:grid;place-items:center;width:90px;height:90px;flex:none;border-radius:50%;overflow:hidden;background:#263547;color:#a5f0c5;font-size:25px;font-weight:bold}
-.profile-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.profile-eyebrow{color:#56d4ff;font-size:12px;letter-spacing:2px;margin-bottom:9px}
-.profile-name{font-size:30px;margin:0;overflow-wrap:anywhere}.profile-placeholder{border-top:1px solid #273342;margin-top:28px;padding-top:24px;color:#9aa9bb;line-height:1.8}
-.profile-state{color:#aab8c8;line-height:1.8}.profile-status{color:#9aa9bb;margin-top:18px}[hidden]{display:none!important}
-@media(max-width:600px){main{padding:22px 12px}h1{font-size:29px}.profile-card{padding:22px}.profile-name{font-size:24px}.profile-avatar{width:68px;height:68px}}
-</style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b1017">
+<title>球员档案 · NBA 高阶数据</title>
+<link rel="stylesheet" href="/assets/player-search.css"><link rel="stylesheet" href="/assets/player-profile.css">
 </head>
-<body>
-<main>
-  <header class="site-header">
-    <div class="site-intro">
-      <a class="back-link" href="/">← 返回联盟排行榜</a>
-      <h1>球员主页</h1>
-      <p>每一位球员，都有自己的篮球故事。</p>
-    </div>
-    <player-search></player-search>
-  </header>
-  <section class="profile-card" aria-labelledby="profileName" aria-busy="true">
-    <div id="profileState" class="profile-state" role="status">正在打开球员主页…</div>
+<body><main>
+  <header class="site-header"><div class="site-intro"><a class="back-link" href="/">← 返回联盟排行榜</a><h1>球员档案</h1><p>逐季回看表现，让数字串起生涯。</p></div><player-search></player-search></header>
+  <section class="profile-card hero" aria-labelledby="profileName" aria-busy="true">
+    <div id="profileState" class="profile-state" role="status">正在读取球员历史档案…</div><button id="retryProfile" hidden>重新加载</button>
     <div id="profileContent" hidden>
-      <div class="profile-heading">
-        <div id="profileAvatar" class="profile-avatar" aria-hidden="true"></div>
-        <div><div class="profile-eyebrow">NBA PLAYER</div><h2 id="profileName" class="profile-name"></h2></div>
-      </div>
-      <div class="profile-placeholder">球员资料、生涯数据和赛季表现将在这里陆续呈现。</div>
+      <div class="profile-heading"><div id="profileAvatar" class="profile-avatar" aria-hidden="true"></div><div class="profile-identity"><div class="eyebrow">NBA PLAYER ARCHIVE</div><h2 id="profileName"></h2><p id="playerId" class="muted"></p></div></div>
+      <dl id="profileFacts" class="profile-facts"></dl>
+      <p class="coverage-note">本站覆盖 1996–97 至 2025–26。下列年份是档案中实际出现的赛季，完整生涯尚未核验；早期生涯可能不在覆盖期内。缺失值以「—」表示，不当作 0。</p>
     </div>
   </section>
-</main>
-<script type="module" src="/assets/player-search.js"></script>
-<script type="module" src="/assets/player-profile.js"></script>
-</body>
-</html>
+  <div id="careerContent" hidden>
+    <section class="career-toolbar" aria-label="赛制和赛季选择">
+      <div class="segmented" role="group" aria-label="统计赛制"><button data-phase="REG" aria-pressed="true">常规赛</button><button data-phase="PST" aria-pressed="false">季后赛</button></div>
+      <label>查看赛季 <select id="profileSeason"></select></label><span id="phaseCount" class="muted" role="status"></span>
+    </section>
+    <div id="phaseEmpty" class="profile-card muted" hidden>这位球员在本站覆盖期内没有该赛制的统计记录。</div>
+    <div id="phaseContent">
+      <section class="profile-card season-card" aria-labelledby="seasonTitle">
+        <div class="section-heading"><h2 id="seasonTitle">赛季速览</h2><span id="seasonTeam" class="tag"></span></div><div id="seasonStats" class="stat-grid"></div><p id="seasonModel" class="muted"></p>
+        <details class="source-details"><summary>本季数据来源与统计口径</summary><ul id="seasonSources"></ul><p>PTS、REB、AST 等及分钟为场均；WS、VORP、WAR 为本赛制赛季累计值。多队球员仅计一次赛季合计，登记球队不等于完整转会名单。</p></details>
+      </section>
+      <section class="profile-card trend-card" aria-labelledby="trendTitle">
+        <div class="section-heading"><div><div class="eyebrow">CAREER TREND</div><h2 id="trendTitle">生涯高阶趋势</h2></div><label>趋势指标 <select id="profileMetric"></select></label></div>
+        <p class="muted chart-help">点击或轻触圆点查看该赛季。缺失赛季、缺失值及模型切换处保留断点。</p><div id="trendChart" class="chart-container"></div><p id="chartReadout" class="chart-readout" role="status"></p><div id="chartModels" class="model-tags"></div>
+      </section>
+      <section class="profile-card table-card" aria-labelledby="tableTitle">
+        <div class="section-heading"><div><div class="eyebrow">SEASON BY SEASON</div><h2 id="tableTitle">逐赛季统计</h2></div><div class="segmented" role="group" aria-label="数据表类别"><button data-table="basic" aria-pressed="true">基础统计</button><button data-table="advanced" aria-pressed="false">高阶统计</button></div></div>
+        <p class="muted">点表头排序；手机左右滑动查看。点击赛季返回速览。</p>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="可横向滚动的赛季数据表"><table id="seasonTable"><caption class="sr-only">球员逐赛季统计</caption><thead></thead><tbody></tbody></table></div>
+      </section>
+    </div>
+    <section class="profile-card history-card"><h2>球队与档案年份</h2><p class="muted">按档案登记球队汇总；同季转队显示合计标识，不拆造球队分段数据。缺席年份不补零。</p><div id="teamHistory" class="history-list"></div></section>
+  </div>
+  <footer>NBA Advanced · 历史档案 1996–2026 · 不同高阶模型的数值不能视为同一统计口径。</footer>
+</main><script type="module" src="/assets/player-search.js"></script><script type="module" src="/assets/player-profile.js"></script></body></html>

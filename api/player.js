@@ -28,7 +28,10 @@ module.exports = async function handler(req, res) {
     if (req.method === 'HEAD') return res.status(200).end();
     // Return only the selected player. Search never downloads this database.
     const { popularity_components, ...profile } = player;
-    return res.status(200).json({ player: profile });
+    if (!/^\d+$/.test(String(player.player_id))) throw new Error('Invalid player ID');
+    const career = JSON.parse(await fs.readFile(path.join(process.cwd(), 'api', '_data', 'profiles', `${player.player_id}.json`), 'utf8'));
+    if (career.player_id !== player.player_id) throw new Error('Player ID mismatch');
+    return res.status(200).json({ player: profile, career });
   } catch (error) {
     console.error('Player database could not be read');
     return res.status(503).json({ error: 'Player profile temporarily unavailable' });
