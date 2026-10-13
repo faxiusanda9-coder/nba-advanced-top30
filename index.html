@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NBA 高阶数据 TOP 30</title>
+<link rel="stylesheet" href="/assets/player-search.css">
 <style>
 *{box-sizing:border-box}body{margin:0;background:#0b1017;color:#edf2f8;font:15px Arial,"Microsoft YaHei",sans-serif}
 main{max-width:1200px;margin:auto;padding:32px 18px}h1{margin:0 0 8px;font-size:36px}p,.note{color:#9aa9bb}
@@ -51,8 +52,13 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
 </head>
 <body>
 <main>
-  <h1>NBA 高阶数据 TOP 30</h1>
-  <p>查看联盟单季排名，或比较球员跨赛季的高阶数据变化。</p>
+  <header class="site-header">
+    <div class="site-intro">
+      <h1>NBA 高阶数据 TOP 30</h1>
+      <p>查看联盟单季排名，或比较球员跨赛季的高阶数据变化。</p>
+    </div>
+    <player-search></player-search>
+  </header>
 
   <div class="view-tabs" role="tablist" aria-label="数据视图">
     <button id="rankTab" class="active" type="button" role="tab" aria-selected="true">联盟 TOP 30</button>
@@ -585,5 +591,6 @@ $('season').addEventListener('change',load);
 $('type').addEventListener('change',load);
 load();
 </script>
+<script type="module" src="/assets/player-search.js"></script>
 </body>
 </html>

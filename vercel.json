@@ -1,1 +1,10 @@
-{}
+{
+  "buildCommand": "node scripts/build-player-index.mjs && node scripts/build-site.mjs",
+  "outputDirectory": "public",
+  "functions": {
+    "api/player.js": { "includeFiles": "api/_data/players.json" }
+  },
+  "rewrites": [
+    { "source": "/player/:slug", "destination": "/player.html?slug=:slug" }
+  ]
+}
