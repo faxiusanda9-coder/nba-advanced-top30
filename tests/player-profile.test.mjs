@@ -58,6 +58,21 @@ test('Jordan, LeBron, Curry and a role player have independent profiles; comebac
   assert.equal(ewings.length,2);assert.notEqual((await api(ewings[0].slug)).body.career.player_id,(await api(ewings[1].slug)).body.career.player_id);
 });
 
+test('LeBron 2019-20 regular season and playoffs retain distinct games, averages, advanced stats and honors',async()=>{
+  const result=await api('lebron-james'),{career,honors}=result.body;
+  const regular=career.seasons.REG.find(row=>row.ending_year===2020);
+  const playoffs=career.seasons.PST.find(row=>row.ending_year===2020);
+  assert.equal(regular.player_id,'2544');assert.equal(playoffs.player_id,'2544');
+  assert.equal(regular.phase,'REG');assert.equal(playoffs.phase,'PST');
+  assert.equal(regular.stats.GP,67);assert.equal(playoffs.stats.GP,21);
+  assert.equal(regular.stats.PTS,25.3);assert.equal(playoffs.stats.PTS,27.6);
+  assert.equal(regular.stats.BPM,8.4);assert.equal(playoffs.stats.BPM,10.7);
+  const regAwards=honors.records.filter(row=>row.award_year===2020&&row.phase==='REG').map(row=>row.award_type);
+  const pstAwards=honors.records.filter(row=>row.award_year===2020&&row.phase==='PST').map(row=>row.award_type);
+  assert(regAwards.includes('all_nba_1'));assert(!regAwards.includes('championship'));assert(!regAwards.includes('finals_mvp'));
+  assert(pstAwards.includes('championship'));assert(pstAwards.includes('finals_mvp'));assert(!pstAwards.includes('mvp'));
+});
+
 test('sorting, missing values and chart discontinuities do not fabricate data',()=>{
   const make=(year,value,source='A')=>({ending_year:year,stats:{BPM:value,RAPTOR_PHASE:value},raptor_source:{label:source}});
   const list=[make(1997,-1),make(1998,0),make(1999,null),make(2000,2),make(2001,3,'B')];
