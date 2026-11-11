@@ -39,6 +39,8 @@ try {
   const evaluate=async expression=>(await send('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true})).result.value;
   await send('Page.enable');await send('Runtime.enable');
   const scenarios=[
+    {name:'home-320',width:320,height:844,url:'http://127.0.0.1:4173/',kind:'home'},
+    {name:'home-390',width:390,height:844,url:'http://127.0.0.1:4173/',kind:'home'},
     {name:'daily-320',width:320,height:844,url:'http://127.0.0.1:4173/daily-games?date=2026-11-11',kind:'daily'},
     {name:'daily-390',width:390,height:844,url:'http://127.0.0.1:4173/daily-games?date=2026-11-11',kind:'daily'},
     {name:'game-320',width:320,height:844,url:'http://127.0.0.1:4173/game/0022600211',kind:'game'},
@@ -54,7 +56,9 @@ try {
     for(let attempt=0;attempt<60;attempt++){
       await sleep(100);
       const ready=await evaluate(`document.readyState==='complete' && ${scenario.kind==='daily'
-        ? "document.querySelectorAll('.game-card').length>0" : "document.querySelectorAll('#playerTable tbody tr').length>0"}`);
+        ? "document.querySelectorAll('.game-card').length>0" : scenario.kind==='game'
+          ? "document.querySelectorAll('#playerTable tbody tr').length>0"
+          : "document.querySelectorAll('#rows tr').length>1"}`);
       if(ready)break;
       if(attempt===59)throw new Error(`${scenario.name}: page did not finish loading`);
     }
@@ -64,6 +68,9 @@ try {
       players:document.querySelectorAll('#playerTable tbody tr').length,
       loadedImages:[...document.images].filter(img=>img.complete&&img.naturalWidth>0).length,
       chartRows:document.querySelectorAll('.chart-row').length,
+      navItems:document.querySelectorAll('.view-tabs > *, .section-tabs > *').length,
+      basicHeaders:document.querySelectorAll('.ranking-table th.basic-stat').length,
+      highlightCards:document.querySelectorAll('.basic-highlight').length,
       tableScroll:document.querySelector('.game-table-scroll')?.scrollWidth,
       tableViewport:document.querySelector('.game-table-scroll')?.clientWidth,
       chartOverlap:[...document.querySelectorAll('.chart-row')].some(row=>{
@@ -90,8 +97,11 @@ try {
     }
     report.push({scenario:scenario.name,...metrics});
     if(metrics.width!==scenario.width || metrics.documentWidth>scenario.width+1 || metrics.bodyWidth>scenario.width+1
-        || metrics.loadedImages<2 || metrics.chartOverlap || (scenario.kind==='daily'&&metrics.cards!==6)
-        || (scenario.kind==='game'&&(metrics.players<10 || metrics.allChartRows!==metrics.players || metrics.pointsSorted!=='descending')))
+        || (scenario.kind!=='home'&&metrics.loadedImages<2) || metrics.chartOverlap
+        || (scenario.kind==='home'&&(metrics.navItems!==3||metrics.basicHeaders!==6))
+        || (scenario.kind==='daily'&&(metrics.cards!==6||metrics.navItems!==3))
+        || (scenario.kind==='game'&&(metrics.players<10 || metrics.highlightCards!==6 ||
+          metrics.allChartRows!==metrics.players || metrics.pointsSorted!=='descending')))
       throw new Error(`${scenario.name}: layout/data check failed ${JSON.stringify(metrics)}`);
   }
   console.log(JSON.stringify(report,null,2));

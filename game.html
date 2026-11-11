@@ -11,15 +11,19 @@
   <p id="gameState" class="load-state" role="status">正在读取比赛数据…</p>
   <div id="gameContent" hidden>
     <section class="daily-panel game-hero"><div id="gameScoreboard"></div><p id="gameUpdated" class="last-updated"></p></section>
+    <section class="daily-panel"><div class="section-title"><div><div class="eyebrow">BOX SCORE / BASICS</div><h2>本场基础数据</h2></div></div>
+      <p class="small-note">得分、篮板、助攻、抢断、盖帽、失误各项本场最高值；并列如实标注。双方全部出场球员见下方技术统计表。</p>
+      <div id="basicHighlights" class="basic-highlights"></div>
+    </section>
+    <section class="daily-panel"><div class="section-title"><div><div class="eyebrow">FULL BOX SCORE</div><h2>双方球员技术统计</h2></div></div>
+      <p class="small-note">默认按 GmSc 排序；点击表头可按得分等数据排序。手机可左右滑动查看完整数据。</p>
+      <div class="game-table-scroll" tabindex="0" role="region" aria-label="可横向滚动的单场球员技术统计表"><table id="playerTable"><thead></thead><tbody></tbody></table></div>
+      <details id="dnpDetails" class="dnp-details" hidden><summary>未出场球员</summary><div id="dnpList"></div></details>
+    </section>
     <section class="daily-panel"><div class="section-title"><div><div class="eyebrow">GAME SCORE</div><h2>本场 GmSc 对比</h2></div><span id="gmscInfo"></span></div>
       <p class="small-note">基于 NBA 单场技术统计，按 Game Score 公式计算。图表与表格只比较本场实际出场球员；正负值是另一项统计。</p>
       <div id="chartLegend" class="chart-legend"></div><div id="gmscChart" class="gmsc-chart"></div>
       <button id="showAllChart" type="button" class="secondary-button" hidden>查看全部出场球员</button>
-    </section>
-    <section class="daily-panel"><div class="section-title"><div><div class="eyebrow">BOX SCORE</div><h2>双方球员技术统计</h2></div></div>
-      <p class="small-note">默认按未提前取整的 GmSc 排序；点击表头调整。手机可左右滑动查看完整数据。</p>
-      <div class="game-table-scroll" tabindex="0" role="region" aria-label="可横向滚动的单场球员技术统计表"><table id="playerTable"><thead></thead><tbody></tbody></table></div>
-      <details id="dnpDetails" class="dnp-details" hidden><summary>未出场球员</summary><div id="dnpList"></div></details>
     </section>
   </div>
   <footer><a href="/advanced-guide#GMSC">Game Score 公式与局限</a> · NBA 官方单场技术统计归档</footer>

@@ -13,7 +13,7 @@ select,button{background:#0d141d;color:#eef;border:1px solid #344255;border-radi
 button{cursor:pointer;color:#a5f0c5}#status{min-height:24px;color:#a5f0c5;margin:14px 0}
 .box{overflow:auto;border:1px solid #273342;border-radius:10px;background:#111923}
 table{border-collapse:collapse;width:100%;min-width:1000px}th,td{padding:12px 10px;border-bottom:1px solid #273342;text-align:right;white-space:nowrap}
-th{color:#aab8c8;background:#17212d;position:sticky;top:0}td:nth-child(2),td:nth-child(3),th:nth-child(2),th:nth-child(3){text-align:left}
+th{color:#aab8c8;background:#17212d;position:sticky;top:0}td:nth-child(2),th:nth-child(2){text-align:left}
 tr:hover td{background:#192432}.rank{color:#f47b48}.metric{color:#a5f0c5;font-weight:bold}
 .rank-cell{display:flex;justify-content:flex-end;align-items:center;gap:8px}
 .rank-movement{display:inline-block;min-width:42px;padding:3px 6px;border-radius:999px;font-size:11px;font-weight:bold;text-align:center;animation:badge-pop .35s ease-out both}
@@ -31,9 +31,13 @@ tr:hover td{background:#192432}.rank{color:#f47b48}.metric{color:#a5f0c5;font-we
 .player-open:hover{color:#a5f0c5}.player-open:focus-visible{outline:2px solid #a5f0c5;outline-offset:3px;border-radius:6px}
 .portrait{position:relative;display:inline-grid;place-items:center;flex:none;width:40px;height:40px;border-radius:50%;overflow:hidden;background:#263547;color:#a5f0c5;font-size:12px;font-weight:bold}
 .portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.view-tabs{display:flex;gap:8px;margin:22px 0 0}
-.view-tabs button{padding:11px 16px;border-radius:9px 9px 0 0;background:#111923;color:#9aa9bb}
-.view-tabs button.active{background:#192737;color:#a5f0c5;border-color:#40556c}
+.view-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:22px 0 0}
+.view-tabs button,.view-tabs a{display:flex;align-items:center;justify-content:center;min-width:0;min-height:50px;padding:11px 16px;border:1px solid #344255;border-radius:9px 9px 0 0;background:#111923;color:#c7d5e2;text-align:center;text-decoration:none;font:inherit;font-weight:600}
+.view-tabs button.active,.view-tabs a[aria-current=page]{background:#192737;color:#a5f0c5;border-color:#40556c}
+.view-tabs a:hover{background:#192737}
+.ranking-table th small{display:block;margin-top:3px;color:#8ea3b4;font-size:10px;font-weight:400;line-height:1.2;white-space:normal}
+.ranking-table .basic-stat{background:#15252c;color:#f1f6f7;font-weight:700}
+.ranking-table .metric-guide-link{color:#a5f0c5;text-decoration:underline;text-underline-offset:2px}
 .career-panel{padding:16px;background:#111923;border:1px solid #273342;border-radius:0 10px 10px}
 .career-controls{display:flex;gap:12px;flex-wrap:wrap;align-items:end;background:#151d28;padding:16px;border-radius:10px}
 .career-controls label{display:grid;gap:6px;color:#aab8c8}
@@ -47,7 +51,7 @@ tr:hover td{background:#192432}.rank{color:#f47b48}.metric{color:#a5f0c5;font-we
 .chart-note{font-size:12px;color:#8290a2;margin:12px 0 2px}
 [hidden]{display:none!important}
 footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
-@media(max-width:600px){main{padding:22px 12px}h1{font-size:29px}}
+@media(max-width:600px){main{padding:22px 12px}h1{font-size:29px}.view-tabs{gap:4px}.view-tabs button,.view-tabs a{padding:10px 4px;font-size:12px;line-height:1.25}}
 </style>
 </head>
 <body>
@@ -56,15 +60,15 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
     <div class="site-intro">
       <h1>NBA 高阶数据 TOP 30</h1>
       <p>查看联盟单季排名，或比较球员跨赛季的高阶数据变化。</p>
-      <p><a href="/daily-games">每日比赛与单场 GmSc →</a></p>
     </div>
     <player-search></player-search>
   </header>
 
-  <div class="view-tabs" role="tablist" aria-label="数据视图">
-    <button id="rankTab" class="active" type="button" role="tab" aria-selected="true">联盟 TOP 30</button>
-    <button id="careerTab" type="button" role="tab" aria-selected="false">球员生涯对比</button>
-  </div>
+  <nav class="view-tabs" aria-label="网站主栏目">
+    <button id="rankTab" class="active" type="button" aria-current="page">高阶数据</button>
+    <button id="careerTab" type="button">球员比较</button>
+    <a href="/daily-games">每日比赛</a>
+  </nav>
 
   <section id="rankView">
   <section class="controls">
@@ -78,7 +82,13 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
     </label>
     <label>排名指标
       <select id="metric">
-        <option value="NET_RATING">NET RTG 净效率</option>
+        <option value="PTS">PTS 场均得分</option>
+        <option value="REB">REB 场均篮板</option>
+        <option value="AST">AST 场均助攻</option>
+        <option value="STL">STL 场均抢断</option>
+        <option value="BLK">BLK 场均盖帽</option>
+        <option value="TOV">TOV 场均失误（越低越好）</option>
+        <option value="NET_RATING" selected>NET RTG 净效率</option>
         <option value="OFF_RATING">OFF RTG 进攻效率</option>
         <option value="PIE">PIE 球员影响效率</option>
         <option value="VORP">VORP 替代球员价值</option>
@@ -126,16 +136,22 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
   <div id="status">正在读取历史数据档案…</div>
   <div id="movement" aria-live="polite"></div>
   <div class="box">
-    <table>
+    <table class="ranking-table">
       <thead><tr>
-        <th>排名</th><th>球员</th><th>球队</th><th>出场</th><th>场均分钟</th>
-        <th>OFF RTG</th><th>DEF RTG</th><th>NET RTG</th><th>eFG%</th><th>TS%</th>
-        <th>USG%</th><th>E-USG%</th><th>AST/TO</th><th>AST Ratio</th><th>OREB%</th>
-        <th>DREB%</th><th>REB%</th><th>AST%</th><th>E-TOV%</th><th>PACE</th><th>POSS</th><th>PIE</th>
-        <th>RAPTOR / LAKER 综合</th><th>进攻</th><th>防守</th><th>RAPTOR / LAKER WAR</th><th>数据来源</th>
-        <th>VORP</th><th>WS</th><th>WS/48</th><th>BPM</th><th>OBPM</th><th>DBPM</th><th>PER</th><th>OWS</th><th>DWS</th>
+        <th>排名</th><th>球员</th>
+        <th class="basic-stat">PTS<small>场均得分</small></th><th class="basic-stat">REB<small>场均篮板</small></th>
+        <th class="basic-stat">AST<small>场均助攻</small></th><th class="basic-stat">STL<small>场均抢断</small></th>
+        <th class="basic-stat">BLK<small>场均盖帽</small></th><th class="basic-stat">TOV<small>场均失误</small></th>
+        <th>球队</th><th>出场</th><th>分钟<small>场均</small></th>
+        <th>排名值<small id="rankedMetricTitle">NET RTG 净效率</small></th>
+        <th>TS%<small>真实命中率 · <a class="metric-guide-link" href="/advanced-guide#TS_PCT">解释</a></small></th>
+        <th>BPM<small>每百回合贡献 · <a class="metric-guide-link" href="/advanced-guide#BPM">解释</a></small></th>
+        <th>VORP<small>替代球员价值 · <a class="metric-guide-link" href="/advanced-guide#VORP">解释</a></small></th>
+        <th>WS/48<small>每 48 分钟胜利贡献 · <a class="metric-guide-link" href="/advanced-guide#WS_48">解释</a></small></th>
+        <th>RAPTOR / LAKER<small>综合模型 · <a id="autoModelGuide" class="metric-guide-link" href="/advanced-guide#RAPTOR">解释</a></small></th>
+        <th>模型来源<small>确认具体版本</small></th>
       </tr></thead>
-      <tbody id="rows"><tr><td colspan="36">正在加载…</td></tr></tbody>
+      <tbody id="rows"><tr><td colspan="18">正在加载…</td></tr></tbody>
     </table>
   </div>
   </section>
@@ -241,7 +257,7 @@ function showRows() {
   const minGames = isRegularSeason ? 58 : 7;
   const eligibleRows = getEligibleRows(allRows, $('type').value, key, minMinutes);
   const metricRows = allRows.filter(row => metricValue(row, key) != null).length;
-  const lowerIsBetter = key === 'E_TOV_PCT';
+  const lowerIsBetter = key === 'E_TOV_PCT' || key === 'TOV';
   const rows = eligibleRows
     .sort((a,b) => lowerIsBetter ? metricValue(a, key) - metricValue(b, key) : metricValue(b, key) - metricValue(a, key))
     .slice(0,30);
@@ -254,6 +270,8 @@ function showRows() {
   const seasonType = isRegularSeason ? '常规赛' : '季后赛';
   const season = $('season').value;
   const autoSources = [...new Set(allRows.map(row => metricSourceForRow(row, key)).filter(Boolean))];
+  $('rankedMetricTitle').textContent = $('metric').selectedOptions[0]?.textContent || key;
+  $('autoModelGuide').href = `/advanced-guide#${[...new Set(rows.map(row => raptorSource(row)))].some(source => source.includes('LAKER')) ? 'LAKER' : 'RAPTOR'}`;
   const sourceHint = key.startsWith('RAPTOR_AUTO')
     ? `；自动接续来源：${autoSources.join(' + ') || '该赛季暂无数据'}`
     : key.startsWith('RAPTOR_538') ? '；指标来源：FiveThirtyEight 原版 RAPTOR'
@@ -278,7 +296,6 @@ function showRows() {
       if (n == null) return '—';
       return n.toFixed(field === 'WS_48' ? 3 : 1) + (pct ? '%' : '');
     };
-    const pie = Number(r.PIE);
     const initials = escapeHtml(String(r.PLAYER_NAME).trim().split(/\s+/).map(part => part[0] || '').slice(-2).join('').toUpperCase());
     const playerId = String(r.playerId ?? '').replace(/\D/g, '');
     const headshot = playerId
@@ -289,22 +306,13 @@ function showRows() {
     return `<tr class="rank-row ${motionClass}" style="--row-delay:${Math.min(i * 22, 420)}ms;--row-offset:${offset}px">
       <td class="rank"><span class="rank-cell">${rank}${badge}</span></td>
       <td class="player-cell"><button class="player-open" type="button" data-player-name="${escapeHtml(r.PLAYER_NAME)}" aria-label="查看 ${escapeHtml(r.PLAYER_NAME)} 的生涯走势"><span class="portrait"><span>${initials}</span>${headshot}</span>${escapeHtml(r.PLAYER_NAME)}</button></td>
-      <td>${escapeHtml(r.TEAM_ABBREVIATION)}</td>
-      <td>${val('GP')}</td><td>${val('MIN')}</td>
-      <td>${val('OFF_RATING')}</td><td>${val('DEF_RATING')}</td>
-      <td class="metric">${val('NET_RATING')}</td><td>${val('EFG_PCT',true)}</td>
-      <td>${val('TS_PCT',true)}</td><td>${val('USG_PCT',true)}</td><td>${val('E_USG_PCT',true)}</td>
-      <td>${val('AST_TO')}</td><td>${val('AST_RATIO')}</td><td>${val('OREB_PCT',true)}</td>
-      <td>${val('DREB_PCT',true)}</td><td>${val('REB_PCT',true)}</td><td>${val('AST_PCT',true)}</td>
-      <td>${val('E_TOV_PCT',true)}</td><td>${val('PACE')}</td><td>${val('POSS')}</td>
-      <td>${Number.isFinite(pie) ? pie.toFixed(3) : '—'}</td>
-      <td>${val('RAPTOR_AUTO')}</td><td>${val('RAPTOR_AUTO_OFF')}</td>
-      <td>${val('RAPTOR_AUTO_DEF')}</td><td>${val('RAPTOR_AUTO_WAR')}</td><td>${raptorSource(r)}</td>
-      <td>${val('VORP')}</td><td>${val('WS')}</td><td>${val('WS_48')}</td>
-      <td>${val('BPM')}</td><td>${val('OBPM')}</td><td>${val('DBPM')}</td>
-      <td>${val('PER')}</td><td>${val('OWS')}</td><td>${val('DWS')}</td>
+      <td>${val('PTS')}</td><td>${val('REB')}</td><td>${val('AST')}</td><td>${val('STL')}</td><td>${val('BLK')}</td><td>${val('TOV')}</td>
+      <td>${escapeHtml(r.TEAM_ABBREVIATION)}</td><td>${val('GP')}</td><td>${val('MIN')}</td>
+      <td class="metric">${val(key, key.endsWith('_PCT'))}</td>
+      <td>${val('TS_PCT',true)}</td><td>${val('BPM')}</td><td>${val('VORP')}</td><td>${val('WS_48')}</td>
+      <td>${val('RAPTOR_AUTO')}</td><td>${raptorSource(r)}</td>
     </tr>`;
-  }).join('') || '<tr><td colspan="36">没有符合筛选条件的球员</td></tr>';
+  }).join('') || '<tr><td colspan="18">没有符合筛选条件的球员</td></tr>';
   if (!previousBoard) {
     $('movement').textContent = '榜单变化动画将在你切换赛季、赛制、排名指标或筛选条件后显示。';
   } else {
@@ -338,7 +346,7 @@ async function load() {
   } catch (error) {
     allRows = [];
     $('status').textContent = `加载失败：${error.message}`;
-    $('rows').innerHTML = '<tr><td colspan="36">该赛季档案尚未部署。请稍后刷新，或检查 GitHub Actions 是否已完成历史回填。</td></tr>';
+    $('rows').innerHTML = '<tr><td colspan="18">该赛季档案尚未部署。请稍后刷新，或检查 GitHub Actions 是否已完成历史回填。</td></tr>';
   }
 }
 
@@ -543,8 +551,8 @@ async function openCareerView(playerName = '') {
   $('careerView').hidden = false;
   $('rankTab').classList.remove('active');
   $('careerTab').classList.add('active');
-  $('rankTab').setAttribute('aria-selected', 'false');
-  $('careerTab').setAttribute('aria-selected', 'true');
+  $('rankTab').removeAttribute('aria-current');
+  $('careerTab').setAttribute('aria-current', 'page');
   $('careerStatus').textContent = '正在载入 30 个赛季的本地历史档案…';
   try {
     await loadCareerArchives();
@@ -568,8 +576,8 @@ $('rankTab').addEventListener('click', () => {
   $('rankView').hidden = false;
   $('careerTab').classList.remove('active');
   $('rankTab').classList.add('active');
-  $('careerTab').setAttribute('aria-selected', 'false');
-  $('rankTab').setAttribute('aria-selected', 'true');
+  $('careerTab').removeAttribute('aria-current');
+  $('rankTab').setAttribute('aria-current', 'page');
 });
 $('careerTab').addEventListener('click', () => openCareerView());
 $('rows').addEventListener('click', event => {
@@ -591,6 +599,7 @@ $('minMinutes').addEventListener('change', () => {
 $('season').addEventListener('change',load);
 $('type').addEventListener('change',load);
 load();
+if (location.hash === '#compare') openCareerView();
 </script>
 <script type="module" src="/assets/player-search.js"></script>
 </body>

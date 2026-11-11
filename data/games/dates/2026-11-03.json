@@ -1,0 +1,402 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "timezone": "Asia/Shanghai",
+  "game_count": 15,
+  "final_count": 15,
+  "complete": true,
+  "state": "complete",
+  "games": [
+    {
+      "game_id": "0022600158",
+      "official_date": "2026-11-02",
+      "beijing_date": "2026-11-03",
+      "start_utc": "2026-11-03T00:00:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final",
+      "home": {
+        "team_id": "1610612739",
+        "name": "Cavaliers",
+        "city": "Cleveland",
+        "tricode": "CLE",
+        "score": 112
+      },
+      "away": {
+        "team_id": "1610612760",
+        "name": "Thunder",
+        "city": "Oklahoma City",
+        "tricode": "OKC",
+        "score": 117
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    },
+    {
+      "game_id": "0022600159",
+      "official_date": "2026-11-02",
+      "beijing_date": "2026-11-03",
+      "start_utc": "2026-11-03T00:30:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final",
+      "home": {
+        "team_id": "1610612766",
+        "name": "Hornets",
+        "city": "Charlotte",
+        "tricode": "CHA",
+        "score": 91
+      },
+      "away": {
+        "team_id": "1610612765",
+        "name": "Pistons",
+        "city": "Detroit",
+        "tricode": "DET",
+        "score": 124
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    },
+    {
+      "game_id": "0022600160",
+      "official_date": "2026-11-02",
+      "beijing_date": "2026-11-03",
+      "start_utc": "2026-11-03T00:30:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final",
+      "home": {
+        "team_id": "1610612754",
+        "name": "Pacers",
+        "city": "Indiana",
+        "tricode": "IND",
+        "score": 104
+      },
+      "away": {
+        "team_id": "1610612737",
+        "name": "Hawks",
+        "city": "Atlanta",
+        "tricode": "ATL",
+        "score": 108
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    },
+    {
+      "game_id": "0022600161",
+      "official_date": "2026-11-02",
+      "beijing_date": "2026-11-03",
+      "start_utc": "2026-11-03T00:30:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final",
+      "home": {
+        "team_id": "1610612752",
+        "name": "Knicks",
+        "city": "New York",
+        "tricode": "NYK",
+        "score": 103
+      },
+      "away": {
+        "team_id": "1610612751",
+        "name": "Nets",
+        "city": "Brooklyn",
+        "tricode": "BKN",
+        "score": 90
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    },
+    {
+      "game_id": "0022600162",
+      "official_date": "2026-11-02",
+      "beijing_date": "2026-11-03",
+      "start_utc": "2026-11-03T00:30:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final",
+      "home": {
+        "team_id": "1610612753",
+        "name": "Magic",
+        "city": "Orlando",
+        "tricode": "ORL",
+        "score": 94
+      },
+      "away": {
+        "team_id": "1610612764",
+        "name": "Wizards",
+        "city": "Washington",
+        "tricode": "WAS",
+        "score": 103
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    },
+    {
+      "game_id": "0022600163",
+      "official_date": "2026-11-02",
+      "beijing_date": "2026-11-03",
+      "start_utc": "2026-11-03T00:30:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final",
+      "home": {
+        "team_id": "1610612755",
+        "name": "76ers",
+        "city": "Philadelphia",
+        "tricode": "PHI",
+        "score": 126
+      },
+      "away": {
+        "team_id": "1610612741",
+        "name": "Bulls",
+        "city": "Chicago",
+        "tricode": "CHI",
+        "score": 107
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    },
+    {
+      "game_id": "0022600164",
+      "official_date": "2026-11-02",
+      "beijing_date": "2026-11-03",
+      "start_utc": "2026-11-03T01:00:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final",
+      "home": {
+        "team_id": "1610612742",
+        "name": "Mavericks",
+        "city": "Dallas",
+        "tricode": "DAL",
+        "score": 100
+      },
+      "away": {
+        "team_id": "1610612758",
+        "name": "Kings",
+        "city": "Sacramento",
+        "tricode": "SAC",
+        "score": 115
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    },
+    {
+      "game_id": "0022600165",
+      "official_date": "2026-11-02",
+      "beijing_date": "2026-11-03",
+      "start_utc": "2026-11-03T01:00:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final/OT",
+      "home": {
+        "team_id": "1610612763",
+        "name": "Grizzlies",
+        "city": "Memphis",
+        "tricode": "MEM",
+        "score": 134
+      },
+      "away": {
+        "team_id": "1610612740",
+        "name": "Pelicans",
+        "city": "New Orleans",
+        "tricode": "NOP",
+        "score": 135
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    },
+    {
+      "game_id": "0022600166",
+      "official_date": "2026-11-02",
+      "beijing_date": "2026-11-03",
+      "start_utc": "2026-11-03T01:00:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final",
+      "home": {
+        "team_id": "1610612750",
+        "name": "Timberwolves",
+        "city": "Minnesota",
+        "tricode": "MIN",
+        "score": 112
+      },
+      "away": {
+        "team_id": "1610612749",
+        "name": "Bucks",
+        "city": "Milwaukee",
+        "tricode": "MIL",
+        "score": 100
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    },
+    {
+      "game_id": "0022600167",
+      "official_date": "2026-11-02",
+      "beijing_date": "2026-11-03",
+      "start_utc": "2026-11-03T01:30:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final",
+      "home": {
+        "team_id": "1610612745",
+        "name": "Rockets",
+        "city": "Houston",
+        "tricode": "HOU",
+        "score": 109
+      },
+      "away": {
+        "team_id": "1610612738",
+        "name": "Celtics",
+        "city": "Boston",
+        "tricode": "BOS",
+        "score": 93
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    },
+    {
+      "game_id": "0022600168",
+      "official_date": "2026-11-02",
+      "beijing_date": "2026-11-03",
+      "start_utc": "2026-11-03T01:30:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final",
+      "home": {
+        "team_id": "1610612759",
+        "name": "Spurs",
+        "city": "San Antonio",
+        "tricode": "SAS",
+        "score": 119
+      },
+      "away": {
+        "team_id": "1610612762",
+        "name": "Jazz",
+        "city": "Utah",
+        "tricode": "UTA",
+        "score": 97
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    },
+    {
+      "game_id": "0022600169",
+      "official_date": "2026-11-02",
+      "beijing_date": "2026-11-03",
+      "start_utc": "2026-11-03T02:00:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final",
+      "home": {
+        "team_id": "1610612743",
+        "name": "Nuggets",
+        "city": "Denver",
+        "tricode": "DEN",
+        "score": 110
+      },
+      "away": {
+        "team_id": "1610612757",
+        "name": "Trail Blazers",
+        "city": "Portland",
+        "tricode": "POR",
+        "score": 118
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    },
+    {
+      "game_id": "0022600170",
+      "official_date": "2026-11-02",
+      "beijing_date": "2026-11-03",
+      "start_utc": "2026-11-03T03:00:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final",
+      "home": {
+        "team_id": "1610612744",
+        "name": "Warriors",
+        "city": "Golden State",
+        "tricode": "GSW",
+        "score": 116
+      },
+      "away": {
+        "team_id": "1610612756",
+        "name": "Suns",
+        "city": "Phoenix",
+        "tricode": "PHX",
+        "score": 113
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    },
+    {
+      "game_id": "0022600171",
+      "official_date": "2026-11-02",
+      "beijing_date": "2026-11-03",
+      "start_utc": "2026-11-03T03:00:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final",
+      "home": {
+        "team_id": "1610612746",
+        "name": "Clippers",
+        "city": "LA",
+        "tricode": "LAC",
+        "score": 118
+      },
+      "away": {
+        "team_id": "1610612761",
+        "name": "Raptors",
+        "city": "Toronto",
+        "tricode": "TOR",
+        "score": 125
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    },
+    {
+      "game_id": "0022600172",
+      "official_date": "2026-11-02",
+      "beijing_date": "2026-11-03",
+      "start_utc": "2026-11-03T03:00:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final",
+      "home": {
+        "team_id": "1610612747",
+        "name": "Lakers",
+        "city": "Los Angeles",
+        "tricode": "LAL",
+        "score": 138
+      },
+      "away": {
+        "team_id": "1610612748",
+        "name": "Heat",
+        "city": "Miami",
+        "tricode": "MIA",
+        "score": 117
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    }
+  ],
+  "last_updated_at": "2026-11-11T13:21:48.540Z"
+}

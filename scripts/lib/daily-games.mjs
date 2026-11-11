@@ -88,6 +88,15 @@ export function scheduleGames(document) {
   return games;
 }
 
+export function seasonArchiveDates(games, today) {
+  const first = [...games.values()].filter(game => game.game_type === 'regular')
+    .map(game => game.beijing_date).sort()[0];
+  const dates = [];
+  for (let date = first; date && date <= shiftDate(today, 1); date = shiftDate(date, 1))
+    dates.push(date);
+  return dates;
+}
+
 export function applyScoreboard(games, document) {
   const rows = document?.scoreboard?.games;
   if (!Array.isArray(rows)) throw new Error('NBA scoreboard schema changed: games missing');

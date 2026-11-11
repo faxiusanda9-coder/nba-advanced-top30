@@ -6,7 +6,7 @@ import path from 'node:path';
 import {createServer} from 'node:http';
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {dateInZone, gameScore, gameStatus, gameSummary, scheduleGames, boxscoreSnapshot,
+import {dateInZone, gameScore, gameStatus, gameSummary, scheduleGames, seasonArchiveDates, boxscoreSnapshot,
   playerRecord, dateIndex} from '../scripts/lib/daily-games.mjs';
 import {beijingToday, sortPlayers, chartScale, dateViewState, shownGmsc} from '../assets/daily-games-core.mjs';
 
@@ -71,6 +71,15 @@ test('status and game types separate future, live, final, postponed, canceled, a
   assert.equal(parsed.size, 3);
   assert.equal(parsed.get('0042600001').game_type, 'playoffs');
   assert.equal(parsed.get('0052600001').game_type, 'play_in');
+});
+
+test('season archive spans every Beijing date between opening night and today, including rest days', () => {
+  const games = new Map([
+    ['first', {...gameSummary(sampleGame(3, '2026-10-21T00:30:00Z'), '2026-10-20')}],
+    ['later', {...gameSummary({...sampleGame(3, '2026-10-23T00:30:00Z'), gameId: '0022600002'}, '2026-10-22')}]
+  ]);
+  assert.deepEqual(seasonArchiveDates(games, '2026-10-23'),
+    ['2026-10-21', '2026-10-22', '2026-10-23', '2026-10-24']);
 });
 
 test('box score keeps every played player, DNP, NBA IDs and final scores; partial source cannot be complete', () => {

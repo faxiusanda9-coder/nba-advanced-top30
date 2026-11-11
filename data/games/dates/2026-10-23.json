@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-23",
+  "timezone": "Asia/Shanghai",
+  "game_count": 2,
+  "final_count": 2,
+  "complete": true,
+  "state": "complete",
+  "games": [
+    {
+      "game_id": "0022600006",
+      "official_date": "2026-10-22",
+      "beijing_date": "2026-10-23",
+      "start_utc": "2026-10-22T23:00:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final",
+      "home": {
+        "team_id": "1610612755",
+        "name": "76ers",
+        "city": "Philadelphia",
+        "tricode": "PHI",
+        "score": 114
+      },
+      "away": {
+        "team_id": "1610612739",
+        "name": "Cavaliers",
+        "city": "Cleveland",
+        "tricode": "CLE",
+        "score": 106
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    },
+    {
+      "game_id": "0022600007",
+      "official_date": "2026-10-22",
+      "beijing_date": "2026-10-23",
+      "start_utc": "2026-10-23T01:30:00.000Z",
+      "game_type": "regular",
+      "status": "final",
+      "status_text": "Final",
+      "home": {
+        "team_id": "1610612760",
+        "name": "Thunder",
+        "city": "Oklahoma City",
+        "tricode": "OKC",
+        "score": 96
+      },
+      "away": {
+        "team_id": "1610612743",
+        "name": "Nuggets",
+        "city": "Denver",
+        "tricode": "DEN",
+        "score": 84
+      },
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
+      "updated_at": "2026-11-11T13:21:48.540Z"
+    }
+  ],
+  "last_updated_at": "2026-11-11T13:21:48.540Z"
+}

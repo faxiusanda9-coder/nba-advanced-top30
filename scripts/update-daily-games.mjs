@@ -1,7 +1,7 @@
 import {readFile, writeFile, mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {SCHEMA_VERSION, TIME_ZONE, dateInZone, shiftDate, scheduleGames, applyScoreboard,
+import {SCHEMA_VERSION, TIME_ZONE, dateInZone, shiftDate, scheduleGames, seasonArchiveDates, applyScoreboard,
   boxscoreSnapshot, dateIndex} from './lib/daily-games.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -24,8 +24,7 @@ const nowIso = now.toISOString();
 const today = dateInZone(now);
 if (args.date) shiftDate(args.date, 0);
 if (args['game-id'] && !/^\d{10}$/.test(args['game-id'])) throw new Error('Invalid --game-id');
-const targetDates = args.date ? new Set([args.date])
-  : new Set([-2, -1, 0, 1].map(offset => shiftDate(today, offset)));
+const targetDates = args.date ? new Set([args.date]) : new Set();
 const dryRun = Boolean(args['dry-run']);
 
 async function load(file, fallback) {
@@ -107,6 +106,10 @@ if (!scheduleDocument) {
   const schedule = scheduleGames(scheduleDocument);
   try { applyScoreboard(schedule, await fetchJson(scoreboardUrl)); }
   catch (error) { console.warn(`Scoreboard overlay unavailable: ${error.message}`); }
+
+  // Maintain a continuous Beijing-date archive, including dates with no games.
+  // This also repairs gaps left by a delayed or failed scheduled run.
+  if (!args.date) for (const date of seasonArchiveDates(schedule, today)) targetDates.add(date);
 
   const scheduleDays = [...schedule.values()].map(game => game.beijing_date).sort();
   const first = scheduleDays[0], last = scheduleDays.at(-1);

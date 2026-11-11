@@ -1,0 +1,871 @@
+{
+  "schema_version": 1,
+  "game_id": "0022600148",
+  "official_date": "2026-10-31",
+  "beijing_date": "2026-11-01",
+  "start_utc": "2026-10-31T22:00:00.000Z",
+  "game_type": "regular",
+  "status": "final",
+  "teams": {
+    "home": {
+      "team_id": "1610612766",
+      "name": "Hornets",
+      "city": "Charlotte",
+      "tricode": "CHA",
+      "score": 104,
+      "players": [
+        {
+          "player_id": "1642883",
+          "source_player_id": "1642883",
+          "player_name": "Sion James",
+          "team_id": "1610612766",
+          "played": true,
+          "participation": "played",
+          "minutes": "17:38",
+          "stats": {
+            "points": 4,
+            "rebounds": 2,
+            "assists": 1,
+            "steals": 0,
+            "blocks": 0,
+            "field_goals_made": 2,
+            "field_goals_attempted": 4,
+            "three_pointers_made": 0,
+            "three_pointers_attempted": 1,
+            "free_throws_made": 0,
+            "free_throws_attempted": 0,
+            "offensive_rebounds": 0,
+            "defensive_rebounds": 2,
+            "turnovers": 1,
+            "personal_fouls": 2,
+            "plus_minus": -21
+          },
+          "gmsc": {
+            "value": 1.5,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1629675",
+          "source_player_id": "1629675",
+          "player_name": "Naz Reid",
+          "team_id": "1610612766",
+          "played": true,
+          "participation": "played",
+          "minutes": "35:36",
+          "stats": {
+            "points": 14,
+            "rebounds": 5,
+            "assists": 2,
+            "steals": 0,
+            "blocks": 1,
+            "field_goals_made": 4,
+            "field_goals_attempted": 12,
+            "three_pointers_made": 0,
+            "three_pointers_attempted": 6,
+            "free_throws_made": 6,
+            "free_throws_attempted": 6,
+            "offensive_rebounds": 0,
+            "defensive_rebounds": 5,
+            "turnovers": 4,
+            "personal_fouls": 1,
+            "plus_minus": -12
+          },
+          "gmsc": {
+            "value": 6.4,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1631217",
+          "source_player_id": "1631217",
+          "player_name": "Moussa Diabaté",
+          "team_id": "1610612766",
+          "played": true,
+          "participation": "played",
+          "minutes": "28:26",
+          "stats": {
+            "points": 10,
+            "rebounds": 8,
+            "assists": 3,
+            "steals": 0,
+            "blocks": 2,
+            "field_goals_made": 5,
+            "field_goals_attempted": 5,
+            "three_pointers_made": 0,
+            "three_pointers_attempted": 0,
+            "free_throws_made": 0,
+            "free_throws_attempted": 0,
+            "offensive_rebounds": 3,
+            "defensive_rebounds": 5,
+            "turnovers": 1,
+            "personal_fouls": 3,
+            "plus_minus": -11
+          },
+          "gmsc": {
+            "value": 13.4,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1641706",
+          "source_player_id": "1641706",
+          "player_name": "Brandon Miller",
+          "team_id": "1610612766",
+          "played": true,
+          "participation": "played",
+          "minutes": "32:38",
+          "stats": {
+            "points": 24,
+            "rebounds": 5,
+            "assists": 5,
+            "steals": 2,
+            "blocks": 1,
+            "field_goals_made": 8,
+            "field_goals_attempted": 20,
+            "three_pointers_made": 5,
+            "three_pointers_attempted": 12,
+            "free_throws_made": 3,
+            "free_throws_attempted": 4,
+            "offensive_rebounds": 2,
+            "defensive_rebounds": 3,
+            "turnovers": 2,
+            "personal_fouls": 4,
+            "plus_minus": 1
+          },
+          "gmsc": {
+            "value": 17.7,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "203471",
+          "source_player_id": "203471",
+          "player_name": "Dennis Schröder",
+          "team_id": "1610612766",
+          "played": true,
+          "participation": "played",
+          "minutes": "34:54",
+          "stats": {
+            "points": 4,
+            "rebounds": 3,
+            "assists": 7,
+            "steals": 0,
+            "blocks": 0,
+            "field_goals_made": 1,
+            "field_goals_attempted": 11,
+            "three_pointers_made": 0,
+            "three_pointers_attempted": 6,
+            "free_throws_made": 2,
+            "free_throws_attempted": 3,
+            "offensive_rebounds": 1,
+            "defensive_rebounds": 2,
+            "turnovers": 4,
+            "personal_fouls": 2,
+            "plus_minus": 4
+          },
+          "gmsc": {
+            "value": -2.3,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1628960",
+          "source_player_id": "1628960",
+          "player_name": "Grayson Allen",
+          "team_id": "1610612766",
+          "played": true,
+          "participation": "played",
+          "minutes": "29:58",
+          "stats": {
+            "points": 27,
+            "rebounds": 4,
+            "assists": 3,
+            "steals": 1,
+            "blocks": 1,
+            "field_goals_made": 9,
+            "field_goals_attempted": 12,
+            "three_pointers_made": 7,
+            "three_pointers_attempted": 10,
+            "free_throws_made": 2,
+            "free_throws_attempted": 2,
+            "offensive_rebounds": 1,
+            "defensive_rebounds": 3,
+            "turnovers": 3,
+            "personal_fouls": 3,
+            "plus_minus": 8
+          },
+          "gmsc": {
+            "value": 23.4,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1641750",
+          "source_player_id": "1641750",
+          "player_name": "Ryan Kalkbrenner",
+          "team_id": "1610612766",
+          "played": true,
+          "participation": "played",
+          "minutes": "19:05",
+          "stats": {
+            "points": 6,
+            "rebounds": 3,
+            "assists": 4,
+            "steals": 1,
+            "blocks": 1,
+            "field_goals_made": 3,
+            "field_goals_attempted": 3,
+            "three_pointers_made": 0,
+            "three_pointers_attempted": 0,
+            "free_throws_made": 0,
+            "free_throws_attempted": 0,
+            "offensive_rebounds": 1,
+            "defensive_rebounds": 2,
+            "turnovers": 1,
+            "personal_fouls": 1,
+            "plus_minus": 5
+          },
+          "gmsc": {
+            "value": 9.5,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1626220",
+          "source_player_id": "1626220",
+          "player_name": "Royce O'Neale",
+          "team_id": "1610612766",
+          "played": true,
+          "participation": "played",
+          "minutes": "22:43",
+          "stats": {
+            "points": 8,
+            "rebounds": 6,
+            "assists": 1,
+            "steals": 0,
+            "blocks": 1,
+            "field_goals_made": 3,
+            "field_goals_attempted": 4,
+            "three_pointers_made": 1,
+            "three_pointers_attempted": 2,
+            "free_throws_made": 1,
+            "free_throws_attempted": 1,
+            "offensive_rebounds": 0,
+            "defensive_rebounds": 6,
+            "turnovers": 0,
+            "personal_fouls": 1,
+            "plus_minus": 12
+          },
+          "gmsc": {
+            "value": 9.2,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1643515",
+          "source_player_id": "1643515",
+          "player_name": "Christian Anderson",
+          "team_id": "1610612766",
+          "played": true,
+          "participation": "played",
+          "minutes": "7:31",
+          "stats": {
+            "points": 2,
+            "rebounds": 0,
+            "assists": 0,
+            "steals": 0,
+            "blocks": 1,
+            "field_goals_made": 1,
+            "field_goals_attempted": 1,
+            "three_pointers_made": 0,
+            "three_pointers_attempted": 0,
+            "free_throws_made": 0,
+            "free_throws_attempted": 0,
+            "offensive_rebounds": 0,
+            "defensive_rebounds": 0,
+            "turnovers": 2,
+            "personal_fouls": 0,
+            "plus_minus": -4
+          },
+          "gmsc": {
+            "value": 0.4,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1642275",
+          "source_player_id": "1642275",
+          "player_name": "Tidjane Salaün",
+          "team_id": "1610612766",
+          "played": true,
+          "participation": "played",
+          "minutes": "11:31",
+          "stats": {
+            "points": 5,
+            "rebounds": 2,
+            "assists": 0,
+            "steals": 0,
+            "blocks": 0,
+            "field_goals_made": 2,
+            "field_goals_attempted": 4,
+            "three_pointers_made": 1,
+            "three_pointers_attempted": 2,
+            "free_throws_made": 0,
+            "free_throws_attempted": 0,
+            "offensive_rebounds": 1,
+            "defensive_rebounds": 1,
+            "turnovers": 0,
+            "personal_fouls": 2,
+            "plus_minus": -7
+          },
+          "gmsc": {
+            "value": 3.2,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1641790",
+          "source_player_id": "1641790",
+          "player_name": "PJ Hall",
+          "team_id": "1610612766",
+          "played": false,
+          "participation": "dnp",
+          "minutes": null,
+          "stats": {
+            "points": 0,
+            "rebounds": 0,
+            "assists": 0,
+            "steals": 0,
+            "blocks": 0,
+            "field_goals_made": 0,
+            "field_goals_attempted": 0,
+            "three_pointers_made": 0,
+            "three_pointers_attempted": 0,
+            "free_throws_made": 0,
+            "free_throws_attempted": 0,
+            "offensive_rebounds": 0,
+            "defensive_rebounds": 0,
+            "turnovers": 0,
+            "personal_fouls": 0,
+            "plus_minus": 0
+          },
+          "gmsc": {
+            "value": null,
+            "status": "dnp",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1642862",
+          "source_player_id": "1642862",
+          "player_name": "Liam McNeeley",
+          "team_id": "1610612766",
+          "played": false,
+          "participation": "dnp",
+          "minutes": null,
+          "stats": {
+            "points": 0,
+            "rebounds": 0,
+            "assists": 0,
+            "steals": 0,
+            "blocks": 0,
+            "field_goals_made": 0,
+            "field_goals_attempted": 0,
+            "three_pointers_made": 0,
+            "three_pointers_attempted": 0,
+            "free_throws_made": 0,
+            "free_throws_attempted": 0,
+            "offensive_rebounds": 0,
+            "defensive_rebounds": 0,
+            "turnovers": 0,
+            "personal_fouls": 0,
+            "plus_minus": 0
+          },
+          "gmsc": {
+            "value": null,
+            "status": "dnp",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1643419",
+          "source_player_id": "1643419",
+          "player_name": "Hannes Steinbach",
+          "team_id": "1610612766",
+          "played": false,
+          "participation": "dnp",
+          "minutes": null,
+          "stats": {
+            "points": 0,
+            "rebounds": 0,
+            "assists": 0,
+            "steals": 0,
+            "blocks": 0,
+            "field_goals_made": 0,
+            "field_goals_attempted": 0,
+            "three_pointers_made": 0,
+            "three_pointers_attempted": 0,
+            "free_throws_made": 0,
+            "free_throws_attempted": 0,
+            "offensive_rebounds": 0,
+            "defensive_rebounds": 0,
+            "turnovers": 0,
+            "personal_fouls": 0,
+            "plus_minus": 0
+          },
+          "gmsc": {
+            "value": null,
+            "status": "dnp",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        }
+      ]
+    },
+    "away": {
+      "team_id": "1610612755",
+      "name": "76ers",
+      "city": "Philadelphia",
+      "tricode": "PHI",
+      "score": 109,
+      "players": [
+        {
+          "player_id": "1627759",
+          "source_player_id": "1627759",
+          "player_name": "Jaylen Brown",
+          "team_id": "1610612755",
+          "played": true,
+          "participation": "played",
+          "minutes": "38:09",
+          "stats": {
+            "points": 16,
+            "rebounds": 4,
+            "assists": 4,
+            "steals": 2,
+            "blocks": 0,
+            "field_goals_made": 6,
+            "field_goals_attempted": 15,
+            "three_pointers_made": 0,
+            "three_pointers_attempted": 2,
+            "free_throws_made": 4,
+            "free_throws_attempted": 7,
+            "offensive_rebounds": 1,
+            "defensive_rebounds": 3,
+            "turnovers": 3,
+            "personal_fouls": 0,
+            "plus_minus": 6
+          },
+          "gmsc": {
+            "value": 10.1,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1629731",
+          "source_player_id": "1629731",
+          "player_name": "Dean Wade",
+          "team_id": "1610612755",
+          "played": true,
+          "participation": "played",
+          "minutes": "30:28",
+          "stats": {
+            "points": 4,
+            "rebounds": 5,
+            "assists": 10,
+            "steals": 2,
+            "blocks": 1,
+            "field_goals_made": 2,
+            "field_goals_attempted": 5,
+            "three_pointers_made": 0,
+            "three_pointers_attempted": 3,
+            "free_throws_made": 0,
+            "free_throws_attempted": 0,
+            "offensive_rebounds": 3,
+            "defensive_rebounds": 2,
+            "turnovers": 1,
+            "personal_fouls": 3,
+            "plus_minus": 4
+          },
+          "gmsc": {
+            "value": 11.5,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1641737",
+          "source_player_id": "1641737",
+          "player_name": "Adem Bona",
+          "team_id": "1610612755",
+          "played": true,
+          "participation": "played",
+          "minutes": "22:28",
+          "stats": {
+            "points": 2,
+            "rebounds": 5,
+            "assists": 3,
+            "steals": 1,
+            "blocks": 1,
+            "field_goals_made": 1,
+            "field_goals_attempted": 3,
+            "three_pointers_made": 0,
+            "three_pointers_attempted": 1,
+            "free_throws_made": 0,
+            "free_throws_attempted": 2,
+            "offensive_rebounds": 4,
+            "defensive_rebounds": 1,
+            "turnovers": 0,
+            "personal_fouls": 5,
+            "plus_minus": 5
+          },
+          "gmsc": {
+            "value": 4.4,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1642845",
+          "source_player_id": "1642845",
+          "player_name": "VJ Edgecombe",
+          "team_id": "1610612755",
+          "played": true,
+          "participation": "played",
+          "minutes": "36:47",
+          "stats": {
+            "points": 10,
+            "rebounds": 8,
+            "assists": 3,
+            "steals": 1,
+            "blocks": 1,
+            "field_goals_made": 4,
+            "field_goals_attempted": 13,
+            "three_pointers_made": 2,
+            "three_pointers_attempted": 4,
+            "free_throws_made": 0,
+            "free_throws_attempted": 0,
+            "offensive_rebounds": 1,
+            "defensive_rebounds": 7,
+            "turnovers": 0,
+            "personal_fouls": 2,
+            "plus_minus": 6
+          },
+          "gmsc": {
+            "value": 8.3,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1630178",
+          "source_player_id": "1630178",
+          "player_name": "Tyrese Maxey",
+          "team_id": "1610612755",
+          "played": true,
+          "participation": "played",
+          "minutes": "37:51",
+          "stats": {
+            "points": 38,
+            "rebounds": 4,
+            "assists": 4,
+            "steals": 2,
+            "blocks": 0,
+            "field_goals_made": 13,
+            "field_goals_attempted": 23,
+            "three_pointers_made": 4,
+            "three_pointers_attempted": 9,
+            "free_throws_made": 8,
+            "free_throws_attempted": 9,
+            "offensive_rebounds": 0,
+            "defensive_rebounds": 4,
+            "turnovers": 2,
+            "personal_fouls": 1,
+            "plus_minus": 14
+          },
+          "gmsc": {
+            "value": 30.3,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1629014",
+          "source_player_id": "1629014",
+          "player_name": "Anfernee Simons",
+          "team_id": "1610612755",
+          "played": true,
+          "participation": "played",
+          "minutes": "25:12",
+          "stats": {
+            "points": 19,
+            "rebounds": 0,
+            "assists": 2,
+            "steals": 3,
+            "blocks": 0,
+            "field_goals_made": 6,
+            "field_goals_attempted": 12,
+            "three_pointers_made": 5,
+            "three_pointers_attempted": 9,
+            "free_throws_made": 2,
+            "free_throws_attempted": 2,
+            "offensive_rebounds": 0,
+            "defensive_rebounds": 0,
+            "turnovers": 0,
+            "personal_fouls": 1,
+            "plus_minus": 3
+          },
+          "gmsc": {
+            "value": 17,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1631133",
+          "source_player_id": "1631133",
+          "player_name": "Jabari Walker",
+          "team_id": "1610612755",
+          "played": true,
+          "participation": "played",
+          "minutes": "19:11",
+          "stats": {
+            "points": 12,
+            "rebounds": 6,
+            "assists": 0,
+            "steals": 0,
+            "blocks": 0,
+            "field_goals_made": 5,
+            "field_goals_attempted": 8,
+            "three_pointers_made": 1,
+            "three_pointers_attempted": 4,
+            "free_throws_made": 1,
+            "free_throws_attempted": 1,
+            "offensive_rebounds": 2,
+            "defensive_rebounds": 4,
+            "turnovers": 0,
+            "personal_fouls": 4,
+            "plus_minus": -11
+          },
+          "gmsc": {
+            "value": 9.4,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "203484",
+          "source_player_id": "203484",
+          "player_name": "Kentavious Caldwell-Pope",
+          "team_id": "1610612755",
+          "played": true,
+          "participation": "played",
+          "minutes": "17:55",
+          "stats": {
+            "points": 3,
+            "rebounds": 2,
+            "assists": 1,
+            "steals": 0,
+            "blocks": 0,
+            "field_goals_made": 1,
+            "field_goals_attempted": 2,
+            "three_pointers_made": 1,
+            "three_pointers_attempted": 1,
+            "free_throws_made": 0,
+            "free_throws_attempted": 0,
+            "offensive_rebounds": 1,
+            "defensive_rebounds": 1,
+            "turnovers": 2,
+            "personal_fouls": 1,
+            "plus_minus": 1
+          },
+          "gmsc": {
+            "value": 1.3,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1642348",
+          "source_player_id": "1642348",
+          "player_name": "Justin Edwards",
+          "team_id": "1610612755",
+          "played": true,
+          "participation": "played",
+          "minutes": "2:24",
+          "stats": {
+            "points": 0,
+            "rebounds": 1,
+            "assists": 0,
+            "steals": 0,
+            "blocks": 0,
+            "field_goals_made": 0,
+            "field_goals_attempted": 1,
+            "three_pointers_made": 0,
+            "three_pointers_attempted": 0,
+            "free_throws_made": 0,
+            "free_throws_attempted": 0,
+            "offensive_rebounds": 1,
+            "defensive_rebounds": 0,
+            "turnovers": 0,
+            "personal_fouls": 1,
+            "plus_minus": -5
+          },
+          "gmsc": {
+            "value": -0.4,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1642889",
+          "source_player_id": "1642889",
+          "player_name": "Labaron Philon Jr.",
+          "team_id": "1610612755",
+          "played": true,
+          "participation": "played",
+          "minutes": "9:35",
+          "stats": {
+            "points": 5,
+            "rebounds": 1,
+            "assists": 0,
+            "steals": 0,
+            "blocks": 0,
+            "field_goals_made": 2,
+            "field_goals_attempted": 4,
+            "three_pointers_made": 1,
+            "three_pointers_attempted": 2,
+            "free_throws_made": 0,
+            "free_throws_attempted": 2,
+            "offensive_rebounds": 0,
+            "defensive_rebounds": 1,
+            "turnovers": 0,
+            "personal_fouls": 1,
+            "plus_minus": 2
+          },
+          "gmsc": {
+            "value": 2.1,
+            "status": "calculated",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1629605",
+          "source_player_id": "1629605",
+          "player_name": "Tacko Fall",
+          "team_id": "1610612755",
+          "played": false,
+          "participation": "dnp",
+          "minutes": null,
+          "stats": {
+            "points": 0,
+            "rebounds": 0,
+            "assists": 0,
+            "steals": 0,
+            "blocks": 0,
+            "field_goals_made": 0,
+            "field_goals_attempted": 0,
+            "three_pointers_made": 0,
+            "three_pointers_attempted": 0,
+            "free_throws_made": 0,
+            "free_throws_attempted": 0,
+            "offensive_rebounds": 0,
+            "defensive_rebounds": 0,
+            "turnovers": 0,
+            "personal_fouls": 0,
+            "plus_minus": 0
+          },
+          "gmsc": {
+            "value": null,
+            "status": "dnp",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1631126",
+          "source_player_id": "1631126",
+          "player_name": "Caleb Love",
+          "team_id": "1610612755",
+          "played": false,
+          "participation": "dnp",
+          "minutes": null,
+          "stats": {
+            "points": 0,
+            "rebounds": 0,
+            "assists": 0,
+            "steals": 0,
+            "blocks": 0,
+            "field_goals_made": 0,
+            "field_goals_attempted": 0,
+            "three_pointers_made": 0,
+            "three_pointers_attempted": 0,
+            "free_throws_made": 0,
+            "free_throws_attempted": 0,
+            "offensive_rebounds": 0,
+            "defensive_rebounds": 0,
+            "turnovers": 0,
+            "personal_fouls": 0,
+            "plus_minus": 0
+          },
+          "gmsc": {
+            "value": null,
+            "status": "dnp",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        },
+        {
+          "player_id": "1641712",
+          "source_player_id": "1641712",
+          "player_name": "Rayan Rupert",
+          "team_id": "1610612755",
+          "played": false,
+          "participation": "dnp",
+          "minutes": null,
+          "stats": {
+            "points": 0,
+            "rebounds": 0,
+            "assists": 0,
+            "steals": 0,
+            "blocks": 0,
+            "field_goals_made": 0,
+            "field_goals_attempted": 0,
+            "three_pointers_made": 0,
+            "three_pointers_attempted": 0,
+            "free_throws_made": 0,
+            "free_throws_attempted": 0,
+            "offensive_rebounds": 0,
+            "defensive_rebounds": 0,
+            "turnovers": 0,
+            "personal_fouls": 0,
+            "plus_minus": 0
+          },
+          "gmsc": {
+            "value": null,
+            "status": "dnp",
+            "formula_version": "hollinger-game-score-v1"
+          }
+        }
+      ]
+    }
+  },
+  "gmsc_formula_version": "hollinger-game-score-v1",
+  "source": {
+    "provider": "NBA CDN LiveData",
+    "url": "https://cdn.nba.com/static/json/liveData/boxscore/boxscore_0022600148.json",
+    "fetched_at": "2026-11-11T13:21:48.540Z"
+  },
+  "completeness": {
+    "status": "complete",
+    "issues": []
+  }
+}
