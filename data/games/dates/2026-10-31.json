@@ -3,9 +3,9 @@
   "date": "2026-10-31",
   "timezone": "Asia/Shanghai",
   "game_count": 10,
-  "final_count": 10,
-  "complete": true,
-  "state": "complete",
+  "final_count": 9,
+  "complete": false,
+  "state": "incomplete",
   "games": [
     {
       "game_id": "0022600015",
@@ -13,25 +13,25 @@
       "beijing_date": "2026-10-31",
       "start_utc": "2026-10-30T23:00:00.000Z",
       "game_type": "regular",
-      "status": "final",
-      "status_text": "Final",
+      "status": "live",
+      "status_text": "4th Qtr             ",
       "home": {
         "team_id": "1610612764",
         "name": "Wizards",
         "city": "Washington",
         "tricode": "WAS",
-        "score": 95
+        "score": 0
       },
       "away": {
         "team_id": "1610612766",
         "name": "Hornets",
         "city": "Charlotte",
         "tricode": "CHA",
-        "score": 79
+        "score": 0
       },
-      "boxscore_state": "complete",
+      "boxscore_state": "not_due",
       "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
-      "updated_at": "2026-11-11T13:21:48.540Z"
+      "updated_at": "2026-11-11T20:06:07.693Z"
     },
     {
       "game_id": "0022600016",
@@ -268,5 +268,5 @@
       "updated_at": "2026-11-11T13:21:48.540Z"
     }
   ],
-  "last_updated_at": "2026-11-11T13:21:48.540Z"
+  "last_updated_at": "2026-11-11T20:06:07.693Z"
 }
