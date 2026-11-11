@@ -149,6 +149,22 @@ test('archiving is idempotent, preserves valid data on failure, records daily ch
   }finally{assert(directory.startsWith(path.join(tmpdir(),'nba-current-test-')));await rm(directory,{recursive:true,force:true});}
 });
 
+test('after provider A, B, A the latest value compares with the last compatible A capture',async()=>{
+  const directory=await mkdtemp(path.join(tmpdir(),'nba-current-test-'));
+  const input={players:[player('1',1)],qualification:qualify(teamGames),cutoff:{date:'2026-11-10'},model_versions:{BPM:'v1',TS_PCT:'v1'}};
+  try{
+    const first=await archiveSource(directory,{...source,provider:'A'},input,{now:'2026-11-11T01:00:00Z'});
+    await archiveSource(directory,{...source,provider:'B'},{...input,players:[player('1',50)]},{now:'2026-11-11T02:00:00Z'});
+    await archiveSource(directory,{...source,provider:'A'},{...input,players:[player('1',3)]},{now:'2026-11-11T03:00:00Z'});
+    const table=await readJson(path.join(directory,'latest/BPM.json'));
+    assert.equal(table.rows[0].previous_value,1);assert.equal(table.rows[0].value_change,2);
+    assert.equal(table.previous_snapshot.snapshot_id,first.snapshot_id);
+    const manifest=await readJson(path.join(directory,'manifest.json'));
+    const latest=await readJson(path.join(directory,manifest.sources.test.latest));
+    assert(latest.comparison_snapshots.BPM.includes(first.snapshot_id));
+  }finally{assert(directory.startsWith(path.join(tmpdir(),'nba-current-test-')));await rm(directory,{recursive:true,force:true});}
+});
+
 test('saved production snapshots are genuinely 2026–27, contain all metric lineage and preserve EPM limits',async()=>{
   const config=await load('config.json'),manifest=await load('manifest.json');
   assert.equal(config.season,'2026-27');assert.equal(config.sources.epm.status,'not_connected');

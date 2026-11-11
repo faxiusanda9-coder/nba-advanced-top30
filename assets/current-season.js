@@ -90,13 +90,15 @@ async function loadMetric(){
       const chosen=(source.observations||source.snapshots).filter(item=>item.observed_date===selectedDate).at(-1);
       if(!chosen){$('trackerState').textContent=`${selectedDate} 尚未收录该来源的快照；不能用今天的值反向填补。`;return;}
       const snapshot=await json(`${root}/${chosen.path}`);
-      const previous=snapshot.previous_snapshot?await json(`${root}/${snapshot.previous_snapshot}`):null;
+      const previousPath=snapshot.comparison_snapshots?.[metric.key]||snapshot.previous_snapshot;
+      const previous=previousPath?await json(`${root}/${previousPath}`):null;
       loaded=metricTable(snapshot,previous,metric.key);
     }else {
       loaded=await json(`${root}/latest/${metric.key}.json`);
       if(loaded.snapshot_id!==source.snapshots.at(-1).snapshot_id){
         const snapshot=await json(`${root}/${source.latest}`);
-        const previous=snapshot.previous_snapshot?await json(`${root}/${snapshot.previous_snapshot}`):null;
+        const previousPath=snapshot.comparison_snapshots?.[metric.key]||snapshot.previous_snapshot;
+        const previous=previousPath?await json(`${root}/${previousPath}`):null;
         loaded=metricTable(snapshot,previous,metric.key);
       }
     }

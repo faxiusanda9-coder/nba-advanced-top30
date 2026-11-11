@@ -40,12 +40,16 @@ export function ranksFor(snapshot, metric) {
   return {ranks,participants:rows.length};
 }
 
-export function metricTable(snapshot, previous, metric) {
-  const {ranks,participants}=ranksFor(snapshot,metric);
-  const comparable=previous && previous.season===snapshot.season && previous.season_type===snapshot.season_type &&
+export function comparableSnapshots(snapshot,previous,metric) {
+  return Boolean(previous && previous.season===snapshot.season && previous.season_type===snapshot.season_type &&
     previous.source.id===snapshot.source.id && previous.model_versions[metric]===snapshot.model_versions[metric] &&
     (previous.source.provider||previous.source.id)===(snapshot.source.provider||snapshot.source.id) &&
-    previous.qualification.version===snapshot.qualification.version;
+    previous.qualification.version===snapshot.qualification.version);
+}
+
+export function metricTable(snapshot, previous, metric) {
+  const {ranks,participants}=ranksFor(snapshot,metric);
+  const comparable=comparableSnapshots(snapshot,previous,metric);
   const before = comparable ? ranksFor(previous,metric) : {ranks:new Map()};
   const old = new Map((comparable?previous.players:[]).map(player=>[player.player_id,player]));
   return {schema_version:1,season:snapshot.season,season_type:snapshot.season_type,metric,
