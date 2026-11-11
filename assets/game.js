@@ -53,23 +53,53 @@ function renderHero() {
 const columns = [
   ['姓名', null, player => player.player_name], ['PTS', 'points', player => field(player, 'points')],
   ['REB', 'rebounds', player => field(player, 'rebounds')], ['AST', 'assists', player => field(player, 'assists')],
+  ['STL', 'steals', player => field(player, 'steals')], ['BLK', 'blocks', player => field(player, 'blocks')],
+  ['TOV', 'turnovers', player => field(player, 'turnovers')],
   ['+/-', 'plus_minus', player => player.stats.plus_minus === null ? '—' : `${player.stats.plus_minus > 0 ? '+' : ''}${player.stats.plus_minus}`],
   ['球队', null, player => player.team_tricode], ['MIN', 'minutes', player => shown(player.minutes)],
-  ['STL', 'steals', player => field(player, 'steals')], ['BLK', 'blocks', player => field(player, 'blocks')],
   ['FGM/FGA', null, player => pair(player, 'field_goals_made', 'field_goals_attempted')],
   ['3PM/3PA', null, player => pair(player, 'three_pointers_made', 'three_pointers_attempted')],
   ['FTM/FTA', null, player => pair(player, 'free_throws_made', 'free_throws_attempted')],
   ['ORB', 'offensive_rebounds', player => field(player, 'offensive_rebounds')],
   ['DRB', 'defensive_rebounds', player => field(player, 'defensive_rebounds')],
-  ['TOV', 'turnovers', player => field(player, 'turnovers')],
   ['PF', 'personal_fouls', player => field(player, 'personal_fouls')],
   ['GmSc', 'gmsc', player => shownGmsc(player.gmsc.value)]
 ];
+const columnExplanations = {PTS: '得分', REB: '篮板', AST: '助攻', STL: '抢断', BLK: '盖帽',
+  TOV: '失误', '+/-': '正负值', MIN: '时间', GmSc: '单场综合分'};
 
 function allPlayers() {
   return ['away', 'home'].flatMap(side => snapshot.teams[side].players.map(player => ({
     ...player, team_tricode: snapshot.teams[side].tricode, side
   })));
+}
+
+function renderBasicHighlights() {
+  const played = allPlayers().filter(player => player.played);
+  const metrics = [['points', 'PTS', '得分'], ['rebounds', 'REB', '篮板'],
+    ['assists', 'AST', '助攻'], ['steals', 'STL', '抢断'],
+    ['blocks', 'BLK', '盖帽'], ['turnovers', 'TOV', '失误']];
+  const cards = metrics.map(([key, abbreviation, label]) => {
+    const values = played.map(player => player.stats[key]).filter(Number.isFinite);
+    const card = node('div', undefined, 'basic-highlight');
+    card.append(node('span', `${abbreviation} · ${label}`, 'basic-highlight-label'));
+    if (!values.length) {card.append(node('strong', '暂无数据')); return card;}
+    const maximum = Math.max(...values);
+    const leaders = played.filter(player => player.stats[key] === maximum);
+    card.append(node('strong', String(maximum), 'basic-highlight-value'));
+    if (maximum === 0 && leaders.length === played.length) {
+      card.append(node('span', '双方出场球员均为 0', 'basic-highlight-note'));
+      return card;
+    }
+    for (const player of leaders.slice(0, 3)) {
+      const row = node('div', undefined, 'basic-highlight-player');
+      row.append(portrait(player), node('span', `${player.player_name} · ${player.team_tricode}`));
+      card.append(row);
+    }
+    if (leaders.length > 3) card.append(node('span', `另 ${leaders.length - 3} 人并列`, 'basic-highlight-note'));
+    return card;
+  });
+  $('basicHighlights').replaceChildren(...cards);
 }
 
 function renderTable() {
@@ -78,13 +108,15 @@ function renderTable() {
   for (const [label, key] of columns) {
     const th = node('th');
     if (key) {
-      const button = node('button', `${label}${sortKey === key ? sortDirection === 'desc' ? ' ↓' : ' ↑' : ''}`);
+      const button = node('button');
+      button.append(node('span', `${label}${sortKey === key ? sortDirection === 'desc' ? ' ↓' : ' ↑' : ''}`));
+      if (columnExplanations[label]) button.append(node('small', columnExplanations[label]));
       button.type = 'button'; button.addEventListener('click', () => {
         sortDirection = sortKey === key && sortDirection === 'desc' ? 'asc' : 'desc'; sortKey = key; renderTable();
       });
       th.setAttribute('aria-sort', sortKey === key ? sortDirection === 'desc' ? 'descending' : 'ascending' : 'none');
       th.append(button);
-    } else th.textContent = label;
+    } else {th.append(node('span', label)); if (columnExplanations[label]) th.append(node('small', columnExplanations[label]));}
     header.append(th);
   }
   table.tHead.replaceChildren(header);
@@ -139,11 +171,7 @@ function renderChart() {
       bar.style.left = `${segment.left}%`; bar.style.width = `${segment.width}%`; track.append(bar);
     }
     const score = node('span', shownGmsc(player.gmsc.value), `chart-value ${player.gmsc.value < 0 ? 'negative' : ''}`);
-    const summary = node('div', undefined, 'chart-stats');
-    const basic = [['PTS', player.stats.points], ['REB', player.stats.rebounds], ['AST', player.stats.assists],
-      ['+/−', player.stats.plus_minus === null ? null : `${player.stats.plus_minus > 0 ? '+' : ''}${player.stats.plus_minus}`]];
-    for (const [label, value] of basic) summary.append(node('span', `${label} ${shown(value)}`));
-    row.append(name, track, score, summary); return row;
+    row.append(name, track, score); return row;
   });
   target.replaceChildren(...rows);
   $('showAllChart').hidden = players.length <= 10;
@@ -173,7 +201,7 @@ async function load() {
     if (!snapshot) {
       $('gameState').textContent = summary.status === 'final' ? '这场比赛已结束，完整技术统计尚未归档；请稍后再看。'
         : '比赛尚未结束。赛后完整技术统计和 GmSc 将在归档后显示。';
-      $('gameContent').children[1].hidden = true; $('gameContent').children[2].hidden = true;
+      for (const section of [...$('gameContent').children].slice(1)) section.hidden = true;
       return;
     }
     $('gameState').textContent = snapshot.completeness.status === 'complete' ? '' : '官方技术统计尚不完整；缺失的 GmSc 显示为“暂无数据”。';
@@ -183,7 +211,7 @@ async function load() {
       const item = node('span'); item.append(node('span', undefined, `legend-swatch ${side}`),
         node('span', snapshot.teams[side].tricode)); legend.append(item);
     }
-    renderChart(); renderTable();
+    renderBasicHighlights(); renderTable(); renderChart();
   } catch {
     $('gameState').classList.add('error'); $('gameState').textContent = '比赛数据暂时获取失败，请稍后重试。';
   }
