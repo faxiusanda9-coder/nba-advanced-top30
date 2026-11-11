@@ -1,7 +1,7 @@
 import {createHash} from 'node:crypto';
 import {mkdir,readFile,writeFile,rename} from 'node:fs/promises';
 import path from 'node:path';
-import {SEASON,SEASON_TYPE,METRICS,qualify,metricTable,ranksFor} from '../../assets/current-season-core.mjs';
+import {SEASON,SEASON_TYPE,METRICS,qualify,metricTable,ranksFor,comparableSnapshots} from '../../assets/current-season-core.mjs';
 import {dateInZone} from './daily-games.mjs';
 
 export const ROOT_DIRECTORY='data/current-season/2026-27';
@@ -252,12 +252,24 @@ export async function archiveSource(directory,source,input,{now=new Date().toISO
       player_id:player.player_id,source_player_id:player.source_player_id,season:SEASON,season_type:SEASON_TYPE,
       metric,value,source:source.id,source_provider:source.provider,model_version:input.model_versions[metric],data_as_of:input.cutoff.date,
       fetched_at:now,games_included:player.games_included,snapshot_id:id})));
+    const comparisons={},priorCache=new Map(previous?[[before.latest,previous]]:[]);
+    snapshot.comparison_snapshots={};
+    for(const metric of Object.keys(input.model_versions)){
+      for(const candidate of [...before.snapshots].reverse()){
+        let prior=priorCache.get(candidate.path);
+        if(!prior){prior=await readJson(path.join(directory,candidate.path));priorCache.set(candidate.path,prior);}
+        if(comparableSnapshots(snapshot,prior,metric)){
+          comparisons[metric]=prior;snapshot.comparison_snapshots[metric]=candidate.path;break;
+        }
+      }
+      snapshot.comparison_snapshots[metric]??=null;
+    }
     const relative=`snapshots/${source.id}/${id}.json`;
     before.latest=relative;before.fingerprint=digest;before.data_as_of=input.cutoff.date;
     before.snapshots.push({snapshot_id:id,path:relative,observed_date:observedDate,data_as_of:input.cutoff.date,fetched_at:now});
     if(!dryRun) {
       await writeJson(path.join(directory,relative),snapshot);
-      for(const metric of Object.keys(input.model_versions))await writeJson(path.join(directory,`latest/${metric}.json`),metricTable(snapshot,previous,metric));
+      for(const metric of Object.keys(input.model_versions))await writeJson(path.join(directory,`latest/${metric}.json`),metricTable(snapshot,comparisons[metric]||previous,metric));
       const ranks=Object.fromEntries(Object.keys(input.model_versions).map(metric=>[metric,ranksFor(snapshot,metric)]));
       for(const player of input.players) {
         const file=path.join(directory,`series/${source.id}/${player.series_key}.json`);
