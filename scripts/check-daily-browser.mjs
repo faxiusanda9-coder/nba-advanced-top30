@@ -49,6 +49,24 @@ try {
   ];
   if (process.env.CHECK_STATIC_MIRROR === '1') scenarios.push(
     {name:'mirror-player-390',width:390,height:844,url:'http://127.0.0.1:4173/player/lebron-james',kind:'player'});
+  const origin = process.env.CHECK_SITE_ORIGIN || 'http://127.0.0.1:4173';
+  const basePath = (process.env.SITE_BASE_PATH || '').replace(/\/$/, '');
+  for (const scenario of scenarios) {
+    scenario.url = scenario.url.replace('http://127.0.0.1:4173', `${origin}${basePath}`);
+  }
+  const requests=[];
+  await send('Network.enable');
+  socket.addEventListener('message',event=>{
+    const message=JSON.parse(event.data);
+    if(message.method==='Network.requestWillBeSent')requests.push(message.params.request.url);
+  });
+  async function waitFor(expression) {
+    for(let attempt=0;attempt<150;attempt++) {
+      if(await evaluate(expression))return;
+      await sleep(200);
+    }
+    throw new Error(`Interaction did not finish: ${expression}`);
+  }
   const report=[];
   for(const scenario of scenarios){
     await send('Emulation.setDeviceMetricsOverride',{width:scenario.width,height:scenario.height,
@@ -108,6 +126,32 @@ try {
         || (scenario.kind==='game'&&(metrics.players<10 || metrics.highlightCards!==6 ||
           metrics.allChartRows!==metrics.players || metrics.pointsSorted!=='descending')))
       throw new Error(`${scenario.name}: layout/data check failed ${JSON.stringify(metrics)}`);
+  }
+  if(process.env.CHECK_STATIC_MIRROR==='1') {
+    const honors=await evaluate(`!document.querySelector('#honorsSection').hidden && document.querySelectorAll('.core-honor').length===3`);
+    if(!honors)throw new Error('Player honors missing');
+    await evaluate(`document.querySelector('[data-phase="PST"]').click()`);
+    await waitFor(`document.querySelector('[data-phase="PST"]').getAttribute('aria-pressed')==='true' && document.querySelector('#phaseCount').textContent.includes('季后赛')`);
+    await evaluate(`document.querySelector('.metric-info[data-explanation-key="BPM"]').click()`);
+    await waitFor(`document.querySelector('#metricExplanationDialog')?.open && document.querySelector('#metricExplanationTitle').textContent!=='指标解释'`);
+    const guideLink=await evaluate(`document.querySelector('.metric-guide-link').href`);
+    if(!guideLink.startsWith(`${origin}${basePath}/advanced-guide#`))throw new Error('Explanation guide left site prefix');
+    await send('Page.navigate',{url:`${origin}${basePath}/advanced-guide/`});
+    await waitFor(`document.querySelector('#guideContent')?.hidden===false`);
+    await send('Page.navigate',{url:`${origin}${basePath}/`});
+    await waitFor(`document.querySelector('.player-search-input') && document.querySelectorAll('#rows tr').length>1`);
+    await evaluate(`(()=>{const input=document.querySelector('.player-search-input');input.focus();input.value='curry';input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+    await waitFor(`document.querySelector('.player-search-result')?.textContent.includes('Curry')`);
+    const result=await evaluate(`document.querySelector('.player-search-result').href`);
+    if(!result.startsWith(`${origin}${basePath}/player/`))throw new Error('Search result left site prefix');
+    await evaluate(`document.querySelector('#careerTab').click()`);
+    await waitFor(`!document.querySelector('#careerView').hidden && document.querySelectorAll('#playerNames option').length>100`);
+    await evaluate(`(()=>{document.querySelector('#playerA').value='LeBron James';document.querySelector('#playerB').value='Stephen Curry';document.querySelector('#comparePlayers').click();})()`);
+    await waitFor(`document.querySelectorAll('#careerChart circle').length>2`);
+    const external=requests.filter(url=>/^https?:/.test(url)&&!url.startsWith(`${origin}/`));
+    if(external.length)throw new Error(`Runtime requests left new host: ${external.join(', ')}`);
+    report.push({scenario:'migration-features',honors:true,playoffs:true,explanation:true,guide:true,
+      search:true,career_comparison:true,external_runtime_requests:external.length});
   }
   console.log(JSON.stringify(report,null,2));
 } catch (error) {

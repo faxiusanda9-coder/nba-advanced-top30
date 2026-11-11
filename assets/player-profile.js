@@ -121,7 +121,7 @@ async function loadProfile() {
   $('honorsSection').hidden=true;
   document.querySelector('.hero').setAttribute('aria-busy','true');
   try{
-    const path=location.pathname.match(/^\/player\/([^/]+)\/?$/),slug=path?decodeURIComponent(path[1]):new URLSearchParams(location.search).get('slug');
+    const path=location.pathname.match(/\/player\/([^/]+)\/?$/),slug=path?decodeURIComponent(path[1]):new URLSearchParams(location.search).get('slug');
     if(!slug||!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug))throw new Error('请通过球员搜索打开有效的球员档案。');
     const response=await fetch(`/api/player?slug=${encodeURIComponent(slug)}`,{signal:AbortSignal.timeout(15000)});
     if(response.status===404)throw new Error('未找到这位球员，试试右上角的搜索框。');

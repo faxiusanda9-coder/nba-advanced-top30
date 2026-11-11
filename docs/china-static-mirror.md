@@ -2,6 +2,8 @@
 
 ## 当前状态
 
+更新：网站已增加独立的 [GitHub Pages 部署](github-pages.md)，使用免费平台域名；以下限制主要说明 EdgeOne 等大陆节点方案。GitHub Pages 新站不依赖 Vercel，但其国内网络可用性仍需实测。
+
 正式站点仍是 `nba-advanced-top30.vercel.app`。根据 [Vercel 的中国大陆访问说明](https://vercel.com/kb/guide/accessing-vercel-hosted-sites-from-mainland-china)，`.vercel.app` 在中国大陆可能慢或无法连接，Vercel 不保证大陆可用性。域名或网络问题不能通过改页面文案修复。
 
 仓库已加入独立的静态镜像构建；**尚未发布国内网址**，也未宣称用户无需 VPN 即可访问。正式的中国大陆节点入口需要域名、ICP备案和可用的托管账号。腾讯云 [EdgeOne Pages 域名说明](https://pages.edgeone.ai/document/domain-overview)指出：大陆节点的自定义域名需要备案，平台默认项目域名在大陆仅能通过有效期 3 小时的预览链接访问。腾讯云 [CloudBase 默认域名说明](https://docs.cloudbase.net/service/alias)也把默认域名限定为开发测试，并提示生产访问可能受限。
