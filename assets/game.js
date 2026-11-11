@@ -152,7 +152,8 @@ function renderChart() {
 
 async function getJson(url) {
   const response = await fetch(url, {signal: AbortSignal.timeout(12000)});
-  if (!response.ok) return null;
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(`Game archive HTTP ${response.status}`);
   return response.json();
 }
 
@@ -160,6 +161,7 @@ async function load() {
   if (!/^\d{10}$/.test(id || '')) {$('gameState').textContent = '比赛 ID 无效。'; return;}
   try {
     const [manifest, index] = await Promise.all([getJson('/data/games/manifest.json'), getJson('/data/player-index.json')]);
+    if (!manifest) throw new Error('Game manifest unavailable');
     summary = manifest?.games?.[id];
     if (!summary) {$('gameState').textContent = '这场比赛尚未收录。'; return;}
     if (Array.isArray(index?.players)) playerLinks = new Map(index.players.map(player => [String(player.player_id), player.slug]));
