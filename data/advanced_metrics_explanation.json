@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-13",
+  "updated_at": "2026-11-11",
   "introduction": {
     "title": "什么是高阶数据？",
     "paragraphs": [
@@ -12,7 +12,8 @@
     { "id": "impact", "name": "综合影响力", "metrics": ["BPM", "OBPM", "DBPM", "VORP"] },
     { "id": "efficiency", "name": "效率指标", "metrics": ["TS_PCT", "WS_48"] },
     { "id": "usage", "name": "使用情况指标", "metrics": ["USG_PCT"] },
-    { "id": "models", "name": "综合模型", "metrics": ["RAPTOR", "LAKER"] }
+    { "id": "models", "name": "综合模型", "metrics": ["RAPTOR", "LAKER"] },
+    { "id": "single_game", "name": "单场指标", "metrics": ["GMSC"] }
   ],
   "reading_notes": {
     "title": "阅读时先确认统计口径",
@@ -164,6 +165,22 @@
         "limitation": "名称接续不代表算法和输入完全相同。作者公开赛季页面未详列全部新版本权重，此处不推测公式；与 RAPTOR 等模型比较时应核对版本和样本。"
       },
       "sources": [{ "label": "Neil Paine · LAKER 作者说明", "url": "https://neilpaine.substack.com/p/2025-26-nba-elo-forecast-and-player" }]
+    },
+    "GMSC": {
+      "symbol": "GmSc",
+      "name": "Game Score",
+      "short_description": "把一场比赛的得分、投篮、篮板、助攻、防守与失误汇总为单场技术统计分值。",
+      "category": "单场指标",
+      "reference_direction": "可以为负；数值越高表示公式汇总的本场技术统计越高。没有固定的球员等级线。",
+      "details": {
+        "meaning": "本站基于 NBA 单场技术统计，按 John Hollinger Game Score 公式计算：PTS + 0.4×FGM − 0.7×FGA − 0.4×(FTA−FTM) + 0.7×ORB + 0.3×DRB + STL + 0.7×AST + 0.7×BLK − 0.4×PF − TOV。FGM/FGA 包含两分和三分投篮。",
+        "usage": "比较同一场比赛中实际出场球员的技术统计汇总表现；应结合出场时间和具体技术统计阅读。",
+        "limitation": "GmSc 不衡量全部无球、防守与阵容影响，不等同于 BPM、RAPTOR、LAKER 或真实正负值。缺失必要原始字段时本站不计算。"
+      },
+      "sources": [
+        { "label": "Basketball Reference · Game Score 词条", "url": "https://www.basketball-reference.com/about/glossary.html" },
+        { "label": "NBA CDN · 官方单场技术统计", "url": "https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json" }
+      ]
     }
   }
 }

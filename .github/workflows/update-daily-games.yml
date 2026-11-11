@@ -1,0 +1,85 @@
+name: Update NBA daily games and Game Score
+
+on:
+  schedule:
+    # UTC 00:07, 00:37, ...; Beijing time UTC+8. GitHub may run scheduled jobs late.
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Optional Beijing date YYYY-MM-DD to refresh'
+        type: string
+        default: ''
+      game_id:
+        description: 'Optional 10-digit NBA game ID to refresh'
+        type: string
+        default: ''
+  pull_request:
+    paths:
+      - '.github/workflows/update-daily-games.yml'
+      - 'scripts/update-daily-games.mjs'
+      - 'scripts/lib/daily-games.mjs'
+      - 'tests/daily-games.test.mjs'
+      - 'data/games/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nba-archive-writer
+  cancel-in-progress: false
+
+jobs:
+  update-games:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify formula, dates, snapshots and explanatory catalog
+        run: node --test tests/daily-games.test.mjs tests/metric-explanations.test.mjs
+      - name: Check NBA CDN from GitHub Actions and refresh archived games
+        id: refresh
+        continue-on-error: true
+        env:
+          REQUEST_DATE: ${{ inputs.date }}
+          REQUEST_GAME_ID: ${{ inputs.game_id }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          arguments=()
+          if [ -n "$REQUEST_DATE" ]; then arguments+=("--date=$REQUEST_DATE"); fi
+          if [ -n "$REQUEST_GAME_ID" ]; then arguments+=("--game-id=$REQUEST_GAME_ID"); fi
+          if [ "$EVENT_NAME" = pull_request ]; then arguments+=(--dry-run); fi
+          node scripts/update-daily-games.mjs "${arguments[@]}"
+      - name: Cache official player headshots for archived box scores
+        id: headshots
+        continue-on-error: true
+        if: github.event_name != 'pull_request'
+        run: node scripts/fetch-player-headshots.mjs
+      - name: Commit changed game snapshots only
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/games/ assets/player-headshots/
+          if git diff --cached --quiet; then
+            echo "No game data changes; no deployment needed."
+          else
+            git commit -m "Update NBA daily game archive"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Report source status
+        if: always()
+        env:
+          REFRESH_STATUS: ${{ steps.refresh.outcome }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          echo "NBA CDN refresh: $REFRESH_STATUS" >> "$GITHUB_STEP_SUMMARY"
+          echo "Player headshots: ${{ steps.headshots.outcome }}" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$REFRESH_STATUS" != success ]; then
+            echo "The source was unavailable or some box scores were incomplete. Existing valid snapshots were preserved; inspect the job log for game IDs." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ "$EVENT_NAME" = pull_request ] && [ "$REFRESH_STATUS" != success ]; then exit 1; fi

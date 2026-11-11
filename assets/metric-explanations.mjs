@@ -1,5 +1,5 @@
 const catalogUrl = '/data/advanced_metrics_explanation.json';
-const supportedKeys = new Set(['BPM', 'OBPM', 'DBPM', 'VORP', 'WS_48', 'TS_PCT', 'USG_PCT', 'RAPTOR', 'LAKER', 'RAPTOR_PHASE']);
+const supportedKeys = new Set(['BPM', 'OBPM', 'DBPM', 'VORP', 'WS_48', 'TS_PCT', 'USG_PCT', 'RAPTOR', 'LAKER', 'GMSC', 'RAPTOR_PHASE']);
 let catalogPromise;
 
 export function validateExplanationCatalog(catalog) {

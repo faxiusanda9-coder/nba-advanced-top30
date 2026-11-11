@@ -6,6 +6,8 @@
   },
   "rewrites": [
     { "source": "/advanced-guide", "destination": "/advanced-guide.html" },
+    { "source": "/daily-games", "destination": "/daily-games.html" },
+    { "source": "/game/:id", "destination": "/game.html?id=:id" },
     { "source": "/player/:slug", "destination": "/player.html?slug=:slug" }
   ]
 }

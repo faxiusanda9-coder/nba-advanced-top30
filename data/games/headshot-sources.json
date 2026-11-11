@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "players": {
+    "1641759": {
+      "provider": "ESPN",
+      "source_url": "https://a.espncdn.com/i/headshots/nba/players/full/5106283.png",
+      "espn_player_id": "5106283",
+      "matched_by": "exact game, team, start UTC, and full name",
+      "game_id": "0022600212"
+    }
+  }
+}

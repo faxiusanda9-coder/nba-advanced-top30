@@ -4,10 +4,11 @@ import { readFile } from 'node:fs/promises';
 import { loadExplanationCatalog, resolveMetricExplanation, validateExplanationCatalog } from '../assets/metric-explanations.mjs';
 const catalog = JSON.parse(await readFile(new URL('../data/advanced_metrics_explanation.json', import.meta.url), 'utf8'));
 
-test('nine requested metrics have categorized, sourced explanations without player ratings', () => {
+test('ten metrics include a sourced single-game Game Score explanation without player ratings', () => {
   assert.equal(validateExplanationCatalog(catalog), catalog);
-  assert.deepEqual(Object.keys(catalog.metrics).sort(), ['BPM','OBPM','DBPM','VORP','WS_48','TS_PCT','USG_PCT','RAPTOR','LAKER'].sort());
-  assert.equal(catalog.categories.length, 4);
+  assert.deepEqual(Object.keys(catalog.metrics).sort(), ['BPM','OBPM','DBPM','VORP','WS_48','TS_PCT','USG_PCT','RAPTOR','LAKER','GMSC'].sort());
+  assert.equal(catalog.categories.length, 5);
+  assert(catalog.metrics.GMSC.details.limitation.includes('不等同于 BPM'));
   assert(catalog.metrics.VORP.reference_direction.includes('替代水平'));
   assert(catalog.metrics.USG_PCT.details.limitation.includes('持球时间'));
   assert(!/MVP级|历史超巨|GOAT|詹姆斯|乔丹|库里/.test(JSON.stringify(catalog)));
