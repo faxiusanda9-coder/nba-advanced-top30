@@ -40,6 +40,8 @@ test('changes distinguish first capture, new entry, loss of qualification and pe
   assert.equal(map.get('a').rank_change,0);assert.equal(map.get('c').state,'new_entry');assert.equal(map.get('c').rank_change,null);
   assert.equal(map.get('b').state,'ineligible');assert.equal(map.get('b').left_ranking,true);
   assert.equal(map.get('new').state,'first_seen');assert.equal(map.get('new').value_change,null);
+  const changedSource=metricTable(snapshot([player('a',61,{games_included:1})],{source:{...source,provider:'new'}}),old,'TS_PCT');
+  assert.equal(changedSource.rows[0].state,'ineligible');
   assert.equal(METRICS.find(metric=>metric.key==='TS_PCT').percentage,true);
 });
 

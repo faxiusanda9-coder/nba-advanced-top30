@@ -61,7 +61,7 @@ export function metricTable(snapshot, previous, metric) {
       const rank=ranks.get(player.player_id)??null,previousRank=before.ranks.get(player.player_id)??null;
       const eligible=player.games_included>=snapshot.qualification.min_games&&player.minutes_per_game>=snapshot.qualification.min_minutes;
       let state=value===null?'missing':!eligible?'ineligible':!prior?'first_seen':previousValue===null?'first_seen':previousRank===null?'new_entry':'ranked';
-      if(previous&&!comparable&&value!==null)state='incomparable';
+      if(previous&&!comparable&&value!==null&&eligible)state='incomparable';
       return {...player,metrics:undefined,raw_stats:undefined,metric,value,source:snapshot.source.id,source_provider:snapshot.source.provider,
         model_version:snapshot.model_versions[metric],season:snapshot.season,season_type:snapshot.season_type,
         data_as_of:snapshot.data_as_of,fetched_at:snapshot.fetched_at,snapshot_id:snapshot.snapshot_id,
