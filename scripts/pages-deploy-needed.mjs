@@ -12,7 +12,7 @@ if (process.env.GITHUB_EVENT_NAME === 'workflow_run') {
     const headers = {Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
       Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28'};
     const endpoint = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/deployments`;
-    const response = await fetch(`${endpoint}?environment=github-pages&ref=${revision.stdout.trim()}&per_page=10`,
+    const response = await fetch(`${endpoint}?environment=github-pages&sha=${revision.stdout.trim()}&per_page=10`,
       {headers, signal: AbortSignal.timeout(15000)});
     if (!response.ok) throw new Error(`Deployment lookup returned ${response.status}`);
     for (const deployment of await response.json()) {
