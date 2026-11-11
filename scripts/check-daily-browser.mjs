@@ -47,6 +47,9 @@ try {
     {name:'game-390',width:390,height:844,url:'http://127.0.0.1:4173/game/0022600211',kind:'game'},
     {name:'game-1280',width:1280,height:900,url:'http://127.0.0.1:4173/game/0022600211',kind:'game'}
   ];
+  if (process.env.CHECK_CURRENT_ONLY === '1') scenarios.splice(0,scenarios.length);
+  if (process.env.CHECK_CURRENT_SEASON === '1') scenarios.push(...[320,390,1280].map(width=>({
+    name:`current-${width}`,width,height:900,url:'http://127.0.0.1:4173/current-season/',kind:'current'})));
   if (process.env.CHECK_STATIC_MIRROR === '1') scenarios.push(
     {name:'mirror-player-390',width:390,height:844,url:'http://127.0.0.1:4173/player/lebron-james',kind:'player'});
   const origin = process.env.CHECK_SITE_ORIGIN || 'http://127.0.0.1:4173';
@@ -77,7 +80,8 @@ try {
       await sleep(100);
       const ready=await evaluate(`document.readyState==='complete' && ${scenario.kind==='daily'
         ? "document.querySelectorAll('.game-card').length>0" : scenario.kind==='game'
-          ? "document.querySelectorAll('#playerTable tbody tr').length>0" : scenario.kind==='player'
+          ? "document.querySelectorAll('#playerTable tbody tr').length>0" : scenario.kind==='current'
+            ? "document.querySelectorAll('#trackerRows tr').length>300" : scenario.kind==='player'
             ? "document.querySelector('#profileContent')?.hidden===false"
             : "document.querySelectorAll('#rows tr').length>1"}`);
       if(ready)break;
@@ -93,6 +97,7 @@ try {
       basicHeaders:document.querySelectorAll('.ranking-table th.basic-stat').length,
       highlightCards:document.querySelectorAll('.basic-highlight').length,
       profileName:document.querySelector('#profileName')?.textContent,
+      currentRows:document.querySelectorAll('#trackerRows tr').length,
       tableScroll:document.querySelector('.game-table-scroll')?.scrollWidth,
       tableViewport:document.querySelector('.game-table-scroll')?.clientWidth,
       chartOverlap:[...document.querySelectorAll('.chart-row')].some(row=>{
@@ -120,9 +125,10 @@ try {
     report.push({scenario:scenario.name,...metrics});
     if(metrics.width!==scenario.width || metrics.documentWidth>scenario.width+1 || metrics.bodyWidth>scenario.width+1
         || (scenario.kind!=='home'&&scenario.kind!=='player'&&metrics.loadedImages<2) || metrics.chartOverlap
-        || (scenario.kind==='home'&&(metrics.navItems!==3||metrics.basicHeaders!==6))
+        || (scenario.kind==='home'&&(metrics.navItems!==4||metrics.basicHeaders!==6))
         || (scenario.kind==='player'&&metrics.profileName!=='LeBron James')
-        || (scenario.kind==='daily'&&(metrics.cards!==6||metrics.navItems!==3))
+        || (scenario.kind==='current'&&(metrics.currentRows<300||metrics.navItems!==4))
+        || (scenario.kind==='daily'&&(metrics.cards!==6||metrics.navItems!==4))
         || (scenario.kind==='game'&&(metrics.players<10 || metrics.highlightCards!==6 ||
           metrics.allChartRows!==metrics.players || metrics.pointsSorted!=='descending')))
       throw new Error(`${scenario.name}: layout/data check failed ${JSON.stringify(metrics)}`);
@@ -152,6 +158,33 @@ try {
     if(external.length)throw new Error(`Runtime requests left new host: ${external.join(', ')}`);
     report.push({scenario:'migration-features',honors:true,playoffs:true,explanation:true,guide:true,
       search:true,career_comparison:true,external_runtime_requests:external.length});
+  }
+  if(process.env.CHECK_CURRENT_SEASON==='1') {
+    await send('Page.navigate',{url:`${origin}${basePath}/current-season/`});
+    await waitFor(`document.querySelectorAll('#trackerRows tr').length>300`);
+    await evaluate(`(()=>{const search=document.querySelector('#trackerSearch');search.value='Stephen Curry';search.dispatchEvent(new Event('input'));})()`);
+    const firstSeen=await evaluate(`document.querySelector('#trackerRows tr').textContent.includes('首次收录')`);
+    if(!firstSeen)throw new Error('BPM invented a previous snapshot');
+    await evaluate(`(()=>{const metric=document.querySelector('#trackerMetric');metric.value='TS_PCT';metric.dispatchEvent(new Event('change'));})()`);
+    await waitFor(`!document.querySelector('#trackerTableScroll').hidden && document.querySelector('#metricHeading h3').textContent==='TS%' && document.querySelectorAll('#trackerRows tr').length===1`);
+    const actual=await evaluate(`(async()=>{const latest=await (await fetch(${JSON.stringify(`${origin}${basePath}/data/current-season/2026-27/latest/TS_PCT.json`)})).json();const row=latest.rows.find(item=>item.player_id==='201939');const cells=document.querySelector('#trackerRows tr').cells;return {expected:row.value.toFixed(1)+'%',value:cells[3].textContent,rank:cells[6].textContent,expectedRank:'第 '+row.rank,comparison:document.querySelector('#comparisonNote').textContent};})()`);
+    if(actual.value!==actual.expected||actual.rank!==actual.expectedRank||!actual.comparison.includes('2026-11-09'))throw new Error(`Current-season player data mismatch ${JSON.stringify(actual)}`);
+    await evaluate(`document.querySelector('.trend-open').click()`);
+    await waitFor(`document.querySelectorAll('#trendPoints button').length>=2 && document.querySelectorAll('#trackerChart circle').length>=2`);
+    await evaluate(`document.querySelector('#trendPoints button').click()`);
+    if(!(await evaluate(`document.querySelector('#trendReadout').textContent.includes('2026-11-09')`)))throw new Error('Touch chart failed to read saved cutoff');
+    for(const key of ['EPM_ACTUAL','EPM_EXPECTED']){
+      await evaluate(`(()=>{const metric=document.querySelector('#trackerMetric');metric.value=${JSON.stringify(key)};metric.dispatchEvent(new Event('change'));})()`);
+      await waitFor(`document.querySelector('#trackerTableScroll').hidden && document.querySelector('#trackerState').textContent.includes('暂未接入')`);
+    }
+    await evaluate(`(()=>{const metric=document.querySelector('#trackerMetric');metric.value='BPM';metric.dispatchEvent(new Event('change'));})()`);
+    await waitFor(`!document.querySelector('#trackerTableScroll').hidden`);
+    await evaluate(`(()=>{const date=document.querySelector('#trackerDate');date.value='2026-10-01';date.dispatchEvent(new Event('change'));})()`);
+    await waitFor(`document.querySelector('#trackerState').textContent.includes('尚未收录') && document.querySelector('#trackerTableScroll').hidden`);
+    const external=requests.filter(url=>/^https?:/.test(url)&&!url.startsWith(`${origin}/`));
+    if(external.length)throw new Error(`Current-season external runtime request: ${external.join(', ')}`);
+    report.push({scenario:'current-season-interactions',search:true,source_values:true,global_rank:true,
+      real_snapshot_comparison:true,touch_trend:true,epm_missing:true,unarchived_date:true,external_runtime_requests:external.length});
   }
   console.log(JSON.stringify(report,null,2));
 } catch (error) {

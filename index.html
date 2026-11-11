@@ -31,7 +31,7 @@ tr:hover td{background:#192432}.rank{color:#f47b48}.metric{color:#a5f0c5;font-we
 .player-open:hover{color:#a5f0c5}.player-open:focus-visible{outline:2px solid #a5f0c5;outline-offset:3px;border-radius:6px}
 .portrait{position:relative;display:inline-grid;place-items:center;flex:none;width:40px;height:40px;border-radius:50%;overflow:hidden;background:#263547;color:#a5f0c5;font-size:12px;font-weight:bold}
 .portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.view-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:22px 0 0}
+.view-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:22px 0 0}
 .view-tabs button,.view-tabs a{display:flex;align-items:center;justify-content:center;min-width:0;min-height:50px;padding:11px 16px;border:1px solid #344255;border-radius:9px 9px 0 0;background:#111923;color:#c7d5e2;text-align:center;text-decoration:none;font:inherit;font-weight:600}
 .view-tabs button.active,.view-tabs a[aria-current=page]{background:#192737;color:#a5f0c5;border-color:#40556c}
 .view-tabs a:hover{background:#192737}
@@ -68,6 +68,7 @@ footer{font-size:12px;color:#8290a2;margin-top:18px}a{color:#a5f0c5}
     <button id="rankTab" class="active" type="button" aria-current="page">高阶数据</button>
     <button id="careerTab" type="button">球员比较</button>
     <a href="/daily-games">每日比赛</a>
+    <a href="/current-season">本赛季高阶</a>
   </nav>
 
   <section id="rankView">

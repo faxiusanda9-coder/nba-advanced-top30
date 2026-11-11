@@ -6,6 +6,7 @@
     "api/player.js": { "includeFiles": "api/_data/**" }
   },
   "rewrites": [
+    { "source": "/current-season", "destination": "/current-season.html" },
     { "source": "/advanced-guide", "destination": "/advanced-guide.html" },
     { "source": "/daily-games", "destination": "/daily-games.html" },
     { "source": "/game/:id", "destination": "/game.html?id=:id" },

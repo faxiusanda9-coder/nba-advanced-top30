@@ -11,6 +11,6 @@ export function normalizeBasePath(value = '') {
 export function rebaseStaticPaths(source, value) {
   const base = normalizeBasePath(value);
   if (!base) return source;
-  return source.replace(/(["'`])\/(?=(?:assets|data|player|game|advanced-guide|daily-games|config\.json)(?:[/?#"'`])|["'`])/g,
+  return source.replace(/(["'`])\/(?=(?:assets|data|player|game|advanced-guide|daily-games|current-season|config\.json)(?:[/?#"'`])|["'`])/g,
     (_, quote) => `${quote}${base}/`);
 }

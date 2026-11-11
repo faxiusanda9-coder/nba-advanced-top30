@@ -86,7 +86,7 @@ for (const id of gameIds) {
   await mkdir(route, {recursive: true});
   await cp(gamePage, path.join(route, 'index.html'));
 }
-for (const route of ['daily-games', 'advanced-guide']) {
+for (const route of ['daily-games', 'advanced-guide', 'current-season']) {
   const target = path.join(output, route);
   await mkdir(target, {recursive: true});
   await cp(path.join(output, `${route}.html`), path.join(target, 'index.html'));

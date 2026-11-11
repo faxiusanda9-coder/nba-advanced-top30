@@ -16,6 +16,7 @@ on:
       - Update NBA daily games and Game Score
       - Update NBA season archive
       - Update NBA player honors
+      - Update NBA current season advanced stats
     types: [completed]
     branches: [main]
 

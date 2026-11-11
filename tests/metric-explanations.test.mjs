@@ -4,10 +4,12 @@ import { readFile } from 'node:fs/promises';
 import { loadExplanationCatalog, resolveMetricExplanation, validateExplanationCatalog } from '../assets/metric-explanations.mjs';
 const catalog = JSON.parse(await readFile(new URL('../data/advanced_metrics_explanation.json', import.meta.url), 'utf8'));
 
-test('ten metrics include a sourced single-game Game Score explanation without player ratings', () => {
+test('sixteen sourced metrics distinguish season models and single-game Game Score without player ratings', () => {
   assert.equal(validateExplanationCatalog(catalog), catalog);
-  assert.deepEqual(Object.keys(catalog.metrics).sort(), ['BPM','OBPM','DBPM','VORP','WS_48','TS_PCT','USG_PCT','RAPTOR','LAKER','GMSC'].sort());
-  assert.equal(catalog.categories.length, 5);
+  assert.deepEqual(Object.keys(catalog.metrics).sort(), ['BPM','OBPM','DBPM','VORP','WS','OWS','DWS','PER','WS_48','TS_PCT','USG_PCT','RAPTOR','LAKER','GMSC','EPM_ACTUAL','EPM_EXPECTED'].sort());
+  assert.equal(catalog.categories.length, 6);
+  assert(catalog.metrics.EPM_ACTUAL.details.limitation.includes('季前 Expected EPM'));
+  assert(catalog.metrics.EPM_EXPECTED.name.includes('预测型'));
   assert(catalog.metrics.GMSC.details.limitation.includes('不等同于 BPM'));
   assert(catalog.metrics.VORP.reference_direction.includes('替代水平'));
   assert(catalog.metrics.USG_PCT.details.limitation.includes('持球时间'));

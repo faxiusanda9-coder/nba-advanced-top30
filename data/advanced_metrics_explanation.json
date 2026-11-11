@@ -10,9 +10,10 @@
   },
   "categories": [
     { "id": "impact", "name": "综合影响力", "metrics": ["BPM", "OBPM", "DBPM", "VORP"] },
-    { "id": "efficiency", "name": "效率指标", "metrics": ["TS_PCT", "WS_48"] },
+    { "id": "efficiency", "name": "效率指标", "metrics": ["TS_PCT", "WS_48", "PER"] },
     { "id": "usage", "name": "使用情况指标", "metrics": ["USG_PCT"] },
-    { "id": "models", "name": "综合模型", "metrics": ["RAPTOR", "LAKER"] },
+    { "id": "models", "name": "综合模型", "metrics": ["RAPTOR", "LAKER", "EPM_ACTUAL", "EPM_EXPECTED"] },
+    { "id": "cumulative", "name": "累计贡献", "metrics": ["WS", "OWS", "DWS"] },
     { "id": "single_game", "name": "单场指标", "metrics": ["GMSC"] }
   ],
   "reading_notes": {
@@ -165,6 +166,114 @@
         "limitation": "名称接续不代表算法和输入完全相同。作者公开赛季页面未详列全部新版本权重，此处不推测公式；与 RAPTOR 等模型比较时应核对版本和样本。"
       },
       "sources": [{ "label": "Neil Paine · LAKER 作者说明", "url": "https://neilpaine.substack.com/p/2025-26-nba-elo-forecast-and-player" }]
+    },
+    "WS": {
+      "symbol": "WS",
+      "name": "Win Shares",
+      "short_description": "按技术统计和球队表现，分配球员在本赛季累计的胜利贡献。",
+      "category": "累计贡献",
+      "reference_direction": "累计值受效率、上场时间及比赛数量共同影响，可为负。",
+      "details": {
+        "meaning": "WS 将球队的胜利贡献分配到球员，进攻和防守两部分相加得到总值。",
+        "usage": "用于观察截至统计截止时累计了多少模型估算的胜利贡献，比较时需同时看已赛场次。",
+        "limitation": "它依赖技术统计和球队环境，不能视为球员独自决定的真实胜场数；不能把累计值与每回合评级直接比较。"
+      },
+      "sources": [
+        {
+          "label": "Basketball Reference · Win Shares 方法",
+          "url": "https://www.basketball-reference.com/about/ws.html"
+        }
+      ]
+    },
+    "OWS": {
+      "symbol": "OWS",
+      "name": "Offensive Win Shares",
+      "short_description": "Win Shares 模型中的赛季累计进攻胜利贡献。",
+      "category": "累计贡献",
+      "reference_direction": "按模型分配的累计进攻贡献；样本与出场时间影响数值。",
+      "details": {
+        "meaning": "OWS 是 Win Shares 的进攻部分，使用个人进攻产出、效率和球队信息进行分配。",
+        "usage": "结合 WS、已赛场次和上场时间观察累计进攻贡献。",
+        "limitation": "不是单场进攻影响，也不是球队真实胜场的因果分解；模型无法完整捕捉所有无球作用。"
+      },
+      "sources": [
+        {
+          "label": "Basketball Reference · Win Shares 方法",
+          "url": "https://www.basketball-reference.com/about/ws.html"
+        }
+      ]
+    },
+    "DWS": {
+      "symbol": "DWS",
+      "name": "Defensive Win Shares",
+      "short_description": "Win Shares 模型中的赛季累计防守胜利贡献。",
+      "category": "累计贡献",
+      "reference_direction": "累计防守贡献估计，阅读时结合球队防守环境。",
+      "details": {
+        "meaning": "DWS 是 Basketball Reference Win Shares 的防守部分，结合球队防守和个人技术统计分配累计贡献。",
+        "usage": "用于阅读 Win Shares 的防守组成，而非单独判定球员防守能力。",
+        "limitation": "防守技术统计有限，球队环境影响很大。NBA Stats 中名称相近的 DEF_WS 并不自动等于这里的 DWS。"
+      },
+      "sources": [
+        {
+          "label": "Basketball Reference · Win Shares 方法",
+          "url": "https://www.basketball-reference.com/about/ws.html"
+        }
+      ]
+    },
+    "PER": {
+      "symbol": "PER",
+      "name": "Player Efficiency Rating",
+      "short_description": "综合技术统计并调整比赛节奏的球员效率指标。",
+      "category": "效率指标",
+      "reference_direction": "联盟基准通常设为15；高值表示该公式下更高的统计效率。",
+      "details": {
+        "meaning": "PER 是 John Hollinger 提出的技术统计效率指标，对正向产出和失误、投篮等消耗加权并进行节奏调整。",
+        "usage": "与场次、分钟和进攻角色一起观察统计产出的效率。",
+        "limitation": "模型权重和技术统计覆盖面有限，尤其难完整衡量防守和无球贡献；15不是球员等级判断线。"
+      },
+      "sources": [
+        {
+          "label": "Basketball Reference · PER 方法",
+          "url": "https://www.basketball-reference.com/about/per.html"
+        }
+      ]
+    },
+    "EPM_ACTUAL": {
+      "symbol": "Actual EPM",
+      "name": "Actual Estimated Plus-Minus",
+      "short_description": "描述本季已赛表现的 EPM 评级；以季前 Expected EPM 为起点，随本季样本增加调整。",
+      "category": "综合模型",
+      "reference_direction": "每100回合相对平均的模型评级；本站当前未接入数值。",
+      "details": {
+        "meaning": "Dunks & Threes 的 Actual EPM 用已赛的常规赛或季后赛结果描述该赛制表现，并保留作者说明的季前预期起点。",
+        "usage": "同一来源、类型、版本和赛制下阅读赛季表现；作者说明通常每晚更新。",
+        "limitation": "早季样本更依赖季前 Expected EPM，不能宣称完全没有先验。不能与 Expected EPM 混算变化，也不能当作单场评级。程序化 API 需要订阅，本站未购买或推算替代值。"
+      },
+      "sources": [
+        {
+          "label": "Dunks & Threes · 当前 EPM 方法与 API",
+          "url": "https://dunksandthrees.com/about/epm"
+        }
+      ]
+    },
+    "EPM_EXPECTED": {
+      "symbol": "Expected EPM",
+      "name": "Expected Estimated Plus-Minus（预测型）",
+      "short_description": "预测球员未来影响的评级，使用评级日前的信息；不能当作本季实际表现。",
+      "category": "综合模型",
+      "reference_direction": "预测型每100回合影响估计；本站当前未接入数值。",
+      "details": {
+        "meaning": "Expected EPM 结合作者的 Estimated Skills 与正则化调整正负值方法，对某一日期的球员影响进行预测。",
+        "usage": "用于观察前瞻性影响估计；作者说明每晚更新，评级日数据不包含当天比赛。",
+        "limitation": "它使用历史表现与模型先验，属于预测型。不能用 Actual EPM、BPM 或 WS 代替，也不能用同名 EPM 混合不同类型的时间序列。程序化 API 需要订阅。"
+      },
+      "sources": [
+        {
+          "label": "Dunks & Threes · Expected EPM 方法",
+          "url": "https://dunksandthrees.com/about/epm"
+        }
+      ]
     },
     "GMSC": {
       "symbol": "GmSc",

@@ -74,6 +74,12 @@ for (const file of files.filter(file => /^\d{10}\.json$/.test(file))) {
         game_id:box.game_id,official_date:box.official_date,start_utc:box.start_utc});
     }
 }
+const currentRoot=path.join(root,'data/current-season/2026-27');
+const currentManifest=await readFile(path.join(currentRoot,'manifest.json'),'utf8').then(JSON.parse).catch(error=>{if(error.code==='ENOENT')return null;throw error;});
+for(const state of Object.values(currentManifest?.sources||{}))if(state.latest){
+  const snapshot=JSON.parse(await readFile(path.join(currentRoot,state.latest),'utf8'));
+  for(const player of snapshot.players)if(/^\d+$/.test(player.nba_player_id||''))ids.add(player.nba_player_id);
+}
 await mkdir(output, {recursive:true});
 const missing = [];
 for (const id of ids) {
@@ -89,7 +95,7 @@ await Promise.all(Array.from({length:Math.min(4,selected.length)}, async () => {
     try {
       const image = await fetchPng(id);
       if (hash(image) === generic) {
-        const fallback=await fetchEspnFallback(references.get(id));
+        const fallback=references.has(id)?await fetchEspnFallback(references.get(id)):null;
         if(!fallback)results.push({id,status:'unavailable'});
         else {if(!dryRun)await writeFile(path.join(output,`${id}.png`),fallback.image);
           results.push({id,status:'saved',source:fallback.source});}
