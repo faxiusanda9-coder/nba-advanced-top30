@@ -47,6 +47,8 @@ try {
     {name:'game-390',width:390,height:844,url:'http://127.0.0.1:4173/game/0022600211',kind:'game'},
     {name:'game-1280',width:1280,height:900,url:'http://127.0.0.1:4173/game/0022600211',kind:'game'}
   ];
+  if (process.env.CHECK_STATIC_MIRROR === '1') scenarios.push(
+    {name:'mirror-player-390',width:390,height:844,url:'http://127.0.0.1:4173/player/lebron-james',kind:'player'});
   const report=[];
   for(const scenario of scenarios){
     await send('Emulation.setDeviceMetricsOverride',{width:scenario.width,height:scenario.height,
@@ -57,8 +59,9 @@ try {
       await sleep(100);
       const ready=await evaluate(`document.readyState==='complete' && ${scenario.kind==='daily'
         ? "document.querySelectorAll('.game-card').length>0" : scenario.kind==='game'
-          ? "document.querySelectorAll('#playerTable tbody tr').length>0"
-          : "document.querySelectorAll('#rows tr').length>1"}`);
+          ? "document.querySelectorAll('#playerTable tbody tr').length>0" : scenario.kind==='player'
+            ? "document.querySelector('#profileContent')?.hidden===false"
+            : "document.querySelectorAll('#rows tr').length>1"}`);
       if(ready)break;
       if(attempt===59)throw new Error(`${scenario.name}: page did not finish loading`);
     }
@@ -71,6 +74,7 @@ try {
       navItems:document.querySelectorAll('.view-tabs > *, .section-tabs > *').length,
       basicHeaders:document.querySelectorAll('.ranking-table th.basic-stat').length,
       highlightCards:document.querySelectorAll('.basic-highlight').length,
+      profileName:document.querySelector('#profileName')?.textContent,
       tableScroll:document.querySelector('.game-table-scroll')?.scrollWidth,
       tableViewport:document.querySelector('.game-table-scroll')?.clientWidth,
       chartOverlap:[...document.querySelectorAll('.chart-row')].some(row=>{
@@ -97,8 +101,9 @@ try {
     }
     report.push({scenario:scenario.name,...metrics});
     if(metrics.width!==scenario.width || metrics.documentWidth>scenario.width+1 || metrics.bodyWidth>scenario.width+1
-        || (scenario.kind!=='home'&&metrics.loadedImages<2) || metrics.chartOverlap
+        || (scenario.kind!=='home'&&scenario.kind!=='player'&&metrics.loadedImages<2) || metrics.chartOverlap
         || (scenario.kind==='home'&&(metrics.navItems!==3||metrics.basicHeaders!==6))
+        || (scenario.kind==='player'&&metrics.profileName!=='LeBron James')
         || (scenario.kind==='daily'&&(metrics.cards!==6||metrics.navItems!==3))
         || (scenario.kind==='game'&&(metrics.players<10 || metrics.highlightCards!==6 ||
           metrics.allChartRows!==metrics.players || metrics.pointsSorted!=='descending')))

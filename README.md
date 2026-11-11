@@ -6,6 +6,8 @@
 
 [`/daily-games`](https://nba-advanced-top30.vercel.app/daily-games) 与首页「高阶数据」「球员比较」同列。按北京时间查看今天、昨天或指定日期的正式 NBA 比赛；单场页先呈现得分、篮板、助攻、抢断、盖帽、失误六项基础数据及双方完整技术统计，再展示 GmSc 图表。赛季榜单也显示这六项场均数据，保留的高阶指标附中文小字和解释链接。赛程、比分和 Box Score 来自 NBA 官方公开数据；开赛日至今的每天都有日期索引，历史快照保存在独立的 `data/games/` 目录。自动归档每 30 分钟检查一次，实际更新受 Actions 与部署延迟影响。数据口径、覆盖日期、手动补抓及验收见 [每日比赛说明](docs/daily-games.md)。
 
+面向可接入中国大陆节点的静态镜像构建见 [国内静态部署准备](docs/china-static-mirror.md)。该构建去除了运行时对 Vercel 球员 API 和 NBA CDN 头像的依赖；当前正式站点仍由 Vercel 提供。
+
 ## 高阶数据解释层
 
 `data/advanced_metrics_explanation.json` 是解释文本的唯一来源，保存版本、核对日期、指标目录、十项指标的名称、简述、参考方向、含义、用途、局限和原始方法链接。RAPTOR 条目还说明 Estimated RAPTOR 接续版本；LAKER 单独说明。解释没有球员身份、统计输入或等级阈值。
