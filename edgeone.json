@@ -1,0 +1,11 @@
+{
+  "buildCommand": "node scripts/add-player-basic.mjs && node scripts/add-estimated-raptor-playoffs.mjs && node scripts/build-player-index.mjs && node scripts/build-player-profiles.mjs && node scripts/build-player-honors.mjs && node scripts/build-site.mjs && node scripts/build-static-mirror.mjs",
+  "outputDirectory": "dist-cn",
+  "nodeVersion": "22.11.0",
+  "rewrites": [
+    { "source": "/advanced-guide", "destination": "/advanced-guide/index.html" },
+    { "source": "/daily-games", "destination": "/daily-games/index.html" },
+    { "source": "/player/:slug", "destination": "/player/:slug/index.html" },
+    { "source": "/game/:id", "destination": "/game/:id/index.html" }
+  ]
+}
