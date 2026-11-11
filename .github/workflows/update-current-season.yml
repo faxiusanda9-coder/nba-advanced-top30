@@ -70,7 +70,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: current-season-source-check
-          path: out/current-season-source-check.json
+          path: |
+            out/current-season-source-check.json
+            out/current-season-primary-advanced.html
+            out/current-season-primary-teams.html
       - name: Report partial failures without erasing valid sources
         if: always()
         env:

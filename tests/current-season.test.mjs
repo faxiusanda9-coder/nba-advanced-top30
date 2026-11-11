@@ -46,7 +46,7 @@ test('changes distinguish first capture, new entry, loss of qualification and pe
 test('different seasons, source identities, model versions and rule versions never produce deltas',()=>{
   const old=snapshot([player('a',3)]);
   for(const patch of [{season:'2025-26'},{season_type:'PST'},{source:{...source,id:'other'}},
-    {model_versions:{BPM:'different'}},{qualification:{...old.qualification,version:'new-rule'}}]) {
+    {source:{...source,provider:'different-provider'}},{model_versions:{BPM:'different'}},{qualification:{...old.qualification,version:'new-rule'}}]) {
     const result=metricTable(snapshot([player('a',5)],patch),old,'BPM');
     assert.equal(result.rows[0].value_change,null);assert.equal(result.rows[0].rank_change,null);assert.equal(result.rows[0].state,'incomparable');
   }

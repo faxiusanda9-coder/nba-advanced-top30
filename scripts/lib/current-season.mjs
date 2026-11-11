@@ -45,6 +45,52 @@ export function parseCsv(text) {
   });
 }
 
+const plainHtml=value=>value.replace(/<[^>]*>/g,'').replace(/&(?:amp|quot|apos|nbsp|rsquo);/g,entity=>
+  ({'&amp;':'&','&quot;':'"','&apos;':"'",'&nbsp;':' ','&rsquo;':"'"})[entity])
+  .replace(/&#(x[0-9a-f]+|\d+);/gi,(_,code)=>String.fromCodePoint(code[0].toLowerCase()==='x'?parseInt(code.slice(1),16):Number(code))).trim();
+function htmlCells(row) {
+  return new Map([...row.matchAll(/<(?:td|th)\b[^>]*\bdata-stat=["']([^"']+)["'][^>]*>([\s\S]*?)<\/(?:td|th)>/gi)]
+    .map(match=>[match[1],match[2]]));
+}
+const csvCell=value=>/[",\r\n]/.test(String(value))?`"${String(value).replaceAll('"','""')}"`:String(value);
+
+export function primaryBbrefCsv(advancedHtml,leagueHtml) {
+  if(!/2026[-–]27 NBA Player Stats: Advanced/i.test(plainHtml(advancedHtml.match(/<title>([\s\S]*?)<\/title>/i)?.[1]||'')))
+    throw new Error('Primary BBRef title does not confirm 2026–27 advanced stats');
+  if(!/2026[-–]27 NBA Season/i.test(plainHtml(leagueHtml.match(/<title>([\s\S]*?)<\/title>/i)?.[1]||'')))
+    throw new Error('Primary BBRef team page does not confirm 2026–27');
+  const fields=['season','lg','player','player_id','team','g','mp','per','bpm','obpm','dbpm','ws','ows','dws','ws_48','vorp'];
+  const tables=[...advancedHtml.matchAll(/<table\b[^>]*>([\s\S]*?)<\/table>/gi)].map(match=>match[0]);
+  const table=tables.find(html=>/data-stat=["']bpm["']/.test(html)&&/data-stat=["']vorp["']/.test(html));
+  if(!table)throw new Error('Primary BBRef advanced table not found');
+  const rows=[];
+  for(const row of table.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)) {
+    const cells=htmlCells(row[1]);
+    const playerCell=[...cells.values()].find(value=>/href=["']\/players\/[a-z]\/[a-z0-9]+\.html/.test(value));
+    if(!playerCell)continue;
+    const player=playerCell.match(/<a\b[^>]*href=["']\/players\/[a-z]\/([a-z0-9]+)\.html["'][^>]*>([\s\S]*?)<\/a>/i);
+    if(!player)throw new Error('Primary BBRef player ID changed');
+    const get=(...keys)=>plainHtml(keys.map(key=>cells.get(key)).find(value=>value!==undefined)||'');
+    rows.push(['2027','NBA',plainHtml(player[2]),player[1],get('team_name_abbr','team_id','team'),
+      get('games','g','gp'),get('mp'),get('per'),get('bpm'),get('obpm'),get('dbpm'),get('ws'),get('ows'),get('dws'),get('ws_per_48','ws_48'),get('vorp')]);
+  }
+  if(rows.length<300)throw new Error('Primary BBRef current table incomplete');
+  const allStandings=[...leagueHtml.matchAll(/<table\b[^>]*\bid=["']((?:confs|divs)_standings_[EW])["'][^>]*>([\s\S]*?)<\/table>/gi)];
+  const conference=allStandings.filter(match=>match[1].startsWith('confs'));
+  const standings=conference.length===2?conference:allStandings.filter(match=>match[1].startsWith('divs'));
+  if(standings.length!==2)throw new Error('Primary BBRef full standings not found');
+  const teams=[];
+  for(const table of standings)for(const row of table[2].matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)) {
+    const cells=htmlCells(row[1]),teamCell=cells.get('team_name')||cells.get('team');
+    const team=teamCell?.match(/<a\b[^>]*href=["']\/teams\/([A-Z]{3})\/2027\.html["'][^>]*>([\s\S]*?)<\/a>/i);
+    if(!team)continue;
+    teams.push(['2027','NBA',plainHtml(team[2]).replace(/\*$/,''),team[1],plainHtml(cells.get('wins')||''),plainHtml(cells.get('losses')||'')]);
+  }
+  if(teams.length!==30)throw new Error('Primary BBRef standings must contain all 30 teams');
+  return {players:[fields.join(','),...rows.map(row=>row.map(csvCell).join(','))].join('\n')+'\n',
+    teams:[['season','lg','team','abbreviation','w','l'].join(','),...teams.map(row=>row.map(csvCell).join(','))].join('\n')+'\n'};
+}
+
 export function nbaRows(csv) {
   const rows=parseCsv(csv).filter(row=>row.season==='2027'&&row.season_type==='regular-season'&&
     row.measure_type==='advanced'&&row.per_mode==='pergame');
@@ -187,6 +233,7 @@ export async function archiveSource(directory,source,input,{now=new Date().toISO
   const before=manifest.sources[source.id]||{snapshots:[]};
   const canonical={season:SEASON,season_type:SEASON_TYPE,players:input.players,qualification:input.qualification,
     data_as_of:input.cutoff.date,model_versions:input.model_versions};
+  if(source.provider)canonical.source_provider=source.provider;
   const digest=fingerprint(canonical),changed=before.fingerprint!==digest;
   if(before.latest&&input.cutoff.date&&before.data_as_of&&input.cutoff.date<before.data_as_of)
     throw new Error('Source rolled back to an earlier verified statistical cutoff');
@@ -203,7 +250,7 @@ export async function archiveSource(directory,source,input,{now=new Date().toISO
       qualification:input.qualification,previous_snapshot:before.latest??null,players:input.players};
     snapshot.records=input.players.flatMap(player=>Object.entries(player.metrics).map(([metric,value])=>({
       player_id:player.player_id,source_player_id:player.source_player_id,season:SEASON,season_type:SEASON_TYPE,
-      metric,value,source:source.id,model_version:input.model_versions[metric],data_as_of:input.cutoff.date,
+      metric,value,source:source.id,source_provider:source.provider,model_version:input.model_versions[metric],data_as_of:input.cutoff.date,
       fetched_at:now,games_included:player.games_included,snapshot_id:id})));
     const relative=`snapshots/${source.id}/${id}.json`;
     before.latest=relative;before.fingerprint=digest;before.data_as_of=input.cutoff.date;
@@ -216,7 +263,7 @@ export async function archiveSource(directory,source,input,{now=new Date().toISO
         const file=path.join(directory,`series/${source.id}/${player.series_key}.json`);
         const series=await readJson(file)||{schema_version:1,season:SEASON,season_type:SEASON_TYPE,source:source.id,player_id:player.player_id,points:[]};
         series.points.push({snapshot_id:id,data_as_of:input.cutoff.date,observed_date:observedDate,fetched_at:now,
-          games_included:player.games_included,metrics:player.metrics,model_versions:input.model_versions,
+          games_included:player.games_included,metrics:player.metrics,model_versions:input.model_versions,source_provider:source.provider,
           ranks:Object.fromEntries(Object.entries(ranks).map(([key,item])=>[key,item.ranks.get(player.player_id)??null]))});
         await writeJson(file,series);
       }
@@ -228,7 +275,7 @@ export async function archiveSource(directory,source,input,{now=new Date().toISO
   const dayIndex=before.observations.findIndex(item=>item.observed_date===observedDate);
   if(dayIndex<0)before.observations.push(observation);
   else if(before.observations[dayIndex].path!==before.latest)before.observations[dayIndex]=observation;
-  manifest.sources[source.id]={...before,label:source.label,url:source.url,status,
+  manifest.sources[source.id]={...before,label:source.label,url:source.url,provider:source.provider,status,
     latest_valid_fetched_at:snapshot?.fetched_at??before.latest_valid_fetched_at,
     cutoff_verification:input.cutoff,last_error:null};
   if(!dryRun)await writeJson(path.join(directory,'manifest.json'),manifest);
@@ -240,7 +287,7 @@ export async function archiveSource(directory,source,input,{now=new Date().toISO
 export async function recordFailure(directory,source,error,{dryRun=false}={}) {
   const manifest=await readJson(path.join(directory,'manifest.json'))||{schema_version:1,season:SEASON,season_type:SEASON_TYPE,sources:{}};
   const before=manifest.sources[source.id]||{snapshots:[]};
-  manifest.sources[source.id]={...before,label:source.label,url:source.url,status:before.latest?'failed_with_snapshot':'unavailable',
+  manifest.sources[source.id]={...before,label:before.latest?before.label:source.label,url:before.latest?before.url:source.url,status:before.latest?'failed_with_snapshot':'unavailable',
     last_error:String(error.message).replace(/https?:\/\/\S+/g,'[source URL]').slice(0,300)};
   if(!dryRun)await writeJson(path.join(directory,'manifest.json'),manifest);
   return {source:source.id,error:error.message,preserved:!!before.latest};

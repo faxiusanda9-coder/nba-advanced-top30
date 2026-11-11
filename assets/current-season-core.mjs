@@ -44,6 +44,7 @@ export function metricTable(snapshot, previous, metric) {
   const {ranks,participants}=ranksFor(snapshot,metric);
   const comparable=previous && previous.season===snapshot.season && previous.season_type===snapshot.season_type &&
     previous.source.id===snapshot.source.id && previous.model_versions[metric]===snapshot.model_versions[metric] &&
+    (previous.source.provider||previous.source.id)===(snapshot.source.provider||snapshot.source.id) &&
     previous.qualification.version===snapshot.qualification.version;
   const before = comparable ? ranksFor(previous,metric) : {ranks:new Map()};
   const old = new Map((comparable?previous.players:[]).map(player=>[player.player_id,player]));
@@ -61,7 +62,7 @@ export function metricTable(snapshot, previous, metric) {
       const eligible=player.games_included>=snapshot.qualification.min_games&&player.minutes_per_game>=snapshot.qualification.min_minutes;
       let state=value===null?'missing':!eligible?'ineligible':!prior?'first_seen':previousValue===null?'first_seen':previousRank===null?'new_entry':'ranked';
       if(previous&&!comparable&&value!==null)state='incomparable';
-      return {...player,metrics:undefined,raw_stats:undefined,metric,value,source:snapshot.source.id,
+      return {...player,metrics:undefined,raw_stats:undefined,metric,value,source:snapshot.source.id,source_provider:snapshot.source.provider,
         model_version:snapshot.model_versions[metric],season:snapshot.season,season_type:snapshot.season_type,
         data_as_of:snapshot.data_as_of,fetched_at:snapshot.fetched_at,snapshot_id:snapshot.snapshot_id,
         previous_value:previousValue,value_change:value!==null&&previousValue!==null?value-previousValue:null,
@@ -73,7 +74,7 @@ export function metricTable(snapshot, previous, metric) {
 export function seriesSegments(points,metric) {
   const segments=[];let segment=[],last;
   for(const point of points) {
-    const model=point.model_versions?.[metric];
+    const model=`${point.source_provider||''}:${point.model_versions?.[metric]||''}`;
     if(finite(point.metrics?.[metric])===null||last&&last!==model) {
       if(segment.length)segments.push(segment);segment=[];
     }

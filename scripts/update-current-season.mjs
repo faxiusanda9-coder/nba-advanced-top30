@@ -3,11 +3,12 @@ import {fileURLToPath} from 'node:url';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {qualify} from '../assets/current-season-core.mjs';
 import {ROOT_DIRECTORY,nbaRows,nbaTeams,normalizeNba,normalizeBbref,verifyCutoff,
-  archiveSource,recordFailure,readJson,verifyParticipation} from './lib/current-season.mjs';
+  archiveSource,recordFailure,readJson,verifyParticipation,primaryBbrefCsv} from './lib/current-season.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const directory=path.join(root,ROOT_DIRECTORY);
 const config=await readJson(path.join(directory,'config.json'));
+await mkdir(path.join(root,'out'),{recursive:true});
 const args=process.argv.slice(2),dryRun=args.includes('--dry-run');
 const source=args.find(arg=>arg.startsWith('--source='))?.slice(9)||'all';
 if(!['all','bbref','nba','epm'].includes(source))throw new Error('Invalid --source; choose all, bbref, nba or epm');
@@ -90,24 +91,37 @@ if(source==='all'||source==='nba') {
 if(source==='all'||source==='bbref') {
   try {
     if(!nbaIdentity)throw new Error('Current NBA identities and team IDs unavailable; refusing name guessing');
-    // Test the primary public page without circumventing a 403 challenge.
-    try{await request(config.sources.bbref.reference);}catch(error){report.bbref_primary_access=error.message;}
-    const before=await json(metadataUrl);
-    const version=before.currentVersionNumberNullable??before.currentVersionNumber;
-    if(!Number.isInteger(version))throw new Error('Kaggle dataset version missing');
-    const [advanced,teams]=await Promise.all([request(`${dataset}Advanced.csv`),request(`${dataset}Team%20Summaries.csv`)]);
-    const after=await json(metadataUrl);
-    if(version!==(after.currentVersionNumberNullable??after.currentVersionNumber))throw new Error('Dataset changed during capture; retry later');
+    let raw,sourceInfo=config.sources.bbref,release;
+    try {
+      const advanced=await request(config.sources.bbref.reference);
+      await writeFile(path.join(root,'out/current-season-primary-advanced.html'),advanced.text);
+      const teams=await request('https://www.basketball-reference.com/leagues/NBA_2027.html');
+      await writeFile(path.join(root,'out/current-season-primary-teams.html'),teams.text);
+      raw=primaryBbrefCsv(advanced.text,teams.text);
+      sourceInfo={...config.sources.bbref,provider:'basketball-reference',label:'Basketball Reference · 原始高阶表',
+        url:config.sources.bbref.reference,note:'自动化运行环境可公开访问原始高阶表与同赛季球队页面。'};
+      release={provider:'basketball-reference',advanced_last_modified:advanced.last_modified,teams_last_modified:teams.last_modified};
+    }catch(error){report.bbref_primary_access=error.message;}
+    if(!raw) {
+      const before=await json(metadataUrl);
+      const version=before.currentVersionNumberNullable??before.currentVersionNumber;
+      if(!Number.isInteger(version))throw new Error('Kaggle dataset version missing');
+      const [advanced,teams]=await Promise.all([request(`${dataset}Advanced.csv`),request(`${dataset}Team%20Summaries.csv`)]);
+      const after=await json(metadataUrl);
+      if(version!==(after.currentVersionNumberNullable??after.currentVersionNumber))throw new Error('Dataset changed during capture; retry later');
+      raw={players:advanced.text,teams:teams.text};
+      release={dataset_version:version,published_at:before.lastUpdated,advanced_last_modified:advanced.last_modified,
+        teams_last_modified:teams.last_modified,license:before.licenseName};
+    }
     const manifest=await readJson(path.join(directory,'manifest.json'));
     const previousPath=manifest?.sources.bbref?.latest;
     const previous=previousPath?await readJson(path.join(directory,previousPath)):null;
-    const {players,qualification}=normalizeBbref(advanced.text,teams.text,nbaIdentity,existing,previous?.players);
+    const {players,qualification}=normalizeBbref(raw.players,raw.teams,nbaIdentity,existing,previous?.players);
     const cutoff=await verifyParticipation(root,players,verifyCutoff(qualification.team_games,schedule),qualification.team_games);
     const model_versions={BPM:'bbref-bpm2',OBPM:'bbref-bpm2',DBPM:'bbref-bpm2',VORP:'bbref-bpm2-vorp',
       WS:'bbref-win-shares',OWS:'bbref-win-shares',DWS:'bbref-win-shares',WS_48:'bbref-win-shares',PER:'bbref-per'};
-    report.sources.push(await archiveSource(directory,config.sources.bbref,{players,qualification,cutoff,model_versions,
-      source_release:{dataset_version:version,published_at:before.lastUpdated,
-        advanced_last_modified:advanced.last_modified,teams_last_modified:teams.last_modified,license:before.licenseName},
+    report.sources.push(await archiveSource(directory,sourceInfo,{players,qualification,cutoff,model_versions,
+      source_release:release,
       latest_official_date:latestOfficialDate},{now,dryRun}));
   }catch(error){report.sources.push(await recordFailure(directory,config.sources.bbref,error,{dryRun}));}
 }

@@ -163,7 +163,7 @@ try {
     await send('Page.navigate',{url:`${origin}${basePath}/current-season/`});
     await waitFor(`document.querySelectorAll('#trackerRows tr').length>300`);
     await evaluate(`(()=>{const search=document.querySelector('#trackerSearch');search.value='Stephen Curry';search.dispatchEvent(new Event('input'));})()`);
-    const firstSeen=await evaluate(`document.querySelector('#trackerRows tr').textContent.includes('首次收录')`);
+    const firstSeen=await evaluate(`/首次收录|口径变化/.test(document.querySelector('#trackerRows tr').textContent)`);
     if(!firstSeen)throw new Error('BPM invented a previous snapshot');
     await evaluate(`(()=>{const metric=document.querySelector('#trackerMetric');metric.value='TS_PCT';metric.dispatchEvent(new Event('change'));})()`);
     await waitFor(`!document.querySelector('#trackerTableScroll').hidden && document.querySelector('#metricHeading h3').textContent==='TS%' && document.querySelectorAll('#trackerRows tr').length===1`);

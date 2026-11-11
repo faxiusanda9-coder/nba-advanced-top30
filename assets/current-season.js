@@ -22,12 +22,12 @@ function renderSources(){
     }
     card.append(node('h2',id==='bbref'?'BPM / WS / VORP / PER':'TS% / USG%'),node('span',statusLabel[state?.status]||'暂未收录',`source-status ${state?.status==='ready'?'':'waiting'}`),
       node('strong',state?.data_as_of||'尚未确认','source-cutoff'),node('p','统计截止 · NBA 官方比赛日期（美东）'),
-      node('p',id==='bbref'?'Basketball Reference 衍生档案':'NBA Stats 公开档案'));
-    const details=node('details');details.append(node('summary','来源与更新时间'),node('p',info.label),
+      node('p',id==='bbref'?(state?.provider==='basketball-reference'?'Basketball Reference 原始高阶表':'Basketball Reference 衍生档案'):'NBA Stats 公开档案'));
+    const details=node('details');details.append(node('summary','来源与更新时间'),node('p',state?.label||info.label),
       node('p',`${info.metrics.map(key=>METRICS.find(metric=>metric.key===key)?.label).join(' · ')}`),
-      node('p',`有效快照抓取于 ${chineseTime(state?.latest_valid_fetched_at)}（北京时间）`),link('查看数据来源 ↗',info.url,true));
+      node('p',`有效快照抓取于 ${chineseTime(state?.latest_valid_fetched_at)}（北京时间）`),link('查看数据来源 ↗',state?.url||info.url,true));
     if(state?.last_error)details.append(node('p',`本次获取失败：${state.last_error}`));
-    if(id==='bbref')details.append(node('p','公开衍生档案可能落后于原站。这里不将抓取时间标为统计截止时间。'));
+    if(id==='bbref')details.append(node('p',state?.provider==='basketball-reference'?'当前自动化环境可公开读取原始高阶表。统计截止另行核验，不将抓取时间当作截止时间。':'公开衍生档案可能落后于原站。这里不将抓取时间标为统计截止时间。'));
     card.append(details);
     return card;
   }));
@@ -102,6 +102,7 @@ async function loadMetric(){
     }
     if(request!==requestNumber)return;
     table=loaded;
+    $('sourceBadge').textContent=table.source.label;
     const stale=source.status!=='ready';$('trackerState').classList.toggle('warning',stale);
     $('trackerState').textContent=`${selectedDate?`查询核验日 ${selectedDate} 的有效统计版本`:'最新有效快照'}：原始收录于北京时间 ${table.observed_date}；统计截至 ${table.data_as_of||'尚未确认'}（NBA 官方比赛日期，美东）。${statusLabel[source.status]||''}。`;
     const q=table.qualification;
