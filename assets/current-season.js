@@ -127,7 +127,7 @@ async function openTrend(row){
     if(token!==trendNumber)return;
     const savedIds=new Set(manifest.sources[currentMetric().source].snapshots.map(item=>item.snapshot_id));
     const points=series.points.filter(point=>savedIds.has(point.snapshot_id)&&(!selectedDate||point.observed_date<=selectedDate));
-    const read=point=>{const rank=point.ranks[metric];$('trendReadout').textContent=`收录 ${chineseTime(point.fetched_at)}（北京时间） · 统计截至 ${point.data_as_of||'尚未确认'}（美东比赛日期） · ${point.games_included} 场 · ${formatValue(point.metrics[metric],metric)} · ${rank?`联盟第 ${rank}`:'未参与合格排名'}`;for(const button of $('trendPoints').children)button.setAttribute('aria-pressed',String(button.dataset.snapshotId===point.snapshot_id));};
+    const read=point=>{const rank=point.ranks[metric],provider=point.source_provider==='basketball-reference'?'BRef 原始表':series.source==='bbref'?'BRef 衍生档案':'NBA Stats 档案';$('trendReadout').textContent=`${provider} · 收录 ${chineseTime(point.fetched_at)}（北京时间） · 统计截至 ${point.data_as_of||'尚未确认'}（美东比赛日期） · ${point.games_included} 场 · ${formatValue(point.metrics[metric],metric)} · ${rank?`联盟第 ${rank}`:'未参与合格排名'}`;for(const button of $('trendPoints').children)button.setAttribute('aria-pressed',String(button.dataset.snapshotId===point.snapshot_id));};
     points.forEach(point=>{const button=node('button',`${point.observed_date}\n${formatValue(point.metrics[metric],metric)} · ${point.games_included}场`);button.type='button';button.dataset.snapshotId=point.snapshot_id;button.addEventListener('click',()=>read(point));$('trendPoints').append(button);});
     if(points.filter(point=>number(point.metrics[metric])).length<2)$('trackerChart').append(node('p','目前不足两份包含真实数值的观察。下次来源发布新统计后，才会形成变化曲线。','one-observation'));
     else{

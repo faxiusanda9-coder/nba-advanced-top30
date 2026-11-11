@@ -4,7 +4,7 @@ import {mkdtemp,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {qualify,metricTable,ranksFor,seriesSegments,METRICS} from '../assets/current-season-core.mjs';
-import {archiveSource,recordFailure,readJson,writeJson,resolveIdentity,fullSeasonRow,verifyCutoff,parseCsv,normalizeNba,verifyParticipation} from '../scripts/lib/current-season.mjs';
+import {archiveSource,recordFailure,readJson,writeJson,resolveIdentity,fullSeasonRow,verifyCutoff,parseCsv,normalizeNba,verifyParticipation,primaryBbrefCsv} from '../scripts/lib/current-season.mjs';
 const dataRoot=new URL('../data/current-season/2026-27/',import.meta.url);
 const load=async relative=>JSON.parse(await readFile(new URL(relative,dataRoot),'utf8'));
 const source={id:'test',label:'Test fixture, never published',url:'https://example.test'};
@@ -78,6 +78,19 @@ test('a cutoff is confirmed only when every team count matches one full official
 test('CSV parsing keeps quoted names and blanks; missing fields never become zero',()=>{
   assert.deepEqual(parseCsv('id,name,value\n1,"Name, Jr.",\n2,"A""B",0\n'),[{id:'1',name:'Name, Jr.',value:''},{id:'2',name:'A"B',value:'0'}]);
   assert.throws(()=>parseCsv('id,name\n1,"cut off'));
+});
+
+test('primary HTML adapter validates season, complete player table, stable IDs and thirty team standings',()=>{
+  const rows=Array.from({length:301},(_,i)=>`<tr><td data-stat="name_display"><a href="/players/a/player${i}.html">Name &amp; Test</a></td><td data-stat="team_name_abbr">AAA</td><td data-stat="games">8</td><td data-stat="mp">240</td><td data-stat="bpm">1.2</td><td data-stat="vorp">0.2</td><td data-stat="ws_per_48">.120</td></tr>`).join('');
+  const advanced=`<title>2026-27 NBA Player Stats: Advanced</title><table id="advanced_stats">${rows}</table>`;
+  const team=(letter,index)=>`<tr><th data-stat="team_name"><a href="/teams/A${letter}${String.fromCharCode(65+index)}/2027.html">Team ${index}</a></th><td data-stat="wins">4</td><td data-stat="losses">4</td></tr>`;
+  const league='<title>2026-27 NBA Season Summary</title>'+['E','W'].map((side,index)=>`<table id="confs_standings_${side}">${Array.from({length:15},(_,i)=>team(index?'B':'A',i)).join('')}</table>`).join('');
+  const result=primaryBbrefCsv(advanced,league),players=parseCsv(result.players),teams=parseCsv(result.teams);
+  assert.equal(players.length,301);assert.equal(players[0].player,'Name & Test');assert.equal(players[0].player_id,'player0');
+  assert.equal(players[0].ws_48,'.120');assert.equal(teams.length,30);
+  assert.throws(()=>primaryBbrefCsv(advanced.replaceAll('2026-27','2025-26'),league));
+  assert.throws(()=>primaryBbrefCsv(advanced,league.replace('confs_standings_W','missing_standings_W')));
+  assert.throws(()=>primaryBbrefCsv('<title>Just a moment...</title>',league));
 });
 
 test('NBA percentages preserve real zero, missing values and true shooting over 100%',()=>{

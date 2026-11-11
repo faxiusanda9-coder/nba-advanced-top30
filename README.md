@@ -6,7 +6,7 @@
 
 ## 本赛季高阶追踪
 
-独立入口：[2026–27 本赛季高阶](https://faxiusanda9-coder.github.io/nba-advanced-top30/current-season/)。按真实来源显示本季统计、动态资格排名、已保存快照之间的数值与名次变化，以及按需加载的球员曲线。各来源分别标明实际截止日期；BRef 衍生档案滞后、EPM 未接入会明确提示，不用上季数据或推算评级填充。来源、快照、自动任务和验收详见 [本赛季栏目说明](docs/current-season.md)。
+独立入口：[2026–27 本赛季高阶](https://faxiusanda9-coder.github.io/nba-advanced-top30/current-season/)。按真实来源显示本季统计、动态资格排名、已保存快照之间的数值与名次变化，以及按需加载的球员曲线。优先接入自动化环境可公开读取的 BRef 原始高阶表，NBA Stats 档案提供 TS%／USG%；各来源分别标明实际截止日期。备用衍生档案滞后、EPM 未接入会明确提示，不用上季数据或推算评级填充。来源、快照、自动任务和验收详见 [本赛季栏目说明](docs/current-season.md)。
 
 ## 每日比赛与单场 GmSc
 
