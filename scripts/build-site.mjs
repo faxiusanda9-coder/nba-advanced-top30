@@ -9,7 +9,7 @@ validateExplanationCatalog(JSON.parse(await readFile(path.join(root, 'data/advan
 await mkdir(output, { recursive: true });
 // Publish only browser assets, explanations and season/search indexes. The complete player
 // database stays in the server function bundle, outside the static output.
-for (const file of ['index.html', 'player.html', 'advanced-guide.html', 'daily-games.html', 'game.html', 'config.json']) {
+for (const file of ['index.html', 'player.html', 'advanced-guide.html', 'daily-games.html', 'game.html', 'current-season.html', 'config.json']) {
   await copyFile(path.join(root, file), path.join(output, file));
 }
 for (const directory of ['assets', 'data']) {

@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "season": "2026-27",
+  "ending_year": 2027,
+  "season_type": "REG",
+  "timezone": "Asia/Shanghai",
+  "qualification": {
+    "version": "ongoing-20mpg-58of82-v1",
+    "min_minutes": 20,
+    "min_games_formula": "max(1, ceil(mean(30 source team games) * 58 / 82))",
+    "custom_rule": true,
+    "note": "本站进行中赛季资格规则；各来源使用同批球队已赛场次，不使用历史榜单的固定58场门槛。"
+  },
+  "sources": {
+    "bbref": {
+      "id": "bbref",
+      "label": "Basketball Reference 衍生公开档案 · Kaggle",
+      "url": "https://www.kaggle.com/datasets/sumitrodatta/nba-aba-baa-stats",
+      "reference": "https://www.basketball-reference.com/leagues/NBA_2027_advanced.html",
+      "metrics": [
+        "BPM",
+        "OBPM",
+        "DBPM",
+        "WS",
+        "OWS",
+        "DWS",
+        "WS_48",
+        "VORP",
+        "PER"
+      ],
+      "note": "优先从可公开访问的自动化运行环境读取 Basketball Reference 原始高阶表及球队页面。本地实测403时不绕过挑战，备用现有项目的 CC0 衍生档案。各版本明确记录实际提供者，跨提供者不计算涨跌。"
+    },
+    "nba": {
+      "id": "nba",
+      "label": "NBA Stats · SportsDataverse 公开档案",
+      "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/tag/nba_stats_player_season_stats",
+      "reference": "https://www.nba.com/stats/players/advanced?Season=2026-27",
+      "metrics": [
+        "TS_PCT",
+        "USG_PCT"
+      ],
+      "note": "NBA Stats 高阶表的原始 TS%、USG% 字段；不使用同名防守字段冒充 Basketball Reference DWS。"
+    },
+    "epm": {
+      "id": "epm",
+      "label": "Dunks & Threes",
+      "url": "https://dunksandthrees.com/about/epm",
+      "status": "not_connected",
+      "reason": "公开 Actual 表当前未提供可可靠归档的完整 EPM 评级，作者的程序化 API 需要订阅。未购买、未使用登录或付费数据。",
+      "reviewed_at": "2026-11-11",
+      "types": {
+        "EPM_ACTUAL": "actual",
+        "EPM_EXPECTED": "expected_predictive"
+      }
+    }
+  },
+  "snapshot_policy": "保存从上线开始的有效统计版本及每日一次的真实核验索引；内容不变不复制统计文件，不改统计截止与原始抓取时间。未保存日期不回填。"
+}

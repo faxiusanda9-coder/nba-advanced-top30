@@ -18,7 +18,7 @@ for (const player of database.players) {
   await stat(path.join(output, 'player', player.slug, 'index.html'));
 }
 for (const id of Object.keys(manifest.games)) await stat(path.join(output, 'game', id, 'index.html'));
-for (const route of ['daily-games', 'advanced-guide']) await stat(path.join(output, route, 'index.html'));
+for (const route of ['daily-games', 'advanced-guide', 'current-season']) await stat(path.join(output, route, 'index.html'));
 let fileCount = 0, bytes = 0, largest = 0;
 const walk = async directory => {
   for (const entry of await readdir(directory, {withFileTypes: true})) {

@@ -1,0 +1,84 @@
+name: Update NBA current season advanced stats
+
+on:
+  schedule:
+    # UTC; Beijing 09:23 / 15:23 / 21:23 / 03:23. Scheduling and publishing can be delayed.
+    - cron: '23 1,7,13,19 * * *'
+  workflow_dispatch:
+    inputs:
+      source:
+        description: 'Refresh a source or retry a failed capture'
+        type: choice
+        options: [all, bbref, nba, epm]
+        default: all
+  pull_request:
+    paths:
+      - '.github/workflows/update-current-season.yml'
+      - 'scripts/update-current-season.mjs'
+      - 'scripts/lib/current-season.mjs'
+      - 'assets/current-season-core.mjs'
+      - 'tests/current-season.test.mjs'
+      - 'data/current-season/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nba-archive-writer
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify snapshots, identities, rankings, missing values and EPM boundaries
+        run: node --test tests/current-season.test.mjs tests/metric-explanations.test.mjs
+      - name: Check real 2026-27 sources from GitHub Actions
+        id: capture
+        continue-on-error: true
+        env:
+          REQUEST_SOURCE: ${{ inputs.source || 'all' }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          arguments=("--source=$REQUEST_SOURCE")
+          if [ "$EVENT_NAME" = pull_request ]; then arguments+=(--dry-run); fi
+          node scripts/update-current-season.mjs "${arguments[@]}"
+      - name: Cache official headshots for current players
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        run: node scripts/fetch-player-headshots.mjs --max=80
+      - name: Commit only changed data or newly verified daily observation indexes
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/current-season/ assets/player-headshots/ data/games/headshots-unavailable.json data/games/headshot-sources.json
+          if git diff --cached --quiet; then
+            echo "No source content or daily observation changes."
+          else
+            git commit -m "Update current NBA season advanced snapshots"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Save HTTP and player validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: current-season-source-check
+          path: |
+            out/current-season-source-check.json
+            out/current-season-primary-advanced.html
+            out/current-season-primary-teams.html
+      - name: Report partial failures without erasing valid sources
+        if: always()
+        env:
+          CAPTURE_STATUS: ${{ steps.capture.outcome }}
+        run: |
+          echo "Current-season sources: $CAPTURE_STATUS" >> "$GITHUB_STEP_SUMMARY"
+          echo "Review the artifact for source cutoffs, HTTP status and three player samples. Failed sources retain valid snapshots." >> "$GITHUB_STEP_SUMMARY"
+          if [ "$CAPTURE_STATUS" != success ]; then exit 1; fi

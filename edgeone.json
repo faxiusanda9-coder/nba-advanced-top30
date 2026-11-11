@@ -3,6 +3,7 @@
   "outputDirectory": "dist-cn",
   "nodeVersion": "22.11.0",
   "rewrites": [
+    { "source": "/current-season", "destination": "/current-season/index.html" },
     { "source": "/advanced-guide", "destination": "/advanced-guide/index.html" },
     { "source": "/daily-games", "destination": "/daily-games/index.html" },
     { "source": "/player/:slug", "destination": "/player/:slug/index.html" },

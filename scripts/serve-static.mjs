@@ -25,6 +25,7 @@ createServer(async (request, response) => {
   } else {
     if (pathname === '/daily-games') pathname = '/daily-games.html';
     if (pathname === '/advanced-guide') pathname = '/advanced-guide.html';
+    if (pathname === '/current-season') pathname = '/current-season.html';
     if (/^\/game\/\d{10}$/.test(pathname)) pathname = '/game.html';
     if (/^\/player\/[^/]+$/.test(pathname)) pathname = '/player.html';
   }

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b1017">
+<title>本赛季高阶 · NBA Advanced</title>
+<link rel="stylesheet" href="/assets/daily-games.css"><link rel="stylesheet" href="/assets/current-season.css"><link rel="stylesheet" href="/assets/metric-explanations.css">
+</head>
+<body><main class="daily-page current-page">
+  <header class="daily-header"><div><p class="eyebrow">NBA ADVANCED · SEASON TRACKER</p><h1>本赛季高阶</h1><p>2026–27 · 常规赛 · 追踪赛季进度，保留每一次真实观察。</p></div><a href="/advanced-guide" class="guide-entry">ⓘ 高阶数据指南</a></header>
+  <nav class="section-tabs" aria-label="网站主栏目"><a href="/">高阶数据</a><a href="/#compare">球员比较</a><a href="/daily-games">每日比赛</a><a href="/current-season" aria-current="page">本赛季高阶</a></nav>
+  <section class="source-summary" id="sourceSummary" aria-label="各来源统计进度"><p class="small-note">正在读取数据来源…</p></section>
+  <section class="daily-panel tracker-panel">
+    <div class="tracker-heading"><div><p class="eyebrow">SEASON TO DATE</p><h2>球员数据与联盟排名</h2></div><span id="sourceBadge" class="source-badge"></span></div>
+    <p class="small-note">这里是本赛季截至来源统计截止日的数据，包含此前已赛比赛；不是今天单场的 BPM 或 EPM。</p>
+    <div class="tracker-controls">
+      <label>指标<select id="trackerMetric" aria-label="选择高阶指标"></select></label>
+      <label>搜索球员<input id="trackerSearch" type="search" placeholder="姓名或来源 ID" autocomplete="off"></label>
+      <label>球队<select id="trackerTeam"><option value="">全部球队</option></select></label>
+      <label>查询收录日期<input id="trackerDate" type="date" aria-label="已保存的北京时间日期"></label>
+      <button id="trackerLatest" type="button">最新有效快照</button>
+    </div>
+    <div id="metricHeading" class="metric-heading"></div>
+    <p id="trackerState" class="tracker-state" role="status">正在读取本赛季档案…</p>
+    <p id="qualificationNote" class="small-note"></p><p id="comparisonNote" class="small-note"></p>
+    <div class="tracker-table-scroll" id="trackerTableScroll" hidden><table id="trackerTable">
+      <thead><tr>
+        <th scope="col"><button data-sort="player_name">球员 / 球队</button></th>
+        <th scope="col"><button data-sort="games_included">场次</button></th>
+        <th scope="col"><button data-sort="minutes_per_game">分钟<small>场均</small></button></th>
+        <th scope="col"><button data-sort="value">当前值</button></th>
+        <th scope="col"><button data-sort="previous_value">上次值</button></th>
+        <th scope="col"><button data-sort="value_change">数值变化</button></th>
+        <th scope="col"><button data-sort="rank">当前排名</button></th>
+        <th scope="col"><button data-sort="previous_rank">上次排名</button></th>
+        <th scope="col"><button data-sort="rank_change">排名变化</button></th>
+        <th scope="col">观察</th><th scope="col">来源</th>
+      </tr></thead><tbody id="trackerRows"></tbody>
+    </table></div><p id="trackerCount" class="small-note"></p>
+    <p class="small-note">变化基于两份可比较的真实快照，可能包含多场比赛、官方修正及其他球员的变化；不能直接解释为某一场比赛带来的提升。百分比指标的差值使用“百分点”。</p>
+  </section>
+  <section class="daily-panel trend-panel" id="trackerTrend" hidden aria-labelledby="trendTitle">
+    <div class="tracker-heading"><div><p class="eyebrow">SAVED OBSERVATIONS</p><h2 id="trendTitle">球员变化曲线</h2></div><button id="closeTrend" type="button">收起</button></div>
+    <p id="trendNote" class="small-note"></p><div id="trackerChart"></div><p id="trendReadout" class="trend-readout" aria-live="polite"></p>
+    <div id="trendPoints" class="trend-points"></div>
+  </section>
+  <footer class="small-note">从功能上线开始归档，未保存日期显示尚未收录。首次收录不会生成虚构涨跌。来源检查和网站发布存在延迟。<a href="/daily-games">查看每日比赛与单场 GmSc →</a></footer>
+</main><script type="module" src="/assets/current-season.js"></script></body></html>

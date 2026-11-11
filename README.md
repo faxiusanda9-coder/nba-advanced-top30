@@ -4,6 +4,10 @@
 
 网站入口：[NBA Advanced · GitHub Pages](https://faxiusanda9-coder.github.io/nba-advanced-top30/)。新站将网页、图片和全部档案一起部署，无 Vercel 运行时依赖；构建、打包、自动更新和迁移说明见 [GitHub Pages 部署](docs/github-pages.md)。
 
+## 本赛季高阶追踪
+
+独立入口：[2026–27 本赛季高阶](https://faxiusanda9-coder.github.io/nba-advanced-top30/current-season/)。按真实来源显示本季统计、动态资格排名、已保存快照之间的数值与名次变化，以及按需加载的球员曲线。优先接入自动化环境可公开读取的 BRef 原始高阶表，NBA Stats 档案提供 TS%／USG%；各来源分别标明实际截止日期。备用衍生档案滞后、EPM 未接入会明确提示，不用上季数据或推算评级填充。来源、快照、自动任务和验收详见 [本赛季栏目说明](docs/current-season.md)。
+
 ## 每日比赛与单场 GmSc
 
 [`/daily-games`](https://faxiusanda9-coder.github.io/nba-advanced-top30/daily-games/) 与首页「高阶数据」「球员比较」同列。按北京时间查看今天、昨天或指定日期的正式 NBA 比赛；单场页先呈现得分、篮板、助攻、抢断、盖帽、失误六项基础数据及双方完整技术统计，再展示 GmSc 图表。赛季榜单也显示这六项场均数据，保留的高阶指标附中文小字和解释链接。赛程、比分和 Box Score 来自 NBA 官方公开数据；开赛日至今的每天都有日期索引，历史快照保存在独立的 `data/games/` 目录。自动归档每 30 分钟检查一次，实际更新受 Actions 与部署延迟影响。数据口径、覆盖日期、手动补抓及验收见 [每日比赛说明](docs/daily-games.md)。
