@@ -2,6 +2,10 @@
 
 按赛季查看 NBA 球员常规赛或季后赛高级数据，并按选定指标显示联盟前 30 名。
 
+## 每日比赛与单场 GmSc
+
+[`/daily-games`](https://nba-advanced-top30.vercel.app/daily-games) 按北京时间展示今天、昨天或指定已收录日期的正式 NBA 比赛；进入单场页面可查看双方全部实际出场球员的技术统计、DNP 名单、单场 GmSc 排序与横向对比图。得分、篮板、助攻和正负值同时出现在图表摘要与可横向滚动的完整表格中。赛程、比分和 Box Score 来自 NBA 官方公开数据；历史快照保存在独立的 `data/games/` 目录。自动归档每 30 分钟检查一次，实际更新受 Actions 与部署延迟影响。数据口径、覆盖日期、手动补抓及验收见 [每日比赛说明](docs/daily-games.md)。
+
 ## 高阶数据解释层
 
 `data/advanced_metrics_explanation.json` 是解释文本的唯一来源，保存版本、核对日期、四类指标目录、九项指标的名称、简述、参考方向、含义、用途、局限和原始方法链接。RAPTOR 条目还说明 Estimated RAPTOR 接续版本；LAKER 单独说明。解释没有球员身份、统计输入或等级阈值。

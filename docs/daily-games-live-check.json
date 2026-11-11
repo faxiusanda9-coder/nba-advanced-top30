@@ -1,0 +1,111 @@
+{
+  "checked_at": "2026-11-11T12:33:04.692Z",
+  "date": "2026-11-11",
+  "date_game_count": 6,
+  "date_final_count": 6,
+  "date_complete": true,
+  "games": [
+    {
+      "game_id": "0022600211",
+      "nba_url": "https://cdn.nba.com/static/json/liveData/boxscore/boxscore_0022600211.json",
+      "espn_url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909960",
+      "start_utc": "2026-11-11T00:30:00.000Z",
+      "official_date": "2026-11-10",
+      "beijing_date": "2026-11-11",
+      "final_score": "MIL 85 - NYK 117",
+      "scores_agree": true,
+      "saved_player_count": 28,
+      "official_player_count": 28,
+      "players": [
+        {
+          "name": "Jaime Jaquez Jr.",
+          "nba_player_id": "1631170",
+          "saved_gmsc": 9.5,
+          "independent_espn_gmsc": 9.5,
+          "nba_score_recalculated": 9.5,
+          "source_stats_agree": true,
+          "gmsc_agrees": true,
+          "differences": []
+        },
+        {
+          "name": "OG Anunoby",
+          "nba_player_id": "1628384",
+          "saved_gmsc": 14.7,
+          "independent_espn_gmsc": 14.7,
+          "nba_score_recalculated": 14.7,
+          "source_stats_agree": true,
+          "gmsc_agrees": true,
+          "differences": []
+        }
+      ]
+    },
+    {
+      "game_id": "0022600212",
+      "nba_url": "https://cdn.nba.com/static/json/liveData/boxscore/boxscore_0022600212.json",
+      "espn_url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909961",
+      "start_utc": "2026-11-11T01:00:00.000Z",
+      "official_date": "2026-11-10",
+      "beijing_date": "2026-11-11",
+      "final_score": "BOS 123 - PHI 101",
+      "scores_agree": true,
+      "saved_player_count": 27,
+      "official_player_count": 27,
+      "players": [
+        {
+          "name": "Paul George",
+          "nba_player_id": "202331",
+          "saved_gmsc": 27,
+          "independent_espn_gmsc": 27,
+          "nba_score_recalculated": 27,
+          "source_stats_agree": true,
+          "gmsc_agrees": true,
+          "differences": []
+        },
+        {
+          "name": "Jaylen Brown",
+          "nba_player_id": "1627759",
+          "saved_gmsc": 8.3,
+          "independent_espn_gmsc": 8.3,
+          "nba_score_recalculated": 8.3,
+          "source_stats_agree": true,
+          "gmsc_agrees": true,
+          "differences": []
+        }
+      ]
+    },
+    {
+      "game_id": "0022600213",
+      "nba_url": "https://cdn.nba.com/static/json/liveData/boxscore/boxscore_0022600213.json",
+      "espn_url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909962",
+      "start_utc": "2026-11-11T02:00:00.000Z",
+      "official_date": "2026-11-10",
+      "beijing_date": "2026-11-11",
+      "final_score": "LAC 110 - PHX 133",
+      "scores_agree": true,
+      "saved_player_count": 25,
+      "official_player_count": 25,
+      "players": [
+        {
+          "name": "Derrick Jones Jr.",
+          "nba_player_id": "1627884",
+          "saved_gmsc": 9.6,
+          "independent_espn_gmsc": 9.6,
+          "nba_score_recalculated": 9.6,
+          "source_stats_agree": true,
+          "gmsc_agrees": true,
+          "differences": []
+        },
+        {
+          "name": "Dillon Brooks",
+          "nba_player_id": "1628415",
+          "saved_gmsc": 4,
+          "independent_espn_gmsc": 4,
+          "nba_score_recalculated": 4,
+          "source_stats_agree": true,
+          "gmsc_agrees": true,
+          "differences": []
+        }
+      ]
+    }
+  ]
+}

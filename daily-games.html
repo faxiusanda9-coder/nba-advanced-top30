@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b1017"><title>每日比赛 · NBA Advanced</title>
+  <link rel="stylesheet" href="/assets/daily-games.css">
+</head>
+<body><main class="daily-page">
+  <header class="daily-header"><a class="back-link" href="/">← 联盟排行榜</a><div class="eyebrow">NBA ADVANCED / DAILY</div>
+    <h1>每日比赛</h1><p>按北京时间查看赛程，赛后阅读完整技术统计与单场 GmSc。</p>
+    <nav class="daily-nav" aria-label="网站栏目"><a href="/advanced-guide">高阶数据指南</a><a href="/">球员与排行榜</a></nav>
+  </header>
+  <section class="daily-panel" aria-label="选择比赛日期">
+    <div class="date-actions"><button id="todayButton" type="button">今天</button><button id="yesterdayButton" type="button">昨天</button>
+      <label>指定日期 <input id="gameDate" type="date"></label></div>
+    <div class="date-head"><div><div id="dateTitle" class="date-title"></div><p id="dateSummary" role="status"></p></div><span class="timezone">Asia/Shanghai · 北京时间</span></div>
+    <p id="loadState" class="load-state" role="status"></p><div id="gameList" class="game-list"></div>
+    <p id="lastUpdated" class="last-updated"></p>
+  </section>
+  <footer>赛后数据由独立归档任务定期核对；GitHub Actions 调度及网站部署可能延迟，不提供秒级直播。</footer>
+</main><script type="module" src="/assets/daily-games.js"></script></body>
+</html>

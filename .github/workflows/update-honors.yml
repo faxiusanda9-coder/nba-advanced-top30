@@ -19,7 +19,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: nba-player-honors-update
+  group: nba-archive-writer
   cancel-in-progress: false
 
 jobs:

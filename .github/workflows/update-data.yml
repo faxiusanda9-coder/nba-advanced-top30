@@ -7,6 +7,7 @@ on:
       - 'data/**'
       - 'sources/**'
       - 'api/_data/**'
+      - 'assets/player-headshots/**'
   workflow_dispatch:
     inputs:
       backfill:
@@ -19,6 +20,10 @@ on:
 
 permissions:
   contents: write
+
+concurrency:
+  group: nba-archive-writer
+  cancel-in-progress: false
 
 jobs:
   update-data:
