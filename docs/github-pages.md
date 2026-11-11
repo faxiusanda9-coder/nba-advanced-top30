@@ -2,7 +2,7 @@
 
 新站入口：<https://faxiusanda9-coder.github.io/nba-advanced-top30/>。
 
-整个新站使用 GitHub Pages 提供网页、球员档案、生涯荣誉、赛季 JSON、每日比赛、Box Score、指标解释、球队标志和已缓存头像。访问新站不经过 Vercel，也不调用 Vercel 的 `/api/player`。旧 Vercel 配置保留用于迁移期间回退；停用旧项目不影响新站。
+整个新站使用 GitHub Pages 提供网页、球员档案、生涯荣誉、赛季 JSON、每日比赛、Box Score、指标解释、球队标志和已缓存头像。访问新站不经过 Vercel，也不调用 Vercel 的 `/api/player`。`vercel.json` 已关闭 Vercel 自动部署；现有旧网址保留最后快照用于回退，不再跟随仓库更新。停用旧项目不影响新站。
 
 ## 自动更新
 
