@@ -67,6 +67,9 @@ async function loadDate() {
       getJson(`/data/games/dates/${selected}.json`), getJson('/data/games/manifest.json')
     ]);
     if (token !== request) return;
+    if (manifestResult.status !== 200 || !manifestResult.data ||
+        (dateResult.status !== 200 && dateResult.status !== 404))
+      throw new Error('Game archive unavailable');
     const index = dateResult.data, manifest = manifestResult.data;
     const state = dateViewState(dateResult.status, index, manifest, selected, today);
     if (state === 'games') {

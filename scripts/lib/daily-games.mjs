@@ -152,7 +152,8 @@ export function boxscoreSnapshot(document, summary, fetchedAt) {
       if (!/^\d+$/.test(player.player_id) || !player.player_name || seen.has(player.player_id))
         throw new Error(`${summary.game_id}: missing or duplicate player ID`);
       seen.add(player.player_id);
-      if (player.played && (player.gmsc.status !== 'calculated' || player.minutes === null)) issues.push(`${player.player_id}: missing stats`);
+      if (player.played && (player.gmsc.status !== 'calculated' || player.minutes === null ||
+          Object.values(player.stats).some(value => value === null))) issues.push(`${player.player_id}: missing stats`);
     }
     if (players.filter(player => player.played).length < 5) issues.push(`${side}: fewer than five played players`);
     const score = number(team.score);
