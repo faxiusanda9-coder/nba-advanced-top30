@@ -73,3 +73,14 @@ node scripts/build-github-pages.mjs
 ## 验收
 
 包含真实赛季及三队样本、两份实际 NBA release 的数值及排名复算、并列／负数／零／缺失、首次收录及入榜、失去资格、跨来源及模型隔离、转队及同名、延迟／失败／修正／重复执行、每日核验索引及未收录日期。浏览器检查320、390、1280像素布局、球员搜索、真实数值与联盟排名、触控曲线、EPM缺失状态及既有历史功能。新栏目不请求境外运行时图片或API，均加载新站同域静态档案。
+
+## 主要修改文件
+
+| 范围 | 文件 |
+| --- | --- |
+| 独立页面、共享排名计算与界面 | `current-season.html`、`assets/current-season.js`、`assets/current-season-core.mjs`、`assets/current-season.css` |
+| 抓取、校验、归档 | `scripts/update-current-season.mjs`、`scripts/lib/current-season.mjs`、`scripts/fetch-player-headshots.mjs` |
+| 数据、初次捕获证明、核验报告 | `data/current-season/2026-27/**`、`sources/current-season/2026-27/**`、`docs/current-season-source-verification.json` |
+| 独立更新与自动发布 | `.github/workflows/update-current-season.yml`、`.github/workflows/deploy-pages.yml` |
+| 导航、构建、路由 | `index.html`、`daily-games.html`、`assets/daily-games.css`、`scripts/build-site.mjs`、`scripts/build-static-mirror.mjs`、`scripts/verify-static-mirror.mjs`、`scripts/lib/static-paths.mjs`、`scripts/serve-static.mjs`、`vercel.json`、`edgeone.json` |
+| 统一解释及验收 | `data/advanced_metrics_explanation.json`、`assets/metric-explanations.mjs`、`tests/current-season.test.mjs`、`tests/metric-explanations.test.mjs`、`scripts/check-daily-browser.mjs`、`README.md` |
