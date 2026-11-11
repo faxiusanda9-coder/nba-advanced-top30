@@ -3,11 +3,10 @@ name: Update NBA season archive
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - 'data/**'
-      - 'sources/**'
-      - 'api/_data/**'
-      - 'assets/player-headshots/**'
+    paths:
+      - '.github/workflows/update-data.yml'
+      - 'scripts/build-data.mjs'
+      - 'scripts/add-*.mjs'
   workflow_dispatch:
     inputs:
       backfill:
@@ -37,7 +36,7 @@ jobs:
           node-version: 22
       - name: Download and normalize NBA Stats archive
         run: |
-          if [ "${{ github.event_name }}" = "push" ] || { [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.backfill }}" = "true" ]; }; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.backfill }}" = "true" ]; then
             node scripts/build-data.mjs --backfill
           else
             node scripts/build-data.mjs

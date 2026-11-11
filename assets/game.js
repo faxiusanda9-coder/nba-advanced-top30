@@ -2,7 +2,7 @@ import {beijingTime, typeName, statusName, shown, shownGmsc, sortPlayers, chartS
 import {createExplanationButton} from './metric-explanations.mjs';
 
 const $ = id => document.getElementById(id);
-const id = new URLSearchParams(location.search).get('id') || location.pathname.match(/^\/game\/(\d{10})\/?$/)?.[1];
+const id = new URLSearchParams(location.search).get('id') || location.pathname.match(/\/game\/(\d{10})\/?$/)?.[1];
 const node = (tag, text, className) => {const result = document.createElement(tag); if (text !== undefined) result.textContent = text; if (className) result.className = className; return result;};
 const field = (player, key) => shown(player.stats?.[key]);
 const pair = (player, a, b) => `${field(player, a)}/${field(player, b)}`;

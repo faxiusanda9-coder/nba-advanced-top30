@@ -6,12 +6,19 @@ import {fileURLToPath} from 'node:url';
 const mirror = process.env.STATIC_ROOT === 'dist-cn';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', mirror ? 'dist-cn' : 'public');
 const port = Number(process.env.PORT || 4173);
+const basePath = (process.env.SITE_BASE_PATH || '').replace(/\/$/, '');
 const types = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8',
   '.mjs':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8',
   '.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png'};
 createServer(async (request, response) => {
   const url = new URL(request.url, `http://${request.headers.host}`);
   let pathname = url.pathname;
+  if (basePath) {
+    if (pathname !== basePath && !pathname.startsWith(`${basePath}/`)) {
+      response.writeHead(404); response.end('Not found'); return;
+    }
+    pathname = pathname.slice(basePath.length) || '/';
+  }
   if (pathname === '/') pathname = '/index.html';
   if (mirror) {
     if (!path.posix.extname(pathname)) pathname = `${pathname.replace(/\/$/, '')}/index.html`;

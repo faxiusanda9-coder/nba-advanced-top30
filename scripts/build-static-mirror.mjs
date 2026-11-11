@@ -1,9 +1,11 @@
-import {cp, mkdir, readFile, realpath, rm, writeFile} from 'node:fs/promises';
+import {cp, mkdir, readFile, readdir, realpath, rm, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {normalizeBasePath, rebaseStaticPaths} from './lib/static-paths.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const output = path.resolve(root, 'dist-cn');
+const basePath = normalizeBasePath(process.env.SITE_BASE_PATH || '');
 const rootReal = await realpath(root);
 if (output !== path.join(root, 'dist-cn')) throw new Error('Unexpected mirror output path');
 try {
@@ -29,6 +31,23 @@ await replaceOnce('assets/player-profile.js',
 await replaceOnce('assets/player-profile.js',
   '/api/player?slug=${encodeURIComponent(slug)}',
   '/data/player-profiles/${encodeURIComponent(slug)}.json');
+
+// Transform the shared pages before copying their individual static routes.
+for (const entry of await readdir(output, {withFileTypes: true})) {
+  if (entry.isFile() && entry.name.endsWith('.html')) {
+    const file = path.join(output, entry.name);
+    await writeFile(file, rebaseStaticPaths(await readFile(file, 'utf8'), basePath));
+  }
+}
+async function rebaseAssets(directory) {
+  for (const entry of await readdir(directory, {withFileTypes: true})) {
+    const file = path.join(directory, entry.name);
+    if (entry.isDirectory()) await rebaseAssets(file);
+    else if (/\.(?:js|mjs|css)$/.test(entry.name))
+      await writeFile(file, rebaseStaticPaths(await readFile(file, 'utf8'), basePath));
+  }
+}
+if (basePath) await rebaseAssets(path.join(output, 'assets'));
 
 const database = JSON.parse(await readFile(path.join(root, 'api/_data/players.json'), 'utf8'));
 const manifest = JSON.parse(await readFile(path.join(root, 'data/games/manifest.json'), 'utf8'));
@@ -72,4 +91,5 @@ for (const route of ['daily-games', 'advanced-guide']) {
   await mkdir(target, {recursive: true});
   await cp(path.join(output, `${route}.html`), path.join(target, 'index.html'));
 }
-console.log(JSON.stringify({output, static_profiles: database.players.length, static_game_routes: gameIds.length}));
+await writeFile(path.join(output, '.nojekyll'), '');
+console.log(JSON.stringify({output, base_path: basePath, static_profiles: database.players.length, static_game_routes: gameIds.length}));

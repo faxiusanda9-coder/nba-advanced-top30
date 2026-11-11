@@ -1,0 +1,83 @@
+name: Deploy NBA Advanced to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - '.github/workflows/deploy-pages.yml'
+      - 'scripts/**'
+      - 'assets/**'
+      - '*.html'
+      - 'tests/**'
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Update NBA daily games and Game Score
+      - Update NBA season archive
+      - Update NBA player honors
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nba-pages-publication
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.event != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: read
+      deployments: read
+    outputs:
+      needed: ${{ steps.changed.outputs.needed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Skip an already published source after unchanged data checks
+        id: changed
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/pages-deploy-needed.mjs
+      - name: Configure Pages
+        if: steps.changed.outputs.needed == 'true'
+        id: pages
+        uses: actions/configure-pages@v5
+      - name: Build full website, profiles, honors and archived games
+        if: steps.changed.outputs.needed == 'true'
+        env:
+          SITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: node scripts/build-github-pages.mjs
+      - name: Verify archived data and existing features
+        if: steps.changed.outputs.needed == 'true'
+        run: node --test tests/*.test.mjs
+      - name: Package complete static site
+        if: steps.changed.outputs.needed == 'true' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist-cn
+  deploy:
+    if: github.event_name != 'pull_request' && needs.build.outputs.needed == 'true'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish complete website
+        id: deployment
+        uses: actions/deploy-pages@v4
