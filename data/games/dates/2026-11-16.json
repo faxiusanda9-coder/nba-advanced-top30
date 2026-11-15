@@ -3,7 +3,7 @@
   "date": "2026-11-16",
   "timezone": "Asia/Shanghai",
   "game_count": 9,
-  "final_count": 0,
+  "final_count": 1,
   "complete": false,
   "state": "incomplete",
   "games": [
@@ -13,25 +13,25 @@
       "beijing_date": "2026-11-16",
       "start_utc": "2026-11-15T18:00:00.000Z",
       "game_type": "regular",
-      "status": "scheduled",
-      "status_text": "1:00 pm ET",
+      "status": "final",
+      "status_text": "Final",
       "home": {
         "team_id": "1610612755",
         "name": "76ers",
         "city": "Philadelphia",
         "tricode": "PHI",
-        "score": null
+        "score": 131
       },
       "away": {
         "team_id": "1610612754",
         "name": "Pacers",
         "city": "Indiana",
         "tricode": "IND",
-        "score": null
+        "score": 124
       },
-      "boxscore_state": "not_due",
-      "boxscore_fetched_at": null,
-      "updated_at": "2026-11-14T18:59:30.480Z"
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-15T21:36:32.831Z",
+      "updated_at": "2026-11-15T21:36:32.831Z"
     },
     {
       "game_id": "0022600237",
@@ -39,25 +39,25 @@
       "beijing_date": "2026-11-16",
       "start_utc": "2026-11-15T21:00:00.000Z",
       "game_type": "regular",
-      "status": "scheduled",
-      "status_text": "4:00 pm ET",
+      "status": "live",
+      "status_text": "1st Qtr             ",
       "home": {
         "team_id": "1610612756",
         "name": "Suns",
         "city": "Phoenix",
         "tricode": "PHX",
-        "score": null
+        "score": 12
       },
       "away": {
         "team_id": "1610612747",
         "name": "Lakers",
         "city": "Los Angeles",
         "tricode": "LAL",
-        "score": null
+        "score": 25
       },
       "boxscore_state": "not_due",
       "boxscore_fetched_at": null,
-      "updated_at": "2026-11-14T18:59:30.480Z"
+      "updated_at": "2026-11-15T21:36:32.831Z"
     },
     {
       "game_id": "0022600238",
@@ -242,5 +242,5 @@
       "updated_at": "2026-11-14T18:59:30.480Z"
     }
   ],
-  "last_updated_at": "2026-11-14T18:59:30.480Z"
+  "last_updated_at": "2026-11-15T21:36:32.831Z"
 }
