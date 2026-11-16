@@ -4956,25 +4956,25 @@
       "beijing_date": "2026-11-16",
       "start_utc": "2026-11-15T21:00:00.000Z",
       "game_type": "regular",
-      "status": "live",
-      "status_text": "1st Qtr             ",
+      "status": "final",
+      "status_text": "Final",
       "home": {
         "team_id": "1610612756",
         "name": "Suns",
         "city": "Phoenix",
         "tricode": "PHX",
-        "score": 12
+        "score": 123
       },
       "away": {
         "team_id": "1610612747",
         "name": "Lakers",
         "city": "Los Angeles",
         "tricode": "LAL",
-        "score": 25
+        "score": 131
       },
-      "boxscore_state": "not_due",
-      "boxscore_fetched_at": null,
-      "updated_at": "2026-11-15T21:36:32.831Z"
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-16T01:21:45.079Z",
+      "updated_at": "2026-11-16T01:21:45.079Z"
     },
     "0022600238": {
       "game_id": "0022600238",
@@ -4982,25 +4982,25 @@
       "beijing_date": "2026-11-16",
       "start_utc": "2026-11-15T21:30:00.000Z",
       "game_type": "regular",
-      "status": "scheduled",
-      "status_text": "4:30 pm ET",
+      "status": "final",
+      "status_text": "Final",
       "home": {
         "team_id": "1610612746",
         "name": "Clippers",
         "city": "LA",
         "tricode": "LAC",
-        "score": null
+        "score": 113
       },
       "away": {
         "team_id": "1610612766",
         "name": "Hornets",
         "city": "Charlotte",
         "tricode": "CHA",
-        "score": null
+        "score": 105
       },
-      "boxscore_state": "not_due",
-      "boxscore_fetched_at": null,
-      "updated_at": "2026-11-14T18:59:30.480Z"
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-16T01:21:45.079Z",
+      "updated_at": "2026-11-16T01:21:45.079Z"
     },
     "0022600239": {
       "game_id": "0022600239",
@@ -5008,25 +5008,25 @@
       "beijing_date": "2026-11-16",
       "start_utc": "2026-11-15T22:00:00.000Z",
       "game_type": "regular",
-      "status": "scheduled",
-      "status_text": "5:00 pm ET",
+      "status": "final",
+      "status_text": "Final",
       "home": {
         "team_id": "1610612762",
         "name": "Jazz",
         "city": "Utah",
         "tricode": "UTA",
-        "score": null
+        "score": 102
       },
       "away": {
         "team_id": "1610612759",
         "name": "Spurs",
         "city": "San Antonio",
         "tricode": "SAS",
-        "score": null
+        "score": 110
       },
-      "boxscore_state": "not_due",
-      "boxscore_fetched_at": null,
-      "updated_at": "2026-11-14T18:59:30.480Z"
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-16T01:21:45.079Z",
+      "updated_at": "2026-11-16T01:21:45.079Z"
     },
     "0022600240": {
       "game_id": "0022600240",
@@ -5034,25 +5034,25 @@
       "beijing_date": "2026-11-16",
       "start_utc": "2026-11-15T23:00:00.000Z",
       "game_type": "regular",
-      "status": "scheduled",
-      "status_text": "6:00 pm ET",
+      "status": "final",
+      "status_text": "Final",
       "home": {
         "team_id": "1610612738",
         "name": "Celtics",
         "city": "Boston",
         "tricode": "BOS",
-        "score": null
+        "score": 131
       },
       "away": {
         "team_id": "1610612742",
         "name": "Mavericks",
         "city": "Dallas",
         "tricode": "DAL",
-        "score": null
+        "score": 94
       },
-      "boxscore_state": "not_due",
-      "boxscore_fetched_at": null,
-      "updated_at": "2026-11-14T18:59:30.480Z"
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-16T01:21:45.079Z",
+      "updated_at": "2026-11-16T01:21:45.079Z"
     },
     "0022600241": {
       "game_id": "0022600241",
@@ -5060,25 +5060,25 @@
       "beijing_date": "2026-11-16",
       "start_utc": "2026-11-15T23:00:00.000Z",
       "game_type": "regular",
-      "status": "scheduled",
-      "status_text": "6:00 pm ET",
+      "status": "live",
+      "status_text": "4th Qtr             ",
       "home": {
         "team_id": "1610612761",
         "name": "Raptors",
         "city": "Toronto",
         "tricode": "TOR",
-        "score": null
+        "score": 86
       },
       "away": {
         "team_id": "1610612752",
         "name": "Knicks",
         "city": "New York",
         "tricode": "NYK",
-        "score": null
+        "score": 81
       },
       "boxscore_state": "not_due",
       "boxscore_fetched_at": null,
-      "updated_at": "2026-11-14T18:59:30.480Z"
+      "updated_at": "2026-11-16T01:21:45.079Z"
     },
     "0022600242": {
       "game_id": "0022600242",
@@ -5086,25 +5086,25 @@
       "beijing_date": "2026-11-16",
       "start_utc": "2026-11-16T00:00:00.000Z",
       "game_type": "regular",
-      "status": "scheduled",
-      "status_text": "7:00 pm ET",
+      "status": "live",
+      "status_text": "3rd Qtr             ",
       "home": {
         "team_id": "1610612764",
         "name": "Wizards",
         "city": "Washington",
         "tricode": "WAS",
-        "score": null
+        "score": 56
       },
       "away": {
         "team_id": "1610612745",
         "name": "Rockets",
         "city": "Houston",
         "tricode": "HOU",
-        "score": null
+        "score": 75
       },
       "boxscore_state": "not_due",
       "boxscore_fetched_at": null,
-      "updated_at": "2026-11-14T18:59:30.480Z"
+      "updated_at": "2026-11-16T01:21:45.079Z"
     },
     "0022600243": {
       "game_id": "0022600243",
@@ -5112,25 +5112,25 @@
       "beijing_date": "2026-11-16",
       "start_utc": "2026-11-16T01:00:00.000Z",
       "game_type": "regular",
-      "status": "scheduled",
-      "status_text": "8:00 pm ET",
+      "status": "live",
+      "status_text": "1st Qtr             ",
       "home": {
         "team_id": "1610612749",
         "name": "Bucks",
         "city": "Milwaukee",
         "tricode": "MIL",
-        "score": null
+        "score": 18
       },
       "away": {
         "team_id": "1610612737",
         "name": "Hawks",
         "city": "Atlanta",
         "tricode": "ATL",
-        "score": null
+        "score": 9
       },
       "boxscore_state": "not_due",
       "boxscore_fetched_at": null,
-      "updated_at": "2026-11-14T18:59:30.480Z"
+      "updated_at": "2026-11-16T01:21:45.079Z"
     },
     "0022600244": {
       "game_id": "0022600244",
