@@ -1867,7 +1867,7 @@
       "start_utc": "2026-10-25T02:00:00.000Z",
       "game_type": "regular",
       "status": "final",
-      "status_text": "Final",
+      "status_text": "Final/OT",
       "home": {
         "team_id": "1610612756",
         "name": "Suns",
@@ -1884,7 +1884,7 @@
       },
       "boxscore_state": "complete",
       "boxscore_fetched_at": "2026-11-11T13:21:48.540Z",
-      "updated_at": "2026-11-11T13:21:48.540Z"
+      "updated_at": "2026-11-19T23:46:34.467Z"
     },
     "0022600112": {
       "game_id": "0022600112",
