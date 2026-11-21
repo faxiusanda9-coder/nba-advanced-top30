@@ -3,7 +3,7 @@
   "date": "2026-11-22",
   "timezone": "Asia/Shanghai",
   "game_count": 6,
-  "final_count": 0,
+  "final_count": 1,
   "complete": false,
   "state": "incomplete",
   "games": [
@@ -13,25 +13,25 @@
       "beijing_date": "2026-11-22",
       "start_utc": "2026-11-21T18:00:00.000Z",
       "game_type": "regular",
-      "status": "live",
-      "status_text": "2nd Qtr             ",
+      "status": "final",
+      "status_text": "Final",
       "home": {
         "team_id": "1610612755",
         "name": "76ers",
         "city": "Philadelphia",
         "tricode": "PHI",
-        "score": 45
+        "score": 132
       },
       "away": {
         "team_id": "1610612749",
         "name": "Bucks",
         "city": "Milwaukee",
         "tricode": "MIL",
-        "score": 46
+        "score": 129
       },
-      "boxscore_state": "not_due",
-      "boxscore_fetched_at": null,
-      "updated_at": "2026-11-21T18:58:52.111Z"
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-21T23:44:18.298Z",
+      "updated_at": "2026-11-21T23:44:18.298Z"
     },
     {
       "game_id": "0022600275",
@@ -164,5 +164,5 @@
       "updated_at": "2026-11-20T22:34:52.607Z"
     }
   ],
-  "last_updated_at": "2026-11-21T18:58:52.111Z"
+  "last_updated_at": "2026-11-21T23:44:18.298Z"
 }
