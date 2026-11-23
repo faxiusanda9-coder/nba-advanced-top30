@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-25",
+  "timezone": "Asia/Shanghai",
+  "game_count": 3,
+  "final_count": 0,
+  "complete": false,
+  "state": "incomplete",
+  "games": [
+    {
+      "game_id": "0022600052",
+      "official_date": "2026-11-24",
+      "beijing_date": "2026-11-25",
+      "start_utc": "2026-11-25T00:00:00.000Z",
+      "game_type": "regular",
+      "status": "scheduled",
+      "status_text": "7:00 pm ET",
+      "home": {
+        "team_id": "1610612753",
+        "name": "Magic",
+        "city": "Orlando",
+        "tricode": "ORL",
+        "score": null
+      },
+      "away": {
+        "team_id": "1610612765",
+        "name": "Pistons",
+        "city": "Detroit",
+        "tricode": "DET",
+        "score": null
+      },
+      "boxscore_state": "not_due",
+      "boxscore_fetched_at": null,
+      "updated_at": "2026-11-23T21:58:07.951Z"
+    },
+    {
+      "game_id": "0022600053",
+      "official_date": "2026-11-24",
+      "beijing_date": "2026-11-25",
+      "start_utc": "2026-11-25T01:00:00.000Z",
+      "game_type": "regular",
+      "status": "scheduled",
+      "status_text": "8:00 pm ET",
+      "home": {
+        "team_id": "1610612764",
+        "name": "Wizards",
+        "city": "Washington",
+        "tricode": "WAS",
+        "score": null
+      },
+      "away": {
+        "team_id": "1610612738",
+        "name": "Celtics",
+        "city": "Boston",
+        "tricode": "BOS",
+        "score": null
+      },
+      "boxscore_state": "not_due",
+      "boxscore_fetched_at": null,
+      "updated_at": "2026-11-23T21:58:07.951Z"
+    },
+    {
+      "game_id": "0022600054",
+      "official_date": "2026-11-24",
+      "beijing_date": "2026-11-25",
+      "start_utc": "2026-11-25T03:00:00.000Z",
+      "game_type": "regular",
+      "status": "scheduled",
+      "status_text": "10:00 pm ET",
+      "home": {
+        "team_id": "1610612743",
+        "name": "Nuggets",
+        "city": "Denver",
+        "tricode": "DEN",
+        "score": null
+      },
+      "away": {
+        "team_id": "1610612742",
+        "name": "Mavericks",
+        "city": "Dallas",
+        "tricode": "DAL",
+        "score": null
+      },
+      "boxscore_state": "not_due",
+      "boxscore_fetched_at": null,
+      "updated_at": "2026-11-23T21:58:07.951Z"
+    }
+  ],
+  "last_updated_at": "2026-11-23T21:58:07.951Z"
+}
