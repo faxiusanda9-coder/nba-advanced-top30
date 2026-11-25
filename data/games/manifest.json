@@ -6759,25 +6759,25 @@
       "beijing_date": "2026-11-25",
       "start_utc": "2026-11-25T00:00:00.000Z",
       "game_type": "regular",
-      "status": "live",
-      "status_text": "3rd Qtr             ",
+      "status": "final",
+      "status_text": "Final",
       "home": {
         "team_id": "1610612753",
         "name": "Magic",
         "city": "Orlando",
         "tricode": "ORL",
-        "score": 42
+        "score": 86
       },
       "away": {
         "team_id": "1610612765",
         "name": "Pistons",
         "city": "Detroit",
         "tricode": "DET",
-        "score": 55
+        "score": 104
       },
-      "boxscore_state": "not_due",
-      "boxscore_fetched_at": null,
-      "updated_at": "2026-11-25T01:31:45.134Z"
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-25T10:18:49.361Z",
+      "updated_at": "2026-11-25T10:18:49.361Z"
     },
     "0022600053": {
       "game_id": "0022600053",
@@ -6785,25 +6785,25 @@
       "beijing_date": "2026-11-25",
       "start_utc": "2026-11-25T01:00:00.000Z",
       "game_type": "regular",
-      "status": "live",
-      "status_text": "1st Qtr             ",
+      "status": "final",
+      "status_text": "Final",
       "home": {
         "team_id": "1610612764",
         "name": "Wizards",
         "city": "Washington",
         "tricode": "WAS",
-        "score": 11
+        "score": 116
       },
       "away": {
         "team_id": "1610612738",
         "name": "Celtics",
         "city": "Boston",
         "tricode": "BOS",
-        "score": 21
+        "score": 131
       },
-      "boxscore_state": "not_due",
-      "boxscore_fetched_at": null,
-      "updated_at": "2026-11-25T01:31:45.134Z"
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-25T10:18:49.361Z",
+      "updated_at": "2026-11-25T10:18:49.361Z"
     },
     "0022600054": {
       "game_id": "0022600054",
@@ -6811,25 +6811,25 @@
       "beijing_date": "2026-11-25",
       "start_utc": "2026-11-25T03:00:00.000Z",
       "game_type": "regular",
-      "status": "scheduled",
-      "status_text": "10:00 pm ET",
+      "status": "final",
+      "status_text": "Final",
       "home": {
         "team_id": "1610612743",
         "name": "Nuggets",
         "city": "Denver",
         "tricode": "DEN",
-        "score": null
+        "score": 101
       },
       "away": {
         "team_id": "1610612742",
         "name": "Mavericks",
         "city": "Dallas",
         "tricode": "DAL",
-        "score": null
+        "score": 120
       },
-      "boxscore_state": "not_due",
-      "boxscore_fetched_at": null,
-      "updated_at": "2026-11-23T21:58:07.951Z"
+      "boxscore_state": "complete",
+      "boxscore_fetched_at": "2026-11-25T10:18:49.361Z",
+      "updated_at": "2026-11-25T10:18:49.361Z"
     },
     "0022600055": {
       "game_id": "0022600055",
