@@ -13,25 +13,25 @@
       "beijing_date": "2026-11-25",
       "start_utc": "2026-11-25T00:00:00.000Z",
       "game_type": "regular",
-      "status": "scheduled",
-      "status_text": "7:00 pm ET",
+      "status": "live",
+      "status_text": "3rd Qtr             ",
       "home": {
         "team_id": "1610612753",
         "name": "Magic",
         "city": "Orlando",
         "tricode": "ORL",
-        "score": null
+        "score": 42
       },
       "away": {
         "team_id": "1610612765",
         "name": "Pistons",
         "city": "Detroit",
         "tricode": "DET",
-        "score": null
+        "score": 55
       },
       "boxscore_state": "not_due",
       "boxscore_fetched_at": null,
-      "updated_at": "2026-11-23T21:58:07.951Z"
+      "updated_at": "2026-11-25T01:31:45.134Z"
     },
     {
       "game_id": "0022600053",
@@ -39,25 +39,25 @@
       "beijing_date": "2026-11-25",
       "start_utc": "2026-11-25T01:00:00.000Z",
       "game_type": "regular",
-      "status": "scheduled",
-      "status_text": "8:00 pm ET",
+      "status": "live",
+      "status_text": "1st Qtr             ",
       "home": {
         "team_id": "1610612764",
         "name": "Wizards",
         "city": "Washington",
         "tricode": "WAS",
-        "score": null
+        "score": 11
       },
       "away": {
         "team_id": "1610612738",
         "name": "Celtics",
         "city": "Boston",
         "tricode": "BOS",
-        "score": null
+        "score": 21
       },
       "boxscore_state": "not_due",
       "boxscore_fetched_at": null,
-      "updated_at": "2026-11-23T21:58:07.951Z"
+      "updated_at": "2026-11-25T01:31:45.134Z"
     },
     {
       "game_id": "0022600054",
@@ -86,5 +86,5 @@
       "updated_at": "2026-11-23T21:58:07.951Z"
     }
   ],
-  "last_updated_at": "2026-11-23T21:58:07.951Z"
+  "last_updated_at": "2026-11-25T01:31:45.134Z"
 }
